@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <com.example.hexi.canvastest.FillPathView
@@ -9,4 +10,10 @@
         android:layout_height="300dp"
         android:background="#ccc" />
 
-</RelativeLayout>
+    <com.example.hexi.canvastest.DrawLinesView
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"
+        android:background="#ccc" />
+
+</LinearLayout>

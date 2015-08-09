@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.hexi.model.LineType;
 import com.hexi.model.Person;
 
 import org.junit.Assert;
@@ -12,6 +13,8 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by hexi on 15/7/3.
@@ -52,5 +55,21 @@ public class UnitTest {
         Person person = new Gson().fromJson(json, Person.class);
 
         System.out.println(person.getAge());
+    }
+
+    @Test
+    public void test2() throws InterruptedException {
+        LineType currentLineType = LineType.avg;
+        final String lineType = currentLineType.value;
+        currentLineType = LineType.avg2d;
+        final LineType fLineType = currentLineType;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("lineType: " + lineType + ", currentLineType: " + fLineType);
+            }
+        }, 2000);
+
+        Thread.sleep(3000);
     }
 }

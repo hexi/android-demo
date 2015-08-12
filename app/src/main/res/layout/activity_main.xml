@@ -10,7 +10,7 @@
         android:layout_height="300dp"
         android:background="#ccc" />
 
-    <com.example.hexi.canvastest.BadgeView
+    <com.example.hexi.canvastest.ClearRect
         android:layout_width="300dp"
         android:layout_height="200dp"
         android:layout_marginTop="5dp"

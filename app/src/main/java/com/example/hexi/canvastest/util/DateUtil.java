@@ -1,4 +1,4 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

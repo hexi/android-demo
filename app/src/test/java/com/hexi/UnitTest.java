@@ -11,6 +11,8 @@ import com.hexi.model.Person;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -71,5 +73,28 @@ public class UnitTest {
         }, 2000);
 
         Thread.sleep(3000);
+    }
+
+    @Test
+    public void test3() {
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+        list.add(6);
+        list.add(7);
+        list.add(8);
+        list.add(9);
+        list.add(10);
+        Iterator<Integer> it = list.iterator();
+        while (it.hasNext()) {
+            Integer item = it.next();
+            if (item % 3 == 0) {
+                it.remove();
+            }
+        }
+        System.out.println(new Gson().toJson(list));
     }
 }

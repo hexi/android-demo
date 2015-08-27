@@ -1,5 +1,6 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.adapter;
 
+import com.example.hexi.canvastest.util.DateUtil;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

@@ -1,4 +1,4 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.example.hexi.canvastest.R;
 
 
 public class FillPathView extends View {

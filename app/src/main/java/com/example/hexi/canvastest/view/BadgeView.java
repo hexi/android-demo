@@ -1,4 +1,4 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.example.hexi.canvastest.R;
 
 
 public class BadgeView extends View {

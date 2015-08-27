@@ -1,1 +1,1 @@
-include ':app', ':mylibrary', ':broadcastintenttest'
+include ':app', ':mylibrary', ':broadcastintenttest', ':tablayout'

@@ -1,7 +1,7 @@
 package com.hexi;
 
-import com.example.hexi.canvastest.BooleanAsIntAdapter;
-import com.example.hexi.canvastest.DateTimeTypeAdapter;
+import com.example.hexi.canvastest.adapter.BooleanAsIntAdapter;
+import com.example.hexi.canvastest.adapter.DateTimeTypeAdapter;
 import com.example.hexi.canvastest.model.QuoteDataList;
 import com.example.hexi.canvastest.service.QuoteService;
 import com.google.gson.Gson;
@@ -21,9 +21,11 @@ import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
+import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func3;
 import rx.schedulers.Schedulers;
+import rx.util.async.Async;
 
 /**
  * Created by hexi on 15/7/3.
@@ -68,8 +70,8 @@ public class RxJavaTest {
                 quoteService.getDkLineQuotes(sid, quotationType, tradeDate, sort),
                 new Func3<String, String, QuoteDataList, List<Object>>() {
                     @Override
-                    public List<Object> call(String s0, String s1 , QuoteDataList quoteDataList) {
-                        List<Object>  ret = new ArrayList<Object>();
+                    public List<Object> call(String s0, String s1, QuoteDataList quoteDataList) {
+                        List<Object> ret = new ArrayList<Object>();
                         ret.add(s0);
                         ret.add(s1);
                         ret.add(quoteDataList);
@@ -96,5 +98,44 @@ public class RxJavaTest {
             }
         });
         countDownLatch.await();
+    }
+
+
+    @Test
+    public void test1() throws InterruptedException {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        System.out.println("===Main Thread hasFetchToday before, time: " + System.currentTimeMillis());
+        Async.toAsync(new Func0<Boolean>() {
+
+            @Override
+            public Boolean call() {
+                return hasFetchToday();
+            }
+        }).call()
+                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.immediate())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean hasFetchToday) {
+                        if (hasFetchToday) {
+                            System.out.println("=== time: " + System.currentTimeMillis()
+                                    + ", ThreadName: " + Thread.currentThread().getName());
+                            countDownLatch.countDown();
+                        }
+                    }
+                });
+        System.out.println("===Main Thread hasFetchToday after, time: " + System.currentTimeMillis());
+        countDownLatch.await();
+    }
+
+    private boolean hasFetchToday() {
+        System.out.println("=== hasFetchToday, time: " + System.currentTimeMillis() + ", ThreadName: " + Thread.currentThread().getName());
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

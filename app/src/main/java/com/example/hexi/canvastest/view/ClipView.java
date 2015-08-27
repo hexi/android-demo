@@ -1,4 +1,4 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

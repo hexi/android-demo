@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_original"
+            android:checked="true"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/navigation_home"/>
+
+        <item
+            android:id="@+id/navigation_library"
+            android:icon="@drawable/ic_feedback_black_24dp"
+            android:title="@string/navigation_feedback"/>
+    </group>
+</menu>

@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/broadcastintenttest/broadcastintenttest.iml" filepath="$PROJECT_DIR$/broadcastintenttest/broadcastintenttest.iml" />
       <module fileurl="file://$PROJECT_DIR$/canvasTest.iml" filepath="$PROJECT_DIR$/canvasTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/mylibrary/mylibrary.iml" filepath="$PROJECT_DIR$/mylibrary/mylibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tablayout/tablayout.iml" filepath="$PROJECT_DIR$/tablayout/tablayout.iml" />
     </modules>
   </component>
 </project>

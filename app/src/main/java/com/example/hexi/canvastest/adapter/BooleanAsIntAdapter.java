@@ -1,4 +1,4 @@
-package com.example.hexi.canvastest;
+package com.example.hexi.canvastest.adapter;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

@@ -5,15 +5,9 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.example.hexi.canvastest.view.FillPathView
+    <com.example.hexi.canvastest.view.MatrixView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:background="#ccc" />
-
-    <com.example.hexi.canvastest.view.ClearRect
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="5dp"
         android:background="#ccc" />
 
 </LinearLayout>

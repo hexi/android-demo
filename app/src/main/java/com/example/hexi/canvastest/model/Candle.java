@@ -3,14 +3,21 @@ package com.example.hexi.canvastest.model;
 /**
  * Created by hexi on 15/8/26.
  */
-public class Candle {
-    public int xIndex;
-    public float open;
-    public float close;
+public class Candle extends Entry {
+    private float open;
+    private float close;
 
     public Candle(int xIndex, float open, float close) {
-        this.xIndex = xIndex;
+        super(xIndex, (open + close) / 2);
         this.open = open;
         this.close = close;
+    }
+
+    public float getOpen() {
+        return open;
+    }
+
+    public float getClose() {
+        return close;
     }
 }

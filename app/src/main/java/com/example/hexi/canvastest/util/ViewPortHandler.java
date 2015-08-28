@@ -1,5 +1,6 @@
 package com.example.hexi.canvastest.util;
 
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 /**
@@ -35,7 +36,7 @@ public class ViewPortHandler {
         return contentRect.top;
     }
 
-    private float offsetRight() {
+    public float offsetRight() {
         return canvasWidth - contentRect.right;
     }
 
@@ -53,5 +54,9 @@ public class ViewPortHandler {
 
     public float getCanvasHeight() {
         return canvasHeight;
+    }
+
+    public RectF getContentRect() {
+        return contentRect;
     }
 }

@@ -8,6 +8,6 @@
     <com.example.hexi.canvastest.view.MatrixView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:background="#ccc" />
+        android:background="#AAFEF080"/>
 
 </LinearLayout>

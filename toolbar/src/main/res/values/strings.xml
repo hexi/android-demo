@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">toolBar</string>
+    <string name="open">close</string>
+    <string name="close">close</string>
+</resources>

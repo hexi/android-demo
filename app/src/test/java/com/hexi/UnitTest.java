@@ -97,4 +97,18 @@ public class UnitTest {
         }
         System.out.println(new Gson().toJson(list));
     }
+
+    @Test
+    public void test4() {
+        int f = 3;
+        int i = 2;
+        System.out.println(f/i);
+    }
+
+    @Test
+    public void test5() {
+        double val = 9.88d;
+        double base = Math.floor(val);
+        System.out.println(base);
+    }
 }

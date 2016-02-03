@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.squareup.wire:wire-maven-plugin:2.0.1'
+    }
+}
 apply plugin: 'com.android.application'
 
 android {
@@ -26,6 +35,8 @@ android {
 repositories {
     maven { url 'https://github.com/donnfelker/mvn-repo/raw/master/' }
     mavenCentral()
+    maven { url 'http://maven.tiantong99.com:8081/nexus/content/repositories/releases/'}
+    maven { url 'http://maven.tiantong99.com:8081/nexus/content/repositories/snapshots/'}
 }
 
 dependencies {
@@ -33,15 +44,18 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:1.9.5"
     testCompile 'org.assertj:assertj-core:1.6.1'
-    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'joda-time:joda-time:2.6'
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp:2.3.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
     compile 'io.reactivex:rxandroid:0.22.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.actionbarsherlock:viewpagerindicator:2.4.1'
     compile 'io.reactivex:rxjava-async-util:0.21.0'
     compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.squareup.wire:wire-runtime:2.0.1'
+    compile 'com.ytx.android.library:server:1.1.0'
 }

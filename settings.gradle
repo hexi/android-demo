@@ -1,1 +1,1 @@
-include ':app', ':broadcastintenttest', ':tablayout', ':toolbar'
+include ':app', ':broadcastintenttest', ':tablayout', ':toolbar', ':bestuipractice', ':whois', ':dragtoplayouttest', ':nestedscrollview', ':activitylunchmode', ':realmtest'

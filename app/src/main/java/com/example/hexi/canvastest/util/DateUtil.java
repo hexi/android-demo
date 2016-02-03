@@ -31,17 +31,27 @@ public class DateUtil {
         return format_hh_mm(new DateTime(value));
     }
 
-    public static int getTradeStartMinuteFromBondCategory(String bondCategory) {
+    public static DateTime getTradeStartTimeFromBondCategory(String bondCategory) {
         String[] ranges = bondCategory.split(";");
-        return Integer.parseInt(ranges[0].split("-")[0]);
+        int startMinutes =  Integer.parseInt(ranges[0].split("-")[0]);
+
+        int hour = startMinutes / 60;
+        int minute = startMinutes % 60;
+
+        return DateTime.now().withTimeAtStartOfDay().withHourOfDay(hour).withMinuteOfHour(minute);
     }
 
-    public static int getTradeEndMinuteFromBondCategory(String bondCategory) {
+    public static DateTime getTradeEndTimeFromBondCategory(String bondCategory) {
         String[] ranges = bondCategory.split(";");
-        return Integer.parseInt(ranges[ranges.length - 1].split("-")[1]);
+        int endMinutes = Integer.parseInt(ranges[ranges.length - 1].split("-")[1]);
+
+        int hour = endMinutes / 60;
+        int minute = endMinutes % 60;
+
+        return DateTime.now().plusDays(1).withTimeAtStartOfDay().withHourOfDay(hour).withMinuteOfHour(minute);
     }
 
-    public static int getPoints4OneTradeDayFromBondCategory(String bondCategory) {
+    public static int getPointsOfOneTradeDayFrom(String bondCategory) {
         String[] ranges = bondCategory.split(";");
         int value = 0;
         for (String range : ranges) {
@@ -50,24 +60,6 @@ public class DateUtil {
         }
 
         return value;
-    }
-
-    public static String getStartLabelFromBondCategory(String bondCategory) {
-        int value = getTradeStartMinuteFromBondCategory(bondCategory);
-        int hour = value / 60;
-        int minute = value % 60;
-
-        DateTime  dateTime = DateTime.now().withTimeAtStartOfDay().withHourOfDay(hour).withMinuteOfHour(minute);
-        return dateTime.toString("HH:mm");
-    }
-
-    public static String getEndLabelFromBondCategory(String bondCategory) {
-        int value = getTradeEndMinuteFromBondCategory(bondCategory);
-        int hour = value / 60;
-        int minute = value % 60;
-
-        DateTime  dateTime = DateTime.now().withTimeAtStartOfDay().withHourOfDay(hour).withMinuteOfHour(minute);
-        return dateTime.toString("HH:mm");
     }
 
     public static String format_yyyyMMddHHmm(DateTime time) {

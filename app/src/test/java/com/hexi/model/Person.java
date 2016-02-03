@@ -1,17 +1,12 @@
 package com.hexi.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by hexi on 15/7/17.
  */
-public class Person {
+public abstract class Person implements Human {
 
-    private int age;
+    public int age;
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age + 1;
-    }
 }

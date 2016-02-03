@@ -12,6 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class QuoteDataList {
 
     @SerializedName("datas")
-    public CopyOnWriteArrayList<QuoteData> data = new CopyOnWriteArrayList<>();
+    public ArrayList<QuoteData> data = new ArrayList<>();
     public CategoryInfo info;
 }

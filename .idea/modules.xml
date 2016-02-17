@@ -8,7 +8,11 @@
       <module fileurl="file://$PROJECT_DIR$/broadcastintenttest/broadcastintenttest.iml" filepath="$PROJECT_DIR$/broadcastintenttest/broadcastintenttest.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragtoplayouttest/dragtoplayouttest.iml" filepath="$PROJECT_DIR$/dragtoplayouttest/dragtoplayouttest.iml" />
       <module fileurl="file://$PROJECT_DIR$/hexiTest.iml" filepath="$PROJECT_DIR$/hexiTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/moduleexample-library/moduleexample-library.iml" filepath="$PROJECT_DIR$/moduleexample-library/moduleexample-library.iml" />
       <module fileurl="file://$PROJECT_DIR$/nestedscrollview/nestedscrollview.iml" filepath="$PROJECT_DIR$/nestedscrollview/nestedscrollview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/realm-gridviewexample/realm-gridviewexample.iml" filepath="$PROJECT_DIR$/realm-gridviewexample/realm-gridviewexample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/realm-intro/realm-intro.iml" filepath="$PROJECT_DIR$/realm-intro/realm-intro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/realm-moduleexample/realm-moduleexample.iml" filepath="$PROJECT_DIR$/realm-moduleexample/realm-moduleexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/realmtest/realmtest.iml" filepath="$PROJECT_DIR$/realmtest/realmtest.iml" />
       <module fileurl="file://$PROJECT_DIR$/tablayout/tablayout.iml" filepath="$PROJECT_DIR$/tablayout/tablayout.iml" />
       <module fileurl="file://$PROJECT_DIR$/toolbar/toolbar.iml" filepath="$PROJECT_DIR$/toolbar/toolbar.iml" />

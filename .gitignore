@@ -5,7 +5,7 @@
 .DS_Store
 /build
 /captures
-.idea
+.idea/
 .idea/misc.xml
 hexiTest.iml
 app/app.iml

@@ -14,8 +14,8 @@ import com.example.hexi.canvastest.db.DBHelper;
 public class TestSqliteActivity extends Activity {
 
     private static final String TAG = "TestSqliteActivity";
-    int size = 2000;
-    String log = "this is a log:";
+    int size = 100000;
+    String log = "this is a log, good night for you to find a persion";
     final String[] logDatas = new String[size];
 
     @Override
@@ -45,8 +45,7 @@ public class TestSqliteActivity extends Activity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                int id = DBHelper.getInstance(getApplicationContext()).getLastLogDataId();
-                Log.d(TAG, "===id:"+id);
+                DBHelper.getInstance(getApplicationContext()).countLog();
             }
         }).start();
     }
@@ -68,8 +67,17 @@ public class TestSqliteActivity extends Activity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                int id = DBHelper.getInstance(getApplicationContext()).getLastLogDataId();
-                Log.d(TAG, "===id:"+id);
+                DBHelper.getInstance(getApplicationContext()).countLog();
+            }
+        }).start();
+    }
+
+    public void save_with_transaction(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DBHelper.getInstance(getApplicationContext())
+                        .saveWithTransaction(logDatas);
             }
         }).start();
     }
@@ -91,8 +99,21 @@ public class TestSqliteActivity extends Activity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                int id = DBHelper.getInstance(getApplicationContext()).getLastLogDataId();
-                Log.d(TAG, "===id:"+id);
+                DBHelper.getInstance(getApplicationContext()).countLog();
+            }
+        }, "thread1").start();
+    }
+
+    public void get(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                DBHelper.getInstance(getApplicationContext()).countLog();
             }
         }, "thread1").start();
     }
@@ -126,7 +147,7 @@ public class TestSqliteActivity extends Activity {
             @Override
             public void run() {
                 int id = DBHelper.getInstance(getApplicationContext())
-                        .getLastLogDataIdSleep();
+                        .countLog();
                 Log.d(TAG, "===id:" + id);
             }
         }).start();
@@ -135,7 +156,7 @@ public class TestSqliteActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

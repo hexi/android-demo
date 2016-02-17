@@ -68,8 +68,8 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public boolean saveWithTransaction(String[] logDatas) {
         Log.d(TAG, "===into saveWithTransaction, time:" + DateTime.now());
+        long start = System.currentTimeMillis();
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.d(TAG, "===start saveWithTransaction, time:"+ DateTime.now());
         try {
             db.beginTransaction();
             for (String logData : logDatas) {
@@ -78,27 +78,32 @@ public class DBHelper extends SQLiteOpenHelper{
                 db.execSQL(sql, bindArgs);
             }
             db.setTransactionSuccessful();
-            Log.d(TAG, "===end saveWithTransaction, time:"+DateTime.now());
+            Log.d(TAG, "===saveWithTransaction, time:"+(System.currentTimeMillis() - start));
             return true;
         } finally {
             db.endTransaction();
         }
     }
 
-    public Integer getLastLogDataId() {
+    public Integer countLog() {
         Log.d(TAG, String.format("===%s into getLastLogId, time:%s",
                 Thread.currentThread().getName(),
                 DateTime.now()));
-        SQLiteDatabase db = this.getReadableDatabase();
-        Log.d(TAG, String.format("===%s start getLastLogId, time:%s",
-                Thread.currentThread().getName(),
-                DateTime.now()));
+        long start = System.currentTimeMillis();
 
-        String sql = "select id from log_data order by id DESC limit 1";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+//        String sql = "select id from log_data order by id DESC limit 1";
+        String sql = "select count(*) from log_data order by content DESC";
         Cursor cursor = db.rawQuery(sql, null);
         try {
             if (cursor.moveToFirst()) {
-                return cursor.getInt(0);
+                int count  = cursor.getInt(0);
+                Log.d(TAG, "===count of log:"+count);
+                Log.d(TAG, String.format("===%s end getLastLogId, time:%d",
+                        Thread.currentThread().getName(),
+                        (System.currentTimeMillis() - start)));
+                return count;
             } else {
                 return null;
             }
@@ -106,9 +111,6 @@ public class DBHelper extends SQLiteOpenHelper{
             if (!cursor.isClosed()) {
                 cursor.close();
             }
-            Log.d(TAG, String.format("===%s end getLastLogId, time:%s",
-                    Thread.currentThread().getName(),
-                    DateTime.now()));
         }
     }
 

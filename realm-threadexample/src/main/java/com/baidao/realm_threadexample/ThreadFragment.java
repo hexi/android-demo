@@ -19,6 +19,7 @@ package com.baidao.realm_threadexample;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +40,7 @@ import io.realm.RealmChangeListener;
  */
 public class ThreadFragment extends Fragment {
 
+    private static final String TAG = "ThreadFragment";
     private Realm realm;
     private Random random = new Random();
     private Thread backgroundThread;
@@ -101,6 +103,7 @@ public class ThreadFragment extends Fragment {
         super.onStart();
         // Create Realm instance for the UI thread
         realm = Realm.getDefaultInstance();
+        Log.d(TAG, "===realm:"+realm.toString());
 
         // Create a RealmQuery on the UI thread and send the results to the custom view. The
         // RealmResults will automatically be updated whenever the Realm data is changed.
@@ -127,7 +130,9 @@ public class ThreadFragment extends Fragment {
                 // Realm instances cannot be shared between threads, so we need to create a new
                 // instance on the background thread.
                 int redColor = getResources().getColor(R.color.realm_red);
-                Realm backgroundThreadRealm = Realm.getInstance(getActivity());
+//                Realm backgroundThreadRealm = Realm.getInstance(getActivity());
+                Realm backgroundThreadRealm = Realm.getDefaultInstance();
+                Log.d(TAG, "===backgroundRealm:"+backgroundThreadRealm.toString());
                 while (!backgroundThread.isInterrupted()) {
                     backgroundThreadRealm.beginTransaction();
 

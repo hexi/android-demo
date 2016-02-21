@@ -11,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/moduleexample-library/moduleexample-library.iml" filepath="$PROJECT_DIR$/moduleexample-library/moduleexample-library.iml" />
       <module fileurl="file://$PROJECT_DIR$/nestedscrollview/nestedscrollview.iml" filepath="$PROJECT_DIR$/nestedscrollview/nestedscrollview.iml" />
       <module fileurl="file://$PROJECT_DIR$/realm-adapterexample/realm-adapterexample.iml" filepath="$PROJECT_DIR$/realm-adapterexample/realm-adapterexample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/realm-encryptionexample/realm-encryptionexample.iml" filepath="$PROJECT_DIR$/realm-encryptionexample/realm-encryptionexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/realm-gridviewexample/realm-gridviewexample.iml" filepath="$PROJECT_DIR$/realm-gridviewexample/realm-gridviewexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/realm-intro/realm-intro.iml" filepath="$PROJECT_DIR$/realm-intro/realm-intro.iml" />
       <module fileurl="file://$PROJECT_DIR$/realm-jsonexample/realm-jsonexample.iml" filepath="$PROJECT_DIR$/realm-jsonexample/realm-jsonexample.iml" />

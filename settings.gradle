@@ -1,1 +1,1 @@
-include ':app', ':broadcastintenttest', ':tablayout', ':toolbar', ':bestuipractice', ':whois', ':dragtoplayouttest', ':nestedscrollview', ':activitylunchmode', ':realm-intro', ':realm-moduleexample', ':moduleexample-library', ':realm-gridviewexample', ':realm-threadexample'
+include ':app', ':broadcastintenttest', ':tablayout', ':toolbar', ':bestuipractice', ':whois', ':dragtoplayouttest', ':nestedscrollview', ':activitylunchmode', ':realm-intro', ':realm-moduleexample', ':moduleexample-library', ':realm-gridviewexample', ':realm-threadexample', ':realm-adapterexample'

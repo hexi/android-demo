@@ -56,4 +56,12 @@ public class VitamioAudioActivity extends Activity {
         }
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "===onDestroy===");
+        mediaPlayer.release();
+        mediaPlayer = null;
+    }
 }

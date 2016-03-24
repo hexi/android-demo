@@ -1,4 +1,4 @@
-package com.gensee.networklistener;
+package com.vitamio.networklistener;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

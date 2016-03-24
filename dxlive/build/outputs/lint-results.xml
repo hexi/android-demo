@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="4" by="lint 24.4.1">
+
+    <issue
+        id="MissingSuperCall"
+        severity="Error"
+        message="Overriding method should call `super.onFinishInflate`"
+        category="Correctness"
+        priority="9"
+        summary="Missing Super Call"
+        explanation="Some methods, such as `View#onDetachedFromWindow`, require that you also call the super implementation as part of your method."
+        errorLine1="  public void onFinishInflate() {"
+        errorLine2="              ~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/widget/MediaController.java"
+            line="188"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="Assert"
+        severity="Warning"
+        message="Assertions are unreliable. Use `BuildConfig.DEBUG` conditional checks instead."
+        category="Correctness"
+        priority="6"
+        summary="Assertions"
+        explanation="Assertions are not checked at runtime. There are ways to request that they be used by Dalvik (`adb shell setprop debug.assert 1`), but the property is ignored in many places and can not be relied upon. Instead, perform conditional checking inside `if (BuildConfig.DEBUG) { }` blocks. That constant is a static final boolean which is true in debug builds and false in release builds, and the Java compiler completely removes all code inside the if-body from the app.
+
+For example, you can replace `assert speed > 0` with `if (BuildConfig.DEBUG &amp;&amp; !(speed > 0)) { throw new AssertionError() }`.
+
+(Note: This lint check does not flag assertions purely asserting nullness or non-nullness; these are typically more intended for tools usage than runtime checks.)"
+        url="https://code.google.com/p/android/issues/detail?id=65183"
+        urls="https://code.google.com/p/android/issues/detail?id=65183"
+        errorLine1="        assert encoder.op == output_len;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Base64.java"
+            line="535"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="Assert"
+        severity="Warning"
+        message="Assertions are unreliable. Use `BuildConfig.DEBUG` conditional checks instead."
+        category="Correctness"
+        priority="6"
+        summary="Assertions"
+        explanation="Assertions are not checked at runtime. There are ways to request that they be used by Dalvik (`adb shell setprop debug.assert 1`), but the property is ignored in many places and can not be relied upon. Instead, perform conditional checking inside `if (BuildConfig.DEBUG) { }` blocks. That constant is a static final boolean which is true in debug builds and false in release builds, and the Java compiler completely removes all code inside the if-body from the app.
+
+For example, you can replace `assert speed > 0` with `if (BuildConfig.DEBUG &amp;&amp; !(speed > 0)) { throw new AssertionError() }`.
+
+(Note: This lint check does not flag assertions purely asserting nullness or non-nullness; these are typically more intended for tools usage than runtime checks.)"
+        url="https://code.google.com/p/android/issues/detail?id=65183"
+        urls="https://code.google.com/p/android/issues/detail?id=65183"
+        errorLine1="                assert tailLen == 0;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Base64.java"
+            line="717"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="Assert"
+        severity="Warning"
+        message="Assertions are unreliable. Use `BuildConfig.DEBUG` conditional checks instead."
+        category="Correctness"
+        priority="6"
+        summary="Assertions"
+        explanation="Assertions are not checked at runtime. There are ways to request that they be used by Dalvik (`adb shell setprop debug.assert 1`), but the property is ignored in many places and can not be relied upon. Instead, perform conditional checking inside `if (BuildConfig.DEBUG) { }` blocks. That constant is a static final boolean which is true in debug builds and false in release builds, and the Java compiler completely removes all code inside the if-body from the app.
+
+For example, you can replace `assert speed > 0` with `if (BuildConfig.DEBUG &amp;&amp; !(speed > 0)) { throw new AssertionError() }`.
+
+(Note: This lint check does not flag assertions purely asserting nullness or non-nullness; these are typically more intended for tools usage than runtime checks.)"
+        url="https://code.google.com/p/android/issues/detail?id=65183"
+        urls="https://code.google.com/p/android/issues/detail?id=65183"
+        errorLine1="                assert p == len;"
+        errorLine2="                ~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Base64.java"
+            line="718"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="  return (Build.MODEL.trim().equalsIgnoreCase(&quot;DROIDX&quot;) || Build.MODEL.trim().equalsIgnoreCase(&quot;DROID2&quot;) || Build.FINGERPRINT.toLowerCase().contains(&quot;shadow&quot;) || Build.FINGERPRINT.toLowerCase().contains(&quot;droid2&quot;));"
+        errorLine2="                                                                                                                              ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/CPU.java"
+            line="167"
+            column="127"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="  return (Build.MODEL.trim().equalsIgnoreCase(&quot;DROIDX&quot;) || Build.MODEL.trim().equalsIgnoreCase(&quot;DROID2&quot;) || Build.FINGERPRINT.toLowerCase().contains(&quot;shadow&quot;) || Build.FINGERPRINT.toLowerCase().contains(&quot;droid2&quot;));"
+        errorLine2="                                                                                                                              ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/CPU.java"
+            line="167"
+            column="127"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="        return lo.toLowerCase();"
+        errorLine2="                  ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Device.java"
+            line="35"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="  return sFileTypeMap.get(path.substring(lastDot + 1).toUpperCase());"
+        errorLine2="                                                      ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/MediaFile.java"
+            line="167"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="              String key = mCaseInsensitivePaths ? path.toLowerCase() : path;"
+        errorLine2="                                                        ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/MediaScanner.java"
+            line="93"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="        key = path.toLowerCase();"
+        errorLine2="                   ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/MediaScanner.java"
+            line="272"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="              mFileCache.remove(path.toLowerCase());"
+        errorLine2="                                     ~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/MediaScanner.java"
+            line="309"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="  return hours > 0 ? String.format(&quot;%02d:%02d:%02d&quot;, hours, minutes, seconds) : String.format(&quot;%02d:%02d&quot;, minutes, seconds);"
+        errorLine2="                            ~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/StringUtils.java"
+            line="75"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        severity="Warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        category="Correctness"
+        priority="6"
+        summary="Implied default locale in case conversion"
+        explanation="Calling `String#toLowerCase()` or `#toUpperCase()` *without specifying an explicit locale* is a common source of bugs. The reason for that is that those methods will use the current locale on the user&apos;s device, and even though the code appears to work correctly when you are developing the app, it will fail in some locales. For example, in the Turkish locale, the uppercase replacement for `i` is *not* `I`.
+
+If you want the methods to just perform ASCII replacement, for example to convert an enum name, call `String#toUpperCase(Locale.US)` instead. If you really want to use the current locale, call `String#toUpperCase(Locale.getDefault())` instead."
+        url="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        urls="http://developer.android.com/reference/java/util/Locale.html#default_locale"
+        errorLine1="  return hours > 0 ? String.format(&quot;%02d:%02d:%02d&quot;, hours, minutes, seconds) : String.format(&quot;%02d:%02d&quot;, minutes, seconds);"
+        errorLine2="                            ~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/StringUtils.java"
+            line="75"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="SdCardPath"
+        severity="Warning"
+        message="Do not hardcode &quot;`/data/`&quot;; use `Context.getFilesDir().getPath()` instead"
+        category="Correctness"
+        priority="6"
+        summary="Hardcoded reference to `/sdcard`"
+        explanation="Your code should not reference the `/sdcard` path directly; instead use `Environment.getExternalStorageDirectory().getPath()`.
+
+Similarly, do not reference the `/data/data/` path directly; it can vary in multi-user scenarios. Instead, use `Context.getFilesDir().getPath()`."
+        url="http://developer.android.com/guide/topics/data/data-storage.html#filesExternal"
+        urls="http://developer.android.com/guide/topics/data/data-storage.html#filesExternal"
+        errorLine1="   return &quot;/data/data/&quot; + ai.packageName + &quot;/&quot;;"
+        errorLine2="          ~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/ContextUtils.java"
+            line="37"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="LongLogTag"
+        severity="Error"
+        message="The logging tag can be at most 23 characters, was 56 (Couldn&apos;t open file on client side, trying server side %s)"
+        category="Correctness"
+        priority="5"
+        summary="Too Long Log Tags"
+        explanation="Log tags are only allowed to be at most 23 tag characters long."
+        errorLine1="    Log.e(&quot;Couldn&apos;t open file on client side, trying server side %s&quot;, uri.toString());"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/MediaMetadataRetriever.java"
+            line="84"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GetInstance"
+        severity="Warning"
+        message="ECB encryption mode should not be used"
+        category="Security"
+        priority="9"
+        summary="Cipher.getInstance with ECB"
+        explanation="`Cipher#getInstance` should not be called with ECB as the cipher mode or without setting the cipher mode because the default mode on android is ECB, which is insecure."
+        errorLine1="   Cipher cipher = Cipher.getInstance(&quot;RSA/ECB/NoPadding&quot;);"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Crypto.java"
+            line="121"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="TrulyRandom"
+        severity="Warning"
+        message="Potentially insecure random numbers on Android 4.3 and older. Read https://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html for more info."
+        category="Security"
+        priority="9"
+        summary="Weak RNG"
+        explanation="Key generation, signing, encryption, and random number generation may not receive cryptographically strong values due to improper initialization of the underlying PRNG on Android 4.3 and below.
+
+If your application relies on cryptographically secure random number generation you should apply the workaround described in https://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html .
+
+This lint rule is mostly informational; it does not accurately detect whether cryptographically secure RNG is required, or whether the workaround has already been applied. After reading the blog entry and updating your code if necessary, you can disable this lint issue."
+        url="https://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html"
+        urls="https://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html"
+        errorLine1="   ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);"
+        errorLine2="           ~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/utils/Crypto.java"
+            line="50"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        severity="Warning"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        category="Performance"
+        priority="9"
+        summary="Memory allocations within drawing code"
+        explanation="You should avoid allocating objects during a drawing or layout operation. These are called frequently, so a smooth UI can be interrupted by garbage collection pauses caused by the object allocations.
+
+The way this is generally handled is to allocate the needed objects up front and to reuse them for each drawing operation.
+
+Some methods allocate memory on your behalf (such as `Bitmap.create`), and these should be handled in the same way."
+        errorLine1="    Layout layout = new StaticLayout(getText(), mTextPaintOutline, getWidth(), Layout.Alignment.ALIGN_CENTER, mSpacingMult, mSpacingAdd, mIncludePad);"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/widget/OutlineTextView.java"
+            line="124"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        severity="Warning"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        category="Performance"
+        priority="9"
+        summary="Memory allocations within drawing code"
+        explanation="You should avoid allocating objects during a drawing or layout operation. These are called frequently, so a smooth UI can be interrupted by garbage collection pauses caused by the object allocations.
+
+The way this is generally handled is to allocate the needed objects up front and to reuse them for each drawing operation.
+
+Some methods allocate memory on your behalf (such as `Bitmap.create`), and these should be handled in the same way."
+        errorLine1="    layout = new StaticLayout(getText(), mTextPaint, getWidth(), Layout.Alignment.ALIGN_CENTER, mSpacingMult, mSpacingAdd, mIncludePad);"
+        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/widget/OutlineTextView.java"
+            line="126"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        severity="Warning"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        category="Performance"
+        priority="9"
+        summary="Memory allocations within drawing code"
+        explanation="You should avoid allocating objects during a drawing or layout operation. These are called frequently, so a smooth UI can be interrupted by garbage collection pauses caused by the object allocations.
+
+The way this is generally handled is to allocate the needed objects up front and to reuse them for each drawing operation.
+
+Some methods allocate memory on your behalf (such as `Bitmap.create`), and these should be handled in the same way."
+        errorLine1="    Layout layout = new StaticLayout(getText(), mTextPaintOutline, measureWidth(widthMeasureSpec), Layout.Alignment.ALIGN_CENTER, mSpacingMult, mSpacingAdd, mIncludePad);"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/java/io/vov/vitamio/widget/OutlineTextView.java"
+            line="132"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        severity="Warning"
+        message="Possible overdraw: Root element paints background `@color/mediacontroller_bg` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        category="Performance"
+        priority="3"
+        summary="Overdraw: Painting regions more than once"
+        explanation="If you set a background drawable on a root view, then you should use a custom theme where the theme background is null. Otherwise, the theme background will be painted first, only to have your custom background completely cover it; this is called &quot;overdraw&quot;.
+
+NOTE: This detector relies on figuring out which layouts are associated with which activities based on scanning the Java code, and it&apos;s currently doing that using an inexact pattern matching algorithm. Therefore, it can incorrectly conclude which activity the layout is associated with and then wrongly complain that a background-theme is hidden.
+
+If you want your custom background on multiple pages, then you should consider making a custom theme with your custom background and just using that theme instead of a root element background.
+
+Of course it&apos;s possible that your custom drawable is translucent and you want it to be mixed with the background. However, you will get better performance if you pre-mix the background with your drawable and use that resulting image or color as a custom theme background instead.
+"
+        errorLine1="    android:background=&quot;@color/mediacontroller_bg&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="5"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        severity="Warning"
+        message="Possible overdraw: Root element paints background `@android:color/black` with a theme that also paints a background (inferred theme is `@android:style/Theme.Holo`)"
+        category="Performance"
+        priority="3"
+        summary="Overdraw: Painting regions more than once"
+        explanation="If you set a background drawable on a root view, then you should use a custom theme where the theme background is null. Otherwise, the theme background will be painted first, only to have your custom background completely cover it; this is called &quot;overdraw&quot;.
+
+NOTE: This detector relies on figuring out which layouts are associated with which activities based on scanning the Java code, and it&apos;s currently doing that using an inexact pattern matching algorithm. Therefore, it can incorrectly conclude which activity the layout is associated with and then wrongly complain that a background-theme is hidden.
+
+If you want your custom background on multiple pages, then you should consider making a custom theme with your custom background and just using that theme instead of a root element background.
+
+Of course it&apos;s possible that your custom drawable is translucent and you want it to be mixed with the background. However, you will get better performance if you pre-mix the background with your drawable and use that resulting image or color as a custom theme background instead.
+"
+        errorLine1="    android:background=&quot;@android:color/black&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.layout.mediacontroller` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.drawable.mediacontroller_play` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/drawable-xhdpi/mediacontroller_play.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.drawable.scrubber_track_holo_dark` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/drawable-xhdpi/scrubber_track_holo_dark.9.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.vitamio_library_app_name` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;vitamio_library_app_name&quot;>VitamioLibrary&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="4"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.vitamio_init_decoders` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;vitamio_init_decoders&quot;>Initializing decoders…&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="5"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_group_tools_label` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_group_tools_label&quot;>Vitamio tools&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_group_tools_description` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_group_tools_description&quot;>Access Vitamio package and resources.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_receive_messages_label` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_receive_messages_label&quot;>Receive Vitamio messages&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_receive_messages_description` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_receive_messages_description&quot;>Receive all broadcasts from Vitamio service.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="9"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_write_providers_label` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_write_providers_label&quot;>Write Vitamio providers&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="10"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.permission_write_providers_description` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;permission_write_providers_description&quot;>Delete, update or create new items in Vitamio providers."
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.VideoView_error_title` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;VideoView_error_title&quot;>Cannot play video&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.VideoView_error_text_invalid_progressive_playback` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;VideoView_error_text_invalid_progressive_playback&quot;>Sorry, this video is not valid for streaming to"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="14"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.VideoView_error_text_unknown` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;VideoView_error_text_unknown&quot;>Sorry, this video cannot be played.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="17"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.string.VideoView_error_button` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds."
+        errorLine1="    &lt;string name=&quot;VideoView_error_button&quot;>OK&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/values/strings.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="IconMissingDensityFolder"
+        severity="Warning"
+        message="Missing density variation folders in `src/main/res`: drawable-mdpi, drawable-hdpi, drawable-xxhdpi, drawable-xxxhdpi"
+        category="Usability:Icons"
+        priority="3"
+        summary="Missing density folder"
+        explanation="Icons will look best if a custom version is provided for each of the major screen density classes (low, medium, high, extra-high, extra-extra-high). This lint check identifies folders which are missing, such as `drawable-hdpi`.
+
+Low density is not really used much anymore, so this check ignores the ldpi density. To force lint to include it, set the environment variable `ANDROID_LINT_INCLUDE_LDPI=true`. For more information on current density usage, see http://developer.android.com/resources/dashboard/screens.html"
+        url="http://developer.android.com/guide/practices/screens_support.html"
+        urls="http://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res"/>
+    </issue>
+
+    <issue
+        id="GoogleAppIndexingWarning"
+        severity="Warning"
+        message="App is not indexable by Google Search; consider adding at least one Activity with an ACTION-VIEW intent-filler. See issue explanation for more details."
+        category="Usability"
+        priority="5"
+        summary="Missing support for Google App Indexing"
+        explanation="Adds deep links to get your app into the Google index, to get installs and traffic to your app from Google Search."
+        url="https://g.co/AppIndexing/AndroidStudio"
+        urls="https://g.co/AppIndexing/AndroidStudio"
+        errorLine1="    &lt;application>"
+        errorLine2="    ^">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/AndroidManifest.xml"
+            line="10"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        severity="Warning"
+        message="[Accessibility] Missing `contentDescription` attribute on image"
+        category="Accessibility"
+        priority="3"
+        summary="Image without `contentDescription`"
+        explanation="Non-textual widgets like ImageViews and ImageButtons should use the `contentDescription` attribute to specify a textual description of the widget such that screen readers and other accessibility tools can adequately describe the user interface.
+
+Note that elements in application screens that are purely decorative and do not provide any content or enable a user action should not have accessibility content descriptions. In this case, just suppress the lint warning with a tools:ignore=&quot;ContentDescription&quot; attribute.
+
+Note that for text fields, you should not set both the `hint` and the `contentDescription` attributes since the hint will never be shown. Just set the `hint`. See http://developer.android.com/guide/topics/ui/accessibility/checklist.html#special-cases."
+        errorLine1="    &lt;ImageButton"
+        errorLine2="    ^"
+        quickfix="studio,adt">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="17"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        severity="Warning"
+        message="[Accessibility] Missing `contentDescription` attribute on image"
+        category="Accessibility"
+        priority="3"
+        summary="Image without `contentDescription`"
+        explanation="Non-textual widgets like ImageViews and ImageButtons should use the `contentDescription` attribute to specify a textual description of the widget such that screen readers and other accessibility tools can adequately describe the user interface.
+
+Note that elements in application screens that are purely decorative and do not provide any content or enable a user action should not have accessibility content descriptions. In this case, just suppress the lint warning with a tools:ignore=&quot;ContentDescription&quot; attribute.
+
+Note that for text fields, you should not set both the `hint` and the `contentDescription` attributes since the hint will never be shown. Just set the `hint`. See http://developer.android.com/guide/topics/ui/accessibility/checklist.html#special-cases."
+        errorLine1="    &lt;ImageButton"
+        errorLine2="    ^"
+        quickfix="studio,adt">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="27"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="RtlSymmetry"
+        severity="Warning"
+        message="When you define `paddingLeft` you should probably also define `paddingRight` for right-to-left symmetry"
+        category="Bi-directional Text"
+        priority="6"
+        summary="Padding and margin symmetry"
+        explanation="If you specify padding or margin on the left side of a layout, you should probably also specify padding on the right side (and vice versa) for right-to-left layout symmetry."
+        errorLine1="        android:paddingLeft=&quot;5dp&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="33"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_marginLeft=&quot;5dp&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="18"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_marginLeft=&quot;5dp&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="29"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_toEndOf=&quot;@id/mediacontroller_play_pause&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_toRightOf=&quot;@id/mediacontroller_play_pause&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="30"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_alignParentEnd=&quot;true&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_alignParentRight=&quot;true&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="37"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginEnd=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_marginRight=&quot;5dp&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="39"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_toStartOf=&quot;@id/mediacontroller_time_total&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_toLeftOf=&quot;@id/mediacontroller_time_total&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="47"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_toEndOf=&quot;@id/mediacontroller_time_current&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="            android:layout_toRightOf=&quot;@id/mediacontroller_time_current&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="48"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="        android:layout_marginLeft=&quot;5dp&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/mediacontroller.xml"
+            line="58"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginStart=&quot;10dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="        android:layout_marginLeft=&quot;10dp&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="22"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:layout_marginStart=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="        android:layout_marginLeft=&quot;5dp&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="31"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Consider adding `android:paddingStart=&quot;5dp&quot;` to better support right-to-left layouts"
+        category="Bi-directional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.
+
+For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. *NOTE*: If your `minSdkVersion` is less than 17, you should add *both* the older left/right attributes *as well as* the new start/right attributes. On older platforms, where RTL is not supported and the start/right attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.
+
+(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="        android:paddingLeft=&quot;5dp&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tong/Projects/dxlive-android/dxlive/src/main/res/layout/view_dx_video.xml"
+            line="33"
+            column="9"/>
+    </issue>
+
+</issues>

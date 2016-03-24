@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/hexi/Documents/project/dxlive-android/dxlive/build/intermediates/res/merged/androidTest/debug/raw/libarm.so",
+        "source": "/Users/hexi/Documents/project/dxlive-android/dxlive/build/intermediates/bundles/debug/res/raw/libarm.so"
+    },
+    {
+        "merged": "/Users/tong/Projects/dxlive-android/dxlive/build/intermediates/res/merged/androidTest/debug/raw/libarm.so",
+        "source": "/Users/tong/Projects/dxlive-android/dxlive/build/intermediates/bundles/debug/res/raw/libarm.so"
+    }
+]

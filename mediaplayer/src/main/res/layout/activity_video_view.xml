@@ -6,7 +6,6 @@
     <io.vov.vitamio.widget.VideoView
         android:id="@+id/surface_view"
         android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_height="wrap_content" />
 
     <ProgressBar

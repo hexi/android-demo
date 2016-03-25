@@ -36,6 +36,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.RelativeLayout;
 
 import io.vov.vitamio.MediaFormat;
 import io.vov.vitamio.MediaPlayer;
@@ -72,6 +73,9 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   public static final int VIDEO_LAYOUT_STRETCH = 2;
   public static final int VIDEO_LAYOUT_ZOOM = 3;
   public static final int VIDEO_LAYOUT_FIT_PARENT = 4;
+  public static final int VIDEO_LAYOUT_FIT_WINDOW_HEIGHT = 5;
+  public static final int VIDEO_LAYOUT_FIT_WINDOW_WIDTH = 6;
+
   private static final int STATE_ERROR = -1;
   private static final int STATE_IDLE = 0;
   private static final int STATE_PREPARING = 1;
@@ -82,19 +86,22 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private static final int STATE_SUSPEND = 6;
   private static final int STATE_RESUME = 7;
   private static final int STATE_SUSPEND_UNSUPPORTED = 8;
+  private static final String TAG = "VideoView";
   OnVideoSizeChangedListener mSizeChangedListener = new OnVideoSizeChangedListener() {
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-      Log.d("onVideoSizeChanged: (%dx%d)", width, height);
       mVideoWidth = mp.getVideoWidth();
       mVideoHeight = mp.getVideoHeight();
       mVideoAspectRatio = mp.getVideoAspectRatio();
+
+//      android.util.Log.d(TAG, String.format("===onVideoSizeChanged, mVideoWidth:%d, mVideoHeight:%d, mVideoAspectRatio:%f",
+//              mVideoWidth, mVideoHeight, mVideoAspectRatio));
+
       if (mVideoWidth != 0 && mVideoHeight != 0)
         setVideoLayout(mVideoLayout, mAspectRatio);
     }
   };
   OnPreparedListener mPreparedListener = new OnPreparedListener() {
     public void onPrepared(MediaPlayer mp) {
-      Log.d("onPrepared");
       mCurrentState = STATE_PREPARED;
       // mTargetState = STATE_PLAYING;
 
@@ -108,6 +115,9 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
       mVideoWidth = mp.getVideoWidth();
       mVideoHeight = mp.getVideoHeight();
       mVideoAspectRatio = mp.getVideoAspectRatio();
+
+//      android.util.Log.d(TAG, String.format("===onPrepared, mVideoWidth:%d, mVideoHeight:%d, mVideoAspectRatio:%f",
+//              mVideoWidth, mVideoHeight, mVideoAspectRatio));
 
       long seekToPosition = mSeekWhenPrepared;
       if (seekToPosition != 0)
@@ -169,7 +179,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private int mCurrentState = STATE_IDLE;
   private int mTargetState = STATE_IDLE;
   private float mAspectRatio = 0;
-  private int mVideoLayout = VIDEO_LAYOUT_SCALE;
+  private int mVideoLayout = VIDEO_LAYOUT_FIT_WINDOW_HEIGHT;
   private SurfaceHolder mSurfaceHolder = null;
   private MediaPlayer mMediaPlayer = null;
   private int mVideoWidth;
@@ -316,13 +326,14 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
    * @param aspectRatio video aspect ratio, will audo detect if 0.
    */
   public void setVideoLayout(int layout, float aspectRatio) {
-    LayoutParams lp = getLayoutParams();
+    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)getLayoutParams();
     Pair<Integer, Integer> res = ScreenResolution.getResolution(mContext);
     int windowWidth = res.first.intValue(), windowHeight = res.second.intValue();
     float windowRatio = windowWidth / (float) windowHeight;
     float videoRatio = aspectRatio <= 0.01f ? mVideoAspectRatio : aspectRatio;
     mSurfaceHeight = mVideoHeight;
     mSurfaceWidth = mVideoWidth;
+
     if (VIDEO_LAYOUT_ORIGIN == layout && mSurfaceWidth < windowWidth && mSurfaceHeight < windowHeight) {
       lp.width = (int) (mSurfaceHeight * videoRatio);
       lp.height = mSurfaceHeight;
@@ -334,16 +345,36 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
       float parentRatio = ((float) parent.getWidth()) / ((float) parent.getHeight());
       lp.width = (parentRatio < videoRatio) ? parent.getWidth() : Math.round(((float) parent.getHeight()) * videoRatio);
       lp.height = (parentRatio > videoRatio) ? parent.getHeight() : Math.round(((float) parent.getWidth()) / videoRatio);
+    } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_HEIGHT) {
+      ViewGroup parent = (ViewGroup) getParent();
+      int parentWidth = parent.getWidth();
+      int parentHeight = parent.getHeight();
+
+      lp.width = Math.round(parentHeight * videoRatio);
+      lp.height = parentHeight;
+      int margin = -(lp.width - windowWidth) / 2;
+      lp.leftMargin = margin;
+      lp.rightMargin = margin;
+    } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_WIDTH) {
+      ViewGroup parent = (ViewGroup) getParent();
+      int parentWidth = parent.getWidth();
+      int parentHeight = parent.getHeight();
+
+      lp.width = parentWidth;
+      lp.height = Math.round(parentWidth / videoRatio);
+      lp.bottomMargin = -(lp.height - parentHeight);
     } else {
       boolean full = layout == VIDEO_LAYOUT_STRETCH;
       lp.width = (full || windowRatio < videoRatio) ? windowWidth : (int) (videoRatio * windowHeight);
       lp.height = (full || windowRatio > videoRatio) ? windowHeight : (int) (windowWidth / videoRatio);
     }
+
     setLayoutParams(lp);
     getHolder().setFixedSize(mSurfaceWidth, mSurfaceHeight);
-    Log.d("VIDEO: %dx%dx%f, Surface: %dx%d, LP: %dx%d, Window: %dx%dx%f", mVideoWidth, mVideoHeight, mVideoAspectRatio, mSurfaceWidth, mSurfaceHeight, lp.width, lp.height, windowWidth, windowHeight, windowRatio);
+    Log.d(String.format("VIDEO: {%d * %d}, Surface: {%d * %d, %f}, LP: {%d * %d}, Window: {%d * %d, %f}", mVideoWidth, mVideoHeight, mSurfaceWidth, mSurfaceHeight, mVideoAspectRatio, lp.width, lp.height, windowWidth, windowHeight, windowRatio));
     mVideoLayout = layout;
     mAspectRatio = aspectRatio;
+
   }
 
   @SuppressWarnings("deprecation")

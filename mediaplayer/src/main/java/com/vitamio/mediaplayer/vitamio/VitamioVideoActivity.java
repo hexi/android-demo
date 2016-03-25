@@ -1,9 +1,12 @@
 package com.vitamio.mediaplayer.vitamio;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.vitamio.mediaplayer.R;
@@ -24,9 +27,13 @@ public class VitamioVideoActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
+
         setContentView(R.layout.activity_video_view);
         videoView = (VideoView) findViewById(R.id.surface_view);
         progress = (ProgressBar) findViewById(R.id.progress);
+
 
 //        videoView = new VideoView(this);
 //        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fl_video_container);
@@ -63,7 +70,7 @@ public class VitamioVideoActivity extends Activity {
                         break;
                     case MediaPlayer.MEDIA_INFO_DOWNLOAD_RATE_CHANGED:
                         //Display video download speed
-                        Log.d(TAG, "download rate:" + extra);
+//                        Log.d(TAG, "download rate:" + extra);
                         break;
                 }
                 return true;

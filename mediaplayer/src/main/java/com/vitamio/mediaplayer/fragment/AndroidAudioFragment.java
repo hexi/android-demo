@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.vitamio.mediaplayer.MyMediaPlayer;
 import com.vitamio.mediaplayer.R;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class AndroidAudioFragment extends Fragment {
 
     private static final String TAG = "AndroidAudioFragment";
 
-    private MediaPlayer mediaPlayer;
+    private MyMediaPlayer mediaPlayer;
 
     String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
     //    String path = "http://jorgesys.net/i/irina_delivery@117489/master.m3u8";
@@ -48,20 +49,25 @@ public class AndroidAudioFragment extends Fragment {
         try {
             Log.d(TAG, "===createMediaPlayer===");
             Uri uri = Uri.parse(path);
-            mediaPlayer = new MediaPlayer();
+            mediaPlayer = new MyMediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(getActivity(), uri);
+            mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    mediaPlayer.setPrepared(true);
                     Log.d(TAG, "===onPrepared===");
-                    startPlay();
+                    if (getUserVisibleHint()) {
+                        startPlay();
+                    }
                 }
             });
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     Log.d(TAG, "===onCompletion, thread:" + Thread.currentThread());
+                    mediaPlayer.setPrepared(false);
                     release();
                 }
             });
@@ -69,22 +75,34 @@ public class AndroidAudioFragment extends Fragment {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     Log.d(TAG, String.format("===onError, what:%d, extra:%d", what, extra));
+                    mediaPlayer.setPrepared(false);
                     switch (what) {
-                        case MediaPlayer.MEDIA_ERROR_IO:
-                        case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {
+                        case MyMediaPlayer.MEDIA_ERROR_IO:
+                        case MyMediaPlayer.MEDIA_ERROR_TIMED_OUT: {
                             //TODO
                             Toast.makeText(getActivity(), "音频网络异常", Toast.LENGTH_SHORT).show();
                             return true;
                         }
                     }
-                    return false;
+                    return true;
                 }
             });
 
-            mediaPlayer.prepareAsync();
-
         } catch (IOException e) {
+            if (mediaPlayer != null) {
+                mediaPlayer.setPrepared(false);
+            }
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        boolean isVisibleToUser = getUserVisibleHint();
+        Log.d(TAG, "===onResume, isVisibleToUser:" + isVisibleToUser);
+        if (isVisibleToUser) {
+            startPlay();
         }
     }
 
@@ -96,11 +114,19 @@ public class AndroidAudioFragment extends Fragment {
     }
 
     private void release() {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.release();
+        mediaPlayer.setPrepared(false);
         mediaPlayer = null;
     }
 
     private void startPlay() {
-        mediaPlayer.start();
+        if (mediaPlayer.isPrepared()) {
+            mediaPlayer.start();
+        } else {
+            mediaPlayer.prepareAsync();
+        }
     }
 }

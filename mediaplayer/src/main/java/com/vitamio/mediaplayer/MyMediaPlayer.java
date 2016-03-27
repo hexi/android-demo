@@ -14,4 +14,5 @@ public class MyMediaPlayer extends android.media.MediaPlayer {
     public void setPrepared(boolean prepared) {
         this.prepared = prepared;
     }
+
 }

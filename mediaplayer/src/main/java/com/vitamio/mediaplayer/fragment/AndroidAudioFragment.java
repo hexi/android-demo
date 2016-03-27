@@ -64,6 +64,26 @@ public class AndroidAudioFragment extends Fragment {
                     }
                 }
             });
+            mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                    Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
+                    switch (what) {
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                            //Begin buffer, pauseVideo playing
+                            if (mediaPlayer.isPlaying()) {
+                                pausePlay();
+                            }
+                            break;
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                            //The buffering is done, resume playing
+                            startPlay();
+                            break;
+
+                    }
+                    return true;
+                }
+            });
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -145,6 +165,7 @@ public class AndroidAudioFragment extends Fragment {
     }
 
     private void startPlay() {
+        Log.d(TAG, "===startPlay, isPrepared:" + mediaPlayer.isPrepared());
         if (mediaPlayer.isPrepared()) {
             mediaPlayer.start();
         } else {

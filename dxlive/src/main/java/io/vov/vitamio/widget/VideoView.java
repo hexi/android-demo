@@ -352,7 +352,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
       lp.width = Math.round(parentHeight * videoRatio);
       lp.height = parentHeight;
-      int margin = -(lp.width - windowWidth) / 2;
+      int margin = -(lp.width - parentWidth) / 2;
       lp.leftMargin = margin;
       lp.rightMargin = margin;
     } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_WIDTH) {

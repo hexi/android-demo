@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.vitamio.mediaplayer.R;
 
@@ -35,6 +36,14 @@ public class LiveVideoFragment extends Fragment {
         progress = (ProgressBar) view.findViewById(R.id.progress);
 
 //        this.path = retrievePath(getArguments() != null ? getArguments() : savedInstanceState);
+
+        view.findViewById(R.id.button0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===drag view clicked===");
+                Toast.makeText(getActivity(), "我被点了", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return view;
     }

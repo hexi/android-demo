@@ -7,8 +7,8 @@
 
     <io.vov.vitamio.widget.VideoView
         android:id="@+id/surface"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -25,6 +25,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="-300dp"
         android:background="#FF94BBCF"
+        android:visibility="gone"
         android:orientation="vertical">
         <Button
             android:id="@+id/button0"

@@ -20,7 +20,7 @@ public class DragLayout extends RelativeLayout {
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
-    private boolean debug = true;
+    private boolean debug = false;
 
     public DragLayout(Context context) {
         super(context);
@@ -53,6 +53,9 @@ public class DragLayout extends RelativeLayout {
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
                 logd("===tryCaptureView===");
+                if (dragView.getVisibility() != VISIBLE) {
+                    dragView.setVisibility(VISIBLE);
+                }
                 if (child != dragView) {
                     dragHelper.captureChildView(dragView, pointerId);
                     return false;

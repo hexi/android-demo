@@ -14,4 +14,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!" />
+
+    <View
+        android:id="@+id/roomer_list"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#FFEDD814"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"></View>
 </com.hexi.swipelayout.SwipeLayout>

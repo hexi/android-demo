@@ -9,10 +9,13 @@ public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
     SwipeLayout content;
 
+    View roomList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        roomList = findViewById(R.id.roomer_list);
 
         content = (SwipeLayout) findViewById(R.id.content);
 
@@ -21,34 +24,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "===onClick===");
             }
-        });
-
-        content.setOnSwipeGesture(new OnSwipeListener() {
-            @Override
-            public void onSwipeBottom() {
-                super.onSwipeBottom();
-                Log.d(TAG, "===swipeBottom===");
-            }
-
-            @Override
-            public void onSwipeTop() {
-                super.onSwipeTop();
-                Log.d(TAG, "===onSwipeTop===");
-            }
-
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                Log.d(TAG, "===onSwipeLeft===");
-            }
-
-            @Override
-            public void onSwipeRight() {
-                super.onSwipeRight();
-                Log.d(TAG, "===onSwipeRight===");
-            }
-
-
         });
 
         content.setOnSlideListener(new SlideDetector.OnSlideListener() {

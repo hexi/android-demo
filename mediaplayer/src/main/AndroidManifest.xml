@@ -45,7 +45,7 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".vitamio.PlayAudioByVideoView"/>
-        <activity android:name=".AndroidAudioActivity"/>
+        <activity android:name=".LiveRoomActivity"/>
     </application>
 
 </manifest>

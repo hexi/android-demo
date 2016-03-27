@@ -1,5 +1,6 @@
 package com.vitamio.mediaplayer.fragment;
 
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -104,6 +105,27 @@ public class AndroidAudioFragment extends Fragment {
         if (isVisibleToUser) {
             startPlay();
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.d(TAG, "===setUserVisibleHint, isVisibleToUser:" + isVisibleToUser);
+        if (isAdded()) {
+            if (isVisibleToUser) {
+                startPlay();
+            } else {
+                pausePlay();
+            }
+        }
+    }
+
+    public void pausePlay() {
+        if (mediaPlayer == null
+                || !mediaPlayer.isPlaying()) {
+            return;
+        }
+        mediaPlayer.pause();
     }
 
     @Override

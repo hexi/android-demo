@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void playAndroidAudio(View view) {
-        Intent i = new Intent(this, AndroidAudioActivity.class);
+    public void showLiveRoom(View view) {
+        Intent i = new Intent(this, LiveRoomActivity.class);
         startActivity(i);
     }
 

@@ -8,6 +8,7 @@ import android.view.View;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.widget.MediaController;
 import io.vov.vitamio.widget.VideoView;
 
 /**
@@ -69,6 +70,7 @@ public class HalfLiveActivity extends FragmentActivity {
 //        videoView.initVideoLayout(VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH);
         videoView.setVideoPath(path);
         videoView.requestFocus();
+        videoView.setMediaController(new MediaController(this));
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {

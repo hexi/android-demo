@@ -21,6 +21,8 @@ public class DragLayout extends RelativeLayout {
     private View dragView;
     private int drawViewId;
     private boolean debug = false;
+    private MotionEvent currentDownEvent;
+    private double MOVE_THRESHOLD = 5;
 
     public DragLayout(Context context) {
         super(context);
@@ -154,8 +156,34 @@ public class DragLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        final int action = MotionEventCompat.getActionMasked(event);
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (currentDownEvent != null) {
+                currentDownEvent.recycle();
+            }
+            currentDownEvent = MotionEvent.obtain(event);
+        } else if (action == MotionEvent.ACTION_UP) {
+            double distance = distance(event, currentDownEvent);
+            if (distance < MOVE_THRESHOLD && onClickListener != null) {
+                onClickListener.onClick(this);
+            }
+        }
         dragHelper.processTouchEvent(event);
         return true;
+    }
+
+    OnClickListener onClickListener;
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        onClickListener = l;
+    }
+
+    private double distance(MotionEvent end, MotionEvent start) {
+        float disX = Math.abs(end.getX() - start.getX());
+        float disY = Math.abs(end.getY() - start.getY());
+        double dis = Math.sqrt(disX * disX + disY * disY);
+        return dis;
     }
 
 }

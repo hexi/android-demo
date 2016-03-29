@@ -1,3 +1,4 @@
+include ':servicedemo'
 include(':app',
         ':broadcastintenttest',
         ':tablayout',

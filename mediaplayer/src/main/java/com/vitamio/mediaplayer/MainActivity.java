@@ -40,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void showHalfLive(View view) {
+        Intent intent = new Intent(this, HalfLiveActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

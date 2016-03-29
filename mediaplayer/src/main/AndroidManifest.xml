@@ -46,6 +46,7 @@
         </activity>
         <activity android:name=".vitamio.PlayAudioByVideoView"/>
         <activity android:name=".LiveRoomActivity"/>
+        <activity android:name=".HalfLiveActivity"/>
     </application>
 
 </manifest>

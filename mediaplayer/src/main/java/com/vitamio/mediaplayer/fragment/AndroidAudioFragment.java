@@ -52,6 +52,7 @@ public class AndroidAudioFragment extends Fragment {
             Uri uri = Uri.parse(path);
             mediaPlayer = new MyMediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setLooping(true);
             mediaPlayer.setDataSource(getActivity(), uri);
             mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -97,11 +98,11 @@ public class AndroidAudioFragment extends Fragment {
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     Log.d(TAG, String.format("===onError, what:%d, extra:%d", what, extra));
                     mediaPlayer.setPrepared(false);
-                    switch (what) {
+                    switch (extra) {
                         case MyMediaPlayer.MEDIA_ERROR_IO:
                         case MyMediaPlayer.MEDIA_ERROR_TIMED_OUT: {
-                            //TODO
-                            Toast.makeText(getActivity(), "音频网络异常", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "===音频网路异常===");
+                            mediaPlayer.reset();
                             return true;
                         }
                     }
@@ -141,6 +142,7 @@ public class AndroidAudioFragment extends Fragment {
     }
 
     public void pausePlay() {
+        Log.d(TAG, "===pause===");
         if (mediaPlayer == null
                 || !mediaPlayer.isPlaying()) {
             return;

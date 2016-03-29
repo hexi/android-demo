@@ -45,6 +45,13 @@ public class LiveVideoFragment extends Fragment {
             }
         });
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===screen clicked===");
+            }
+        });
+
         return view;
     }
 
@@ -125,7 +132,7 @@ public class LiveVideoFragment extends Fragment {
         videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
+//                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
                 switch (what) {
                     case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                         //Begin buffer, pauseVideo playing
@@ -153,7 +160,7 @@ public class LiveVideoFragment extends Fragment {
         videoView.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
+//                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
             }
         });
     }
@@ -175,7 +182,14 @@ public class LiveVideoFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "===onPause===");
         pauseVideo();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "===onStop===");
     }
 
     @Override

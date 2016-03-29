@@ -66,7 +66,7 @@ public class HalfLiveActivity extends FragmentActivity {
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        videoView.initVideoLayout(VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH);
+//        videoView.initVideoLayout(VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH);
         videoView.setVideoPath(path);
         videoView.requestFocus();
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

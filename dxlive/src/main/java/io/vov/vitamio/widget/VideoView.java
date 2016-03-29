@@ -179,7 +179,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private int mCurrentState = STATE_IDLE;
   private int mTargetState = STATE_IDLE;
   private float mAspectRatio = 0;
-  private int mVideoLayout = VIDEO_LAYOUT_FIT_WINDOW_HEIGHT;
+  private int mVideoLayout = VIDEO_LAYOUT_FIT_WINDOW_WIDTH;
   private SurfaceHolder mSurfaceHolder = null;
   private MediaPlayer mMediaPlayer = null;
   private int mVideoWidth;
@@ -362,7 +362,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
       lp.width = parentWidth;
       lp.height = Math.round(parentWidth / videoRatio);
-      lp.bottomMargin = -(lp.height - parentHeight);
     } else {
       boolean full = layout == VIDEO_LAYOUT_STRETCH;
       lp.width = (full || windowRatio < videoRatio) ? windowWidth : (int) (videoRatio * windowHeight);

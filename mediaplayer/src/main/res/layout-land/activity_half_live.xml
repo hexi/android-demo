@@ -9,12 +9,5 @@
         android:id="@+id/surface_view"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
-        app:videoLayout="video_layout_fit_window_width"/>
-
-    <View
-        android:id="@+id/markerView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:visibility="gone"
-        android:background="#FFEFD44B"></View>
+        app:videoLayout="video_layout_fit_parent_land"/>
 </RelativeLayout>

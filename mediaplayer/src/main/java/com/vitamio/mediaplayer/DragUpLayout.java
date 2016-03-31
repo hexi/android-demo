@@ -13,37 +13,43 @@ import android.widget.RelativeLayout;
 /**
  * Created by hexi on 16/3/26.
  */
-public class DragLayout extends RelativeLayout {
+public class DragUpLayout extends RelativeLayout {
 
     private static final String TAG = "DragLayout";
 
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
-    private boolean debug = false;
+    private boolean debug = true;
     private MotionEvent currentDownEvent;
     private double MOVE_THRESHOLD = 5;
+    OnClickListener onClickListener;
 
-    public DragLayout(Context context) {
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        onClickListener = l;
+    }
+
+    public DragUpLayout(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public DragLayout(Context context, AttributeSet attrs) {
+    public DragUpLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);
     }
 
-    public DragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragUpLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
 
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragLayout);
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragUpLayout);
         try {
-            drawViewId = a.getResourceId(R.styleable.DragLayout_drawViewId, -1);
+            drawViewId = a.getResourceId(R.styleable.DragUpLayout_drawViewId, -1);
         } finally {
             a.recycle();
         }
@@ -139,7 +145,9 @@ public class DragLayout extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        logd("===onAttachedToWindow===");
+        final int topBound = getHeight() - dragView.getHeight();
+        final int bottomBound = getHeight();
+        logd("===onAttachedToWindow, toBound:%d, bottomBound:%d", topBound, bottomBound);
         initViewDragHelper();
     }
 
@@ -170,13 +178,6 @@ public class DragLayout extends RelativeLayout {
         }
         dragHelper.processTouchEvent(event);
         return true;
-    }
-
-    OnClickListener onClickListener;
-
-    @Override
-    public void setOnClickListener(OnClickListener l) {
-        onClickListener = l;
     }
 
     private double distance(MotionEvent end, MotionEvent start) {

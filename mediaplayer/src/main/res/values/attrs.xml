@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DragLayout">
+    <declare-styleable name="DragUpLayout">
         <attr name="drawViewId" format="reference" />
     </declare-styleable>
 </resources>

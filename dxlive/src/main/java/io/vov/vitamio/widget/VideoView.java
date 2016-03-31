@@ -22,6 +22,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -36,7 +39,10 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.RelativeLayout;
+import android.view.ViewGroup.MarginLayoutParams;
+
+import java.io.IOException;
+import java.util.Map;
 
 import io.vov.vitamio.MediaFormat;
 import io.vov.vitamio.MediaPlayer;
@@ -49,737 +55,775 @@ import io.vov.vitamio.MediaPlayer.OnSeekCompleteListener;
 import io.vov.vitamio.MediaPlayer.OnTimedTextListener;
 import io.vov.vitamio.MediaPlayer.OnVideoSizeChangedListener;
 import io.vov.vitamio.MediaPlayer.TrackInfo;
+import io.vov.vitamio.R;
 import io.vov.vitamio.Vitamio;
 import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.ScreenResolution;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Displays a video file. The VideoView class can load images from various
  * sources (such as resources or content providers), takes care of computing its
  * measurement from the video so that it can be used in any layout manager, and
  * provides various display options such as scaling and tinting.
- * <p/>
+ * <p>
  * VideoView also provide many wrapper methods for
  * {@link io.vov.vitamio.MediaPlayer}, such as {@link #getVideoWidth()},
  * {@link #setTimedTextShown(boolean)}
  */
 public class VideoView extends SurfaceView implements MediaController.MediaPlayerControl {
-  public static final int VIDEO_LAYOUT_ORIGIN = 0;
-  public static final int VIDEO_LAYOUT_SCALE = 1;
-  public static final int VIDEO_LAYOUT_STRETCH = 2;
-  public static final int VIDEO_LAYOUT_ZOOM = 3;
-  public static final int VIDEO_LAYOUT_FIT_PARENT = 4;
-  public static final int VIDEO_LAYOUT_FIT_WINDOW_HEIGHT = 5;
-  public static final int VIDEO_LAYOUT_FIT_WINDOW_WIDTH = 6;
+    private static final String TAG = "VideoView";
 
-  private static final int STATE_ERROR = -1;
-  private static final int STATE_IDLE = 0;
-  private static final int STATE_PREPARING = 1;
-  private static final int STATE_PREPARED = 2;
-  private static final int STATE_PLAYING = 3;
-  private static final int STATE_PAUSED = 4;
-  private static final int STATE_PLAYBACK_COMPLETED = 5;
-  private static final int STATE_SUSPEND = 6;
-  private static final int STATE_RESUME = 7;
-  private static final int STATE_SUSPEND_UNSUPPORTED = 8;
-  private static final String TAG = "VideoView";
-  OnVideoSizeChangedListener mSizeChangedListener = new OnVideoSizeChangedListener() {
-    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-      mVideoWidth = mp.getVideoWidth();
-      mVideoHeight = mp.getVideoHeight();
-      mVideoAspectRatio = mp.getVideoAspectRatio();
+    public static final int VIDEO_LAYOUT_ORIGIN = 0;
+    public static final int VIDEO_LAYOUT_SCALE = 1;
+    public static final int VIDEO_LAYOUT_STRETCH = 2;
+    public static final int VIDEO_LAYOUT_ZOOM = 3;
+    public static final int VIDEO_LAYOUT_FIT_PARENT = 4;
+    public static final int VIDEO_LAYOUT_FIT_WINDOW_HEIGHT = 5;
+    public static final int VIDEO_LAYOUT_FIT_WINDOW_WIDTH = 6;
+    public static final int VIDEO_LAYOUT_FIT_PARENT_LAND = 7;
 
-//      android.util.Log.d(TAG, String.format("===onVideoSizeChanged, mVideoWidth:%d, mVideoHeight:%d, mVideoAspectRatio:%f",
-//              mVideoWidth, mVideoHeight, mVideoAspectRatio));
+    private static final int STATE_ERROR = -1;
+    private static final int STATE_IDLE = 0;
+    private static final int STATE_PREPARING = 1;
+    private static final int STATE_PREPARED = 2;
+    private static final int STATE_PLAYING = 3;
+    private static final int STATE_PAUSED = 4;
+    private static final int STATE_PLAYBACK_COMPLETED = 5;
+    private static final int STATE_SUSPEND = 6;
+    private static final int STATE_RESUME = 7;
+    private static final int STATE_SUSPEND_UNSUPPORTED = 8;
 
-      if (mVideoWidth != 0 && mVideoHeight != 0)
-        setVideoLayout(mVideoLayout, mAspectRatio);
-    }
-  };
-  OnPreparedListener mPreparedListener = new OnPreparedListener() {
-    public void onPrepared(MediaPlayer mp) {
-      mCurrentState = STATE_PREPARED;
-      // mTargetState = STATE_PLAYING;
-
-      // Get the capabilities of the player for this stream
-      //TODO mCanPause
-
-      if (mOnPreparedListener != null)
-        mOnPreparedListener.onPrepared(mMediaPlayer);
-      if (mMediaController != null)
-        mMediaController.setEnabled(true);
-      mVideoWidth = mp.getVideoWidth();
-      mVideoHeight = mp.getVideoHeight();
-      mVideoAspectRatio = mp.getVideoAspectRatio();
-
-//      android.util.Log.d(TAG, String.format("===onPrepared, mVideoWidth:%d, mVideoHeight:%d, mVideoAspectRatio:%f",
-//              mVideoWidth, mVideoHeight, mVideoAspectRatio));
-
-      long seekToPosition = mSeekWhenPrepared;
-      if (seekToPosition != 0)
-        seekTo(seekToPosition);
-
-      if (mVideoWidth != 0 && mVideoHeight != 0) {
-        setVideoLayout(mVideoLayout, mAspectRatio);
-        if (mSurfaceWidth == mVideoWidth && mSurfaceHeight == mVideoHeight) {
-          if (mTargetState == STATE_PLAYING) {
-            start();
-            if (mMediaController != null)
-              mMediaController.show();
-          } else if (!isPlaying() && (seekToPosition != 0 || getCurrentPosition() > 0)) {
-            if (mMediaController != null)
-              mMediaController.show(0);
-          }
+    OnVideoSizeChangedListener mSizeChangedListener = new OnVideoSizeChangedListener() {
+        public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+            Log.d("onVideoSizeChanged: (%dx%d)", width, height);
+            mVideoWidth = mp.getVideoWidth();
+            mVideoHeight = mp.getVideoHeight();
+            mVideoAspectRatio = mp.getVideoAspectRatio();
+            if (mVideoWidth != 0 && mVideoHeight != 0)
+                setVideoLayout(mVideoLayout, mAspectRatio);
         }
-      } else if (mTargetState == STATE_PLAYING) {
-        start();
-      }
-    }
-  };
-  SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback() {
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-      mSurfaceWidth = w;
-      mSurfaceHeight = h;
-      boolean isValidState = (mTargetState == STATE_PLAYING);
-      boolean hasValidSize = (mVideoWidth == w && mVideoHeight == h);
-      if (mMediaPlayer != null && isValidState && hasValidSize) {
-        if (mSeekWhenPrepared != 0)
-          seekTo(mSeekWhenPrepared);
-        start();
-        if (mMediaController != null) {
-          if (mMediaController.isShowing())
-            mMediaController.hide();
-          mMediaController.show();
+    };
+    OnPreparedListener mPreparedListener = new OnPreparedListener() {
+        public void onPrepared(MediaPlayer mp) {
+            Log.d("onPrepared");
+            mCurrentState = STATE_PREPARED;
+            // mTargetState = STATE_PLAYING;
+
+            // Get the capabilities of the player for this stream
+            //TODO mCanPause
+
+            if (mOnPreparedListener != null)
+                mOnPreparedListener.onPrepared(mMediaPlayer);
+            if (mMediaController != null)
+                mMediaController.setEnabled(true);
+            mVideoWidth = mp.getVideoWidth();
+            mVideoHeight = mp.getVideoHeight();
+            mVideoAspectRatio = mp.getVideoAspectRatio();
+
+            long seekToPosition = mSeekWhenPrepared;
+            if (seekToPosition != 0)
+                seekTo(seekToPosition);
+
+            if (mVideoWidth != 0 && mVideoHeight != 0) {
+                setVideoLayout(mVideoLayout, mAspectRatio);
+                if (mSurfaceWidth == mVideoWidth && mSurfaceHeight == mVideoHeight) {
+                    if (mTargetState == STATE_PLAYING) {
+                        start();
+                        if (mMediaController != null)
+                            mMediaController.show();
+                    } else if (!isPlaying() && (seekToPosition != 0 || getCurrentPosition() > 0)) {
+                        if (mMediaController != null)
+                            mMediaController.show(0);
+                    }
+                }
+            } else if (mTargetState == STATE_PLAYING) {
+                start();
+            }
         }
-      }
-    }
+    };
+    SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback() {
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+            mSurfaceWidth = w;
+            mSurfaceHeight = h;
+            boolean isValidState = (mTargetState == STATE_PLAYING);
+            boolean hasValidSize = (mVideoWidth == w && mVideoHeight == h);
+            if (mMediaPlayer != null && isValidState && hasValidSize) {
+                if (mSeekWhenPrepared != 0)
+                    seekTo(mSeekWhenPrepared);
+                start();
+                if (mMediaController != null) {
+                    if (mMediaController.isShowing())
+                        mMediaController.hide();
+                    mMediaController.show();
+                }
+            }
+        }
 
-    public void surfaceCreated(SurfaceHolder holder) {
-      mSurfaceHolder = holder;
-      if (mMediaPlayer != null && mCurrentState == STATE_SUSPEND && mTargetState == STATE_RESUME) {
-        mMediaPlayer.setDisplay(mSurfaceHolder);
-        resume();
-      } else {
-        openVideo();
-      }
-    }
+        public void surfaceCreated(SurfaceHolder holder) {
+            mSurfaceHolder = holder;
+            if (mMediaPlayer != null && mCurrentState == STATE_SUSPEND && mTargetState == STATE_RESUME) {
+                mMediaPlayer.setDisplay(mSurfaceHolder);
+                resume();
+            } else {
+                openVideo();
+            }
+        }
 
-    public void surfaceDestroyed(SurfaceHolder holder) {
-      mSurfaceHolder = null;
-      if (mMediaController != null) mMediaController.hide();
-      release(true);
-    }
-  };
-  private Uri mUri;
-  private long mDuration;
-  private int mCurrentState = STATE_IDLE;
-  private int mTargetState = STATE_IDLE;
-  private float mAspectRatio = 0;
-  private int mVideoLayout = VIDEO_LAYOUT_FIT_WINDOW_WIDTH;
-  private SurfaceHolder mSurfaceHolder = null;
-  private MediaPlayer mMediaPlayer = null;
-  private int mVideoWidth;
-  private int mVideoHeight;
-  private float mVideoAspectRatio;
-  private int mVideoChroma = MediaPlayer.VIDEOCHROMA_RGBA;
-  private boolean mHardwareDecoder = false;
-  private int mSurfaceWidth;
-  private int mSurfaceHeight;
-  private MediaController mMediaController;
-  private View mMediaBufferingIndicator;
-  private OnCompletionListener mOnCompletionListener;
-  private OnPreparedListener mOnPreparedListener;
-  private OnErrorListener mOnErrorListener;
-  private OnSeekCompleteListener mOnSeekCompleteListener;
-  private OnTimedTextListener mOnTimedTextListener;
-  private OnInfoListener mOnInfoListener;
-  private OnBufferingUpdateListener mOnBufferingUpdateListener;
-  private int mCurrentBufferPercentage;
-  private long mSeekWhenPrepared; // recording the seek position while preparing
-  private Context mContext;
-  private Map<String, String> mHeaders;
-  private int mBufSize;
-  private OnCompletionListener mCompletionListener = new OnCompletionListener() {
-    public void onCompletion(MediaPlayer mp) {
-      Log.d("onCompletion");
-      mCurrentState = STATE_PLAYBACK_COMPLETED;
-      mTargetState = STATE_PLAYBACK_COMPLETED;
-      if (mMediaController != null)
-        mMediaController.hide();
-      if (mOnCompletionListener != null)
-        mOnCompletionListener.onCompletion(mMediaPlayer);
-    }
-  };
-  private OnErrorListener mErrorListener = new OnErrorListener() {
-    public boolean onError(MediaPlayer mp, int framework_err, int impl_err) {
-      Log.d("Error: %d, %d", framework_err, impl_err);
-      mCurrentState = STATE_ERROR;
-      mTargetState = STATE_ERROR;
-      if (mMediaController != null)
-        mMediaController.hide();
-
-      if (mOnErrorListener != null) {
-        if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err))
-          return true;
-      }
-
-      if (getWindowToken() != null) {
-        int message = framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK ? getResources().getIdentifier("VideoView_error_text_invalid_progressive_playback", "string", mContext.getPackageName()): getResources().getIdentifier("VideoView_error_text_unknown", "string", mContext.getPackageName());
-
-        new AlertDialog.Builder(mContext).setTitle(getResources().getIdentifier("VideoView_error_title", "string", mContext.getPackageName())).setMessage(message).setPositiveButton(getResources().getIdentifier("VideoView_error_button", "string", mContext.getPackageName()), new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int whichButton) {
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            mSurfaceHolder = null;
+            if (mMediaController != null) mMediaController.hide();
+            release(true);
+        }
+    };
+    private Uri mUri;
+    private long mDuration;
+    private int mCurrentState = STATE_IDLE;
+    private int mTargetState = STATE_IDLE;
+    private float mAspectRatio = 0;
+    private int mVideoLayout = VIDEO_LAYOUT_FIT_WINDOW_WIDTH;
+    private SurfaceHolder mSurfaceHolder = null;
+    private MediaPlayer mMediaPlayer = null;
+    private int mVideoWidth;
+    private int mVideoHeight;
+    private float mVideoAspectRatio;
+    private int mVideoChroma = MediaPlayer.VIDEOCHROMA_RGBA;
+    private boolean mHardwareDecoder = false;
+    private int mSurfaceWidth;
+    private int mSurfaceHeight;
+    private MediaController mMediaController;
+    private View mMediaBufferingIndicator;
+    private OnCompletionListener mOnCompletionListener;
+    private OnPreparedListener mOnPreparedListener;
+    private OnErrorListener mOnErrorListener;
+    private OnSeekCompleteListener mOnSeekCompleteListener;
+    private OnTimedTextListener mOnTimedTextListener;
+    private OnInfoListener mOnInfoListener;
+    private OnBufferingUpdateListener mOnBufferingUpdateListener;
+    private int mCurrentBufferPercentage;
+    private long mSeekWhenPrepared; // recording the seek position while preparing
+    private Context mContext;
+    private Map<String, String> mHeaders;
+    private int mBufSize;
+    private OnCompletionListener mCompletionListener = new OnCompletionListener() {
+        public void onCompletion(MediaPlayer mp) {
+            Log.d("onCompletion");
+            mCurrentState = STATE_PLAYBACK_COMPLETED;
+            mTargetState = STATE_PLAYBACK_COMPLETED;
+            if (mMediaController != null)
+                mMediaController.hide();
             if (mOnCompletionListener != null)
-              mOnCompletionListener.onCompletion(mMediaPlayer);
-          }
-        }).setCancelable(false).show();
-      }
-      return true;
-    }
-  };
-  private OnBufferingUpdateListener mBufferingUpdateListener = new OnBufferingUpdateListener() {
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-      mCurrentBufferPercentage = percent;
-      if (mOnBufferingUpdateListener != null)
-        mOnBufferingUpdateListener.onBufferingUpdate(mp, percent);
-    }
-  };
-  private OnInfoListener mInfoListener = new OnInfoListener() {
-    @Override
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-      Log.d("onInfo: (%d, %d)", what, extra);
-      if (mOnInfoListener != null) {
-        mOnInfoListener.onInfo(mp, what, extra);
-      } else if (mMediaPlayer != null) {
-        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-          mMediaPlayer.pause();
-          if (mMediaBufferingIndicator != null)
-            mMediaBufferingIndicator.setVisibility(View.VISIBLE);
-        } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-          mMediaPlayer.start();
-          if (mMediaBufferingIndicator != null)
-            mMediaBufferingIndicator.setVisibility(View.GONE);
+                mOnCompletionListener.onCompletion(mMediaPlayer);
         }
-      }
-      return true;
+    };
+    private OnErrorListener mErrorListener = new OnErrorListener() {
+        public boolean onError(MediaPlayer mp, int framework_err, int impl_err) {
+            Log.d("Error: %d, %d", framework_err, impl_err);
+            mCurrentState = STATE_ERROR;
+            mTargetState = STATE_ERROR;
+            if (mMediaController != null)
+                mMediaController.hide();
+
+            if (mOnErrorListener != null) {
+                if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err))
+                    return true;
+            }
+
+            if (getWindowToken() != null) {
+                int message = framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK ? getResources().getIdentifier("VideoView_error_text_invalid_progressive_playback", "string", mContext.getPackageName()) : getResources().getIdentifier("VideoView_error_text_unknown", "string", mContext.getPackageName());
+
+                new AlertDialog.Builder(mContext).setTitle(getResources().getIdentifier("VideoView_error_title", "string", mContext.getPackageName())).setMessage(message).setPositiveButton(getResources().getIdentifier("VideoView_error_button", "string", mContext.getPackageName()), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (mOnCompletionListener != null)
+                            mOnCompletionListener.onCompletion(mMediaPlayer);
+                    }
+                }).setCancelable(false).show();
+            }
+            return true;
+        }
+    };
+    private OnBufferingUpdateListener mBufferingUpdateListener = new OnBufferingUpdateListener() {
+        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+            mCurrentBufferPercentage = percent;
+            if (mOnBufferingUpdateListener != null)
+                mOnBufferingUpdateListener.onBufferingUpdate(mp, percent);
+        }
+    };
+    private OnInfoListener mInfoListener = new OnInfoListener() {
+        @Override
+        public boolean onInfo(MediaPlayer mp, int what, int extra) {
+            Log.d("onInfo: (%d, %d)", what, extra);
+            if (mOnInfoListener != null) {
+                mOnInfoListener.onInfo(mp, what, extra);
+            } else if (mMediaPlayer != null) {
+                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                    mMediaPlayer.pause();
+                    if (mMediaBufferingIndicator != null)
+                        mMediaBufferingIndicator.setVisibility(View.VISIBLE);
+                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                    mMediaPlayer.start();
+                    if (mMediaBufferingIndicator != null)
+                        mMediaBufferingIndicator.setVisibility(View.GONE);
+                }
+            }
+            return true;
+        }
+    };
+    private OnSeekCompleteListener mSeekCompleteListener = new OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(MediaPlayer mp) {
+            Log.d("onSeekComplete");
+            if (mOnSeekCompleteListener != null)
+                mOnSeekCompleteListener.onSeekComplete(mp);
+        }
+    };
+    private OnTimedTextListener mTimedTextListener = new OnTimedTextListener() {
+        @Override
+        public void onTimedTextUpdate(byte[] pixels, int width, int height) {
+            Log.i("onSubtitleUpdate: bitmap subtitle, %dx%d", width, height);
+            if (mOnTimedTextListener != null)
+                mOnTimedTextListener.onTimedTextUpdate(pixels, width, height);
+        }
+
+        @Override
+        public void onTimedText(String text) {
+            Log.i("onSubtitleUpdate: %s", text);
+            if (mOnTimedTextListener != null)
+                mOnTimedTextListener.onTimedText(text);
+        }
+    };
+
+    public VideoView(Context context) {
+        super(context);
+        initStyle(context, null, 0);
+        initVideoView(context);
     }
-  };
-  private OnSeekCompleteListener mSeekCompleteListener = new OnSeekCompleteListener() {
+
+    public VideoView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+        initStyle(context, attrs, 0);
+        initVideoView(context);
+    }
+
+    public VideoView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initStyle(context, attrs, defStyle);
+        initVideoView(context);
+    }
+
+    private void initStyle(Context context, AttributeSet attrs, int defStyle) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.VideoView, defStyle, 0);
+        this.mVideoLayout = a.getInteger(R.styleable.VideoView_videoLayout, 5);
+        android.util.Log.d(TAG, "===initStyle, videoLayout:" + mVideoLayout);
+        a.recycle();
+    }
+
     @Override
-    public void onSeekComplete(MediaPlayer mp) {
-      Log.d("onSeekComplete");
-      if (mOnSeekCompleteListener != null)
-        mOnSeekCompleteListener.onSeekComplete(mp);
-    }
-  };
-  private OnTimedTextListener mTimedTextListener = new OnTimedTextListener() {
-    @Override
-    public void onTimedTextUpdate(byte[] pixels, int width, int height) {
-      Log.i("onSubtitleUpdate: bitmap subtitle, %dx%d", width, height);
-      if (mOnTimedTextListener != null)
-        mOnTimedTextListener.onTimedTextUpdate(pixels, width, height);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = getDefaultSize(mVideoWidth, widthMeasureSpec);
+        int height = getDefaultSize(mVideoHeight, heightMeasureSpec);
+        setMeasuredDimension(width, height);
     }
 
-    @Override
-    public void onTimedText(String text) {
-      Log.i("onSubtitleUpdate: %s", text);
-      if (mOnTimedTextListener != null)
-        mOnTimedTextListener.onTimedText(text);
-    }
-  };
+    /**
+     * Set the display options
+     *
+     * @param layout      <ul>
+     *                    <li>{@link #VIDEO_LAYOUT_ORIGIN}
+     *                    <li>{@link #VIDEO_LAYOUT_SCALE}
+     *                    <li>{@link #VIDEO_LAYOUT_STRETCH}
+     *                    <li>{@link #VIDEO_LAYOUT_ZOOM}
+     *                    <li>{@link #VIDEO_LAYOUT_FIT_PARENT}
+     *                    </ul>
+     * @param aspectRatio video aspect ratio, will audo detect if 0.
+     */
+    public void setVideoLayout(int layout, float aspectRatio) {
+        LayoutParams lp = getLayoutParams();
+        Pair<Integer, Integer> res = ScreenResolution.getResolution(mContext);
+        int windowWidth = res.first.intValue(), windowHeight = res.second.intValue();
+        float windowRatio = windowWidth / (float) windowHeight;
+        float videoRatio = aspectRatio <= 0.01f ? mVideoAspectRatio : aspectRatio;
+        mSurfaceHeight = mVideoHeight;
+        mSurfaceWidth = mVideoWidth;
 
-  public VideoView(Context context) {
-    super(context);
-    initVideoView(context);
-  }
+        if (VIDEO_LAYOUT_ORIGIN == layout && mSurfaceWidth < windowWidth && mSurfaceHeight < windowHeight) {
+            lp.width = (int) (mSurfaceHeight * videoRatio);
+            lp.height = mSurfaceHeight;
+        } else if (layout == VIDEO_LAYOUT_ZOOM) {
+            lp.width = windowRatio > videoRatio ? windowWidth : (int) (videoRatio * windowHeight);
+            lp.height = windowRatio < videoRatio ? windowHeight : (int) (windowWidth / videoRatio);
+        } else if (layout == VIDEO_LAYOUT_FIT_PARENT) {
+            ViewGroup parent = (ViewGroup) getParent();
+            float parentRatio = ((float) parent.getWidth()) / ((float) parent.getHeight());
+            lp.width = (parentRatio < videoRatio) ? parent.getWidth() : Math.round(((float) parent.getHeight()) * videoRatio);
+            lp.height = (parentRatio > videoRatio) ? parent.getHeight() : Math.round(((float) parent.getWidth()) / videoRatio);
+        } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_HEIGHT) {
+            ViewGroup parent = (ViewGroup) getParent();
+            int parentWidth = parent.getWidth();
+            int parentHeight = parent.getHeight();
 
-  public VideoView(Context context, AttributeSet attrs) {
-    this(context, attrs, 0);
-    initVideoView(context);
-  }
+            lp.width = Math.round(parentHeight * videoRatio);
+            lp.height = parentHeight;
+            int margin = -(lp.width - parentWidth) / 2;
+            if (lp instanceof MarginLayoutParams) {
+                MarginLayoutParams mlp = (MarginLayoutParams) lp;
+                mlp.leftMargin = margin;
+                mlp.rightMargin = margin;
+            }
+        } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_WIDTH) {
+            ViewGroup parent = (ViewGroup) getParent();
+            int parentWidth = parent.getWidth();
+            int parentHeight = parent.getHeight();
 
-  public VideoView(Context context, AttributeSet attrs, int defStyle) {
-    super(context, attrs, defStyle);
-    initVideoView(context);
-  }
+            lp.width = parentWidth;
+            lp.height = Math.round(parentWidth / videoRatio);
+        } else if (layout == VIDEO_LAYOUT_FIT_PARENT_LAND) {
+            ViewGroup parent = (ViewGroup) getParent();
+            float parentRatio = ((float) parent.getWidth()) / ((float) parent.getHeight());
+            lp.width = (parentRatio > videoRatio) ? parent.getWidth() : Math.round(((float) parent.getHeight()) * videoRatio);
+            lp.height = (parentRatio > videoRatio) ? Math.round(((float) parent.getWidth()) / videoRatio) : parent.getHeight();
+            if (lp instanceof MarginLayoutParams) {
+                MarginLayoutParams mlp = (MarginLayoutParams) lp;
+                if (lp.width > parent.getWidth()) {
+                    int xMargin = - (lp.width - parent.getWidth()) / 2;
+                    mlp.leftMargin = xMargin;
+                    mlp.rightMargin = xMargin;
+                }
+                if (lp.height > parent.getHeight()) {
+                    int yMargin = - (lp.height - parent.getHeight()) / 2;
+                    mlp.topMargin = yMargin;
+                    mlp.bottomMargin = yMargin;
+                }
+            }
 
-  @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int width = getDefaultSize(mVideoWidth, widthMeasureSpec);
-    int height = getDefaultSize(mVideoHeight, heightMeasureSpec);
-    setMeasuredDimension(width, height);
-  }
-
-  /**
-   * Set the display options
-   *
-   * @param layout      <ul>
-   *                    <li>{@link #VIDEO_LAYOUT_ORIGIN}
-   *                    <li>{@link #VIDEO_LAYOUT_SCALE}
-   *                    <li>{@link #VIDEO_LAYOUT_STRETCH}
-   *                    <li>{@link #VIDEO_LAYOUT_ZOOM}
-   *                    <li>{@link #VIDEO_LAYOUT_FIT_PARENT}
-   *                    </ul>
-   * @param aspectRatio video aspect ratio, will audo detect if 0.
-   */
-  public void setVideoLayout(int layout, float aspectRatio) {
-    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)getLayoutParams();
-    Pair<Integer, Integer> res = ScreenResolution.getResolution(mContext);
-    int windowWidth = res.first.intValue(), windowHeight = res.second.intValue();
-    float windowRatio = windowWidth / (float) windowHeight;
-    float videoRatio = aspectRatio <= 0.01f ? mVideoAspectRatio : aspectRatio;
-    mSurfaceHeight = mVideoHeight;
-    mSurfaceWidth = mVideoWidth;
-
-    if (VIDEO_LAYOUT_ORIGIN == layout && mSurfaceWidth < windowWidth && mSurfaceHeight < windowHeight) {
-      lp.width = (int) (mSurfaceHeight * videoRatio);
-      lp.height = mSurfaceHeight;
-    } else if (layout == VIDEO_LAYOUT_ZOOM) {
-      lp.width = windowRatio > videoRatio ? windowWidth : (int) (videoRatio * windowHeight);
-      lp.height = windowRatio < videoRatio ? windowHeight : (int) (windowWidth / videoRatio);
-    } else if (layout == VIDEO_LAYOUT_FIT_PARENT) {
-      ViewGroup parent = (ViewGroup) getParent();
-      float parentRatio = ((float) parent.getWidth()) / ((float) parent.getHeight());
-      lp.width = (parentRatio < videoRatio) ? parent.getWidth() : Math.round(((float) parent.getHeight()) * videoRatio);
-      lp.height = (parentRatio > videoRatio) ? parent.getHeight() : Math.round(((float) parent.getWidth()) / videoRatio);
-    } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_HEIGHT) {
-      ViewGroup parent = (ViewGroup) getParent();
-      int parentWidth = parent.getWidth();
-      int parentHeight = parent.getHeight();
-
-      lp.width = Math.round(parentHeight * videoRatio);
-      lp.height = parentHeight;
-      int margin = -(lp.width - parentWidth) / 2;
-      lp.leftMargin = margin;
-      lp.rightMargin = margin;
-    } else if (layout == VIDEO_LAYOUT_FIT_WINDOW_WIDTH) {
-      ViewGroup parent = (ViewGroup) getParent();
-      int parentWidth = parent.getWidth();
-      int parentHeight = parent.getHeight();
-
-      lp.width = parentWidth;
-      lp.height = Math.round(parentWidth / videoRatio);
-    } else {
-      boolean full = layout == VIDEO_LAYOUT_STRETCH;
-      lp.width = (full || windowRatio < videoRatio) ? windowWidth : (int) (videoRatio * windowHeight);
-      lp.height = (full || windowRatio > videoRatio) ? windowHeight : (int) (windowWidth / videoRatio);
-    }
-
-    setLayoutParams(lp);
-    getHolder().setFixedSize(mSurfaceWidth, mSurfaceHeight);
-    Log.d(String.format("VIDEO: {%d * %d}, Surface: {%d * %d, %f}, LP: {%d * %d}, Window: {%d * %d, %f}", mVideoWidth, mVideoHeight, mSurfaceWidth, mSurfaceHeight, mVideoAspectRatio, lp.width, lp.height, windowWidth, windowHeight, windowRatio));
-    mVideoLayout = layout;
-    mAspectRatio = aspectRatio;
-
-  }
-
-  @SuppressWarnings("deprecation")
-  private void initVideoView(Context ctx) {
-    mContext = ctx;
-    mVideoWidth = 0;
-    mVideoHeight = 0;
-    getHolder().setFormat(PixelFormat.RGBA_8888); // PixelFormat.RGB_565
-    getHolder().addCallback(mSHCallback);
-    // this value only use Hardware decoder before Android 2.3
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && mHardwareDecoder) {
-      getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-    setFocusable(true);
-    setFocusableInTouchMode(true);
-    requestFocus();
-    mCurrentState = STATE_IDLE;
-    mTargetState = STATE_IDLE;
-    if (ctx instanceof Activity)
-      ((Activity) ctx).setVolumeControlStream(AudioManager.STREAM_MUSIC);
-  }
-
-  public boolean isValid() {
-    return (mSurfaceHolder != null && mSurfaceHolder.getSurface().isValid());
-  }
-
-  public void setVideoPath(String path) {
-    setVideoURI(Uri.parse(path));
-  }
-
-  public void setVideoURI(Uri uri) {
-    setVideoURI(uri, null);
-  }
-
-  public void setVideoURI(Uri uri, Map<String, String> headers) {
-    mUri = uri;
-    mHeaders = headers;
-    mSeekWhenPrepared = 0;
-    openVideo();
-    requestLayout();
-    invalidate();
-  }
-
-  public void stopPlayback() {
-    if (mMediaPlayer != null) {
-      mMediaPlayer.stop();
-      mMediaPlayer.release();
-      mMediaPlayer = null;
-      mCurrentState = STATE_IDLE;
-      mTargetState = STATE_IDLE;
-    }
-  }
-
-  private void openVideo() {
-    if (mUri == null || mSurfaceHolder == null || !Vitamio.isInitialized(mContext))
-      return;
-
-    Intent i = new Intent("com.android.music.musicservicecommand");
-    i.putExtra("command", "pause");
-    mContext.sendBroadcast(i);
-
-    release(false);
-    try {
-      mDuration = -1;
-      mCurrentBufferPercentage = 0;
-      mMediaPlayer = new MediaPlayer(mContext, mHardwareDecoder);
-      mMediaPlayer.setOnPreparedListener(mPreparedListener);
-      mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);
-      mMediaPlayer.setOnCompletionListener(mCompletionListener);
-      mMediaPlayer.setOnErrorListener(mErrorListener);
-      mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
-      mMediaPlayer.setOnInfoListener(mInfoListener);
-      mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
-      mMediaPlayer.setOnTimedTextListener(mTimedTextListener);
-      mMediaPlayer.setDataSource(mContext, mUri, mHeaders);
-      mMediaPlayer.setDisplay(mSurfaceHolder);
-      mMediaPlayer.setBufferSize(mBufSize);
-      mMediaPlayer.setVideoChroma(mVideoChroma == MediaPlayer.VIDEOCHROMA_RGB565 ? MediaPlayer.VIDEOCHROMA_RGB565 : MediaPlayer.VIDEOCHROMA_RGBA);
-      mMediaPlayer.setScreenOnWhilePlaying(true);
-      mMediaPlayer.prepareAsync();
-      mCurrentState = STATE_PREPARING;
-      attachMediaController();
-    } catch (IOException ex) {
-      Log.e("Unable to open content: " + mUri, ex);
-      mCurrentState = STATE_ERROR;
-      mTargetState = STATE_ERROR;
-      mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
-      return;
-    } catch (IllegalArgumentException ex) {
-      Log.e("Unable to open content: " + mUri, ex);
-      mCurrentState = STATE_ERROR;
-      mTargetState = STATE_ERROR;
-      mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
-      return;
-    }
-  }
-
-  public void setMediaController(MediaController controller) {
-    if (mMediaController != null)
-      mMediaController.hide();
-    mMediaController = controller;
-    attachMediaController();
-  }
-
-  public void setMediaBufferingIndicator(View mediaBufferingIndicator) {
-    if (mMediaBufferingIndicator != null)
-      mMediaBufferingIndicator.setVisibility(View.GONE);
-    mMediaBufferingIndicator = mediaBufferingIndicator;
-  }
-
-  private void attachMediaController() {
-    if (mMediaPlayer != null && mMediaController != null) {
-      mMediaController.setMediaPlayer(this);
-      View anchorView = this.getParent() instanceof View ? (View) this.getParent() : this;
-      mMediaController.setAnchorView(this);
-      mMediaController.setEnabled(isInPlaybackState());
-
-    }
-  }
-
-  public void setOnPreparedListener(OnPreparedListener l) {
-    mOnPreparedListener = l;
-  }
-
-  public void setOnCompletionListener(OnCompletionListener l) {
-    mOnCompletionListener = l;
-  }
-
-  public void setOnErrorListener(OnErrorListener l) {
-    mOnErrorListener = l;
-  }
-
-  public void setOnBufferingUpdateListener(OnBufferingUpdateListener l) {
-    mOnBufferingUpdateListener = l;
-  }
-
-  public void setOnSeekCompleteListener(OnSeekCompleteListener l) {
-    mOnSeekCompleteListener = l;
-  }
-
-  public void setOnTimedTextListener(OnTimedTextListener l) {
-    mOnTimedTextListener = l;
-  }
-
-  public void setOnInfoListener(OnInfoListener l) {
-    mOnInfoListener = l;
-  }
-
-  private void release(boolean cleartargetstate) {
-    if (mMediaPlayer != null) {
-      mMediaPlayer.reset();
-      mMediaPlayer.release();
-      mMediaPlayer = null;
-      mCurrentState = STATE_IDLE;
-      if (cleartargetstate)
-        mTargetState = STATE_IDLE;
-    }
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent ev) {
-    if (isInPlaybackState() && mMediaController != null)
-      toggleMediaControlsVisiblity();
-    return false;
-  }
-
-  @Override
-  public boolean onTrackballEvent(MotionEvent ev) {
-    if (isInPlaybackState() && mMediaController != null)
-      toggleMediaControlsVisiblity();
-    return false;
-  }
-
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    boolean isKeyCodeSupported = keyCode != KeyEvent.KEYCODE_BACK && keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN && keyCode != KeyEvent.KEYCODE_MENU && keyCode != KeyEvent.KEYCODE_CALL && keyCode != KeyEvent.KEYCODE_ENDCALL;
-    if (isInPlaybackState() && isKeyCodeSupported && mMediaController != null) {
-      if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_SPACE) {
-        if (mMediaPlayer.isPlaying()) {
-          pause();
-          mMediaController.show();
         } else {
-          start();
-          mMediaController.hide();
+            boolean full = layout == VIDEO_LAYOUT_STRETCH;
+            lp.width = (full || windowRatio < videoRatio) ? windowWidth : (int) (videoRatio * windowHeight);
+            lp.height = (full || windowRatio > videoRatio) ? windowHeight : (int) (windowWidth / videoRatio);
         }
-        return true;
-      } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-        if (!mMediaPlayer.isPlaying()) {
-            start();
+
+        setLayoutParams(lp);
+        getHolder().setFixedSize(mSurfaceWidth, mSurfaceHeight);
+        Log.d("VIDEO: %dx%dx%f, Surface: %dx%d, LP: %dx%d, Window: %dx%dx%f", mVideoWidth, mVideoHeight, mVideoAspectRatio, mSurfaceWidth, mSurfaceHeight, lp.width, lp.height, windowWidth, windowHeight, windowRatio);
+        mVideoLayout = layout;
+        mAspectRatio = aspectRatio;
+
+        if (mMediaController != null) {
+            int orientation = getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                mMediaController.showToPortraitButton();
+            } else {
+                mMediaController.showToLandButton();
+            }
+        }
+    }
+
+    public void initVideoLayout(int videoLayout) {
+        this.mVideoLayout = videoLayout;
+    }
+
+    @SuppressWarnings("deprecation")
+    private void initVideoView(Context ctx) {
+        mContext = ctx;
+        mVideoWidth = 0;
+        mVideoHeight = 0;
+        getHolder().setFormat(PixelFormat.RGBA_8888); // PixelFormat.RGB_565
+        getHolder().addCallback(mSHCallback);
+        // this value only use Hardware decoder before Android 2.3
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && mHardwareDecoder) {
+            getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        requestFocus();
+        mCurrentState = STATE_IDLE;
+        mTargetState = STATE_IDLE;
+        if (ctx instanceof Activity)
+            ((Activity) ctx).setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    public boolean isValid() {
+        return (mSurfaceHolder != null && mSurfaceHolder.getSurface().isValid());
+    }
+
+    public void setVideoPath(String path) {
+        setVideoURI(Uri.parse(path));
+    }
+
+    public void setVideoURI(Uri uri) {
+        setVideoURI(uri, null);
+    }
+
+    public void setVideoURI(Uri uri, Map<String, String> headers) {
+        mUri = uri;
+        mHeaders = headers;
+        mSeekWhenPrepared = 0;
+        openVideo();
+        requestLayout();
+        invalidate();
+    }
+
+    public void stopPlayback() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+            mCurrentState = STATE_IDLE;
+            mTargetState = STATE_IDLE;
+        }
+    }
+
+    private void openVideo() {
+        if (mUri == null || mSurfaceHolder == null || !Vitamio.isInitialized(mContext))
+            return;
+
+        Intent i = new Intent("com.android.music.musicservicecommand");
+        i.putExtra("command", "pause");
+        mContext.sendBroadcast(i);
+
+        release(false);
+        try {
+            mDuration = -1;
+            mCurrentBufferPercentage = 0;
+            mMediaPlayer = new MediaPlayer(mContext, mHardwareDecoder);
+            mMediaPlayer.setOnPreparedListener(mPreparedListener);
+            mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);
+            mMediaPlayer.setOnCompletionListener(mCompletionListener);
+            mMediaPlayer.setOnErrorListener(mErrorListener);
+            mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
+            mMediaPlayer.setOnInfoListener(mInfoListener);
+            mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
+            mMediaPlayer.setOnTimedTextListener(mTimedTextListener);
+            mMediaPlayer.setDataSource(mContext, mUri, mHeaders);
+            mMediaPlayer.setDisplay(mSurfaceHolder);
+            mMediaPlayer.setBufferSize(mBufSize);
+            mMediaPlayer.setVideoChroma(mVideoChroma == MediaPlayer.VIDEOCHROMA_RGB565 ? MediaPlayer.VIDEOCHROMA_RGB565 : MediaPlayer.VIDEOCHROMA_RGBA);
+            mMediaPlayer.setScreenOnWhilePlaying(true);
+            mMediaPlayer.prepareAsync();
+            mCurrentState = STATE_PREPARING;
+            attachMediaController();
+        } catch (IOException ex) {
+            Log.e("Unable to open content: " + mUri, ex);
+            mCurrentState = STATE_ERROR;
+            mTargetState = STATE_ERROR;
+            mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return;
+        } catch (IllegalArgumentException ex) {
+            Log.e("Unable to open content: " + mUri, ex);
+            mCurrentState = STATE_ERROR;
+            mTargetState = STATE_ERROR;
+            mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return;
+        }
+    }
+
+    public void setMediaController(MediaController controller) {
+        if (mMediaController != null)
             mMediaController.hide();
+        mMediaController = controller;
+        attachMediaController();
+    }
+
+    public void setMediaBufferingIndicator(View mediaBufferingIndicator) {
+        if (mMediaBufferingIndicator != null)
+            mMediaBufferingIndicator.setVisibility(View.GONE);
+        mMediaBufferingIndicator = mediaBufferingIndicator;
+    }
+
+    private void attachMediaController() {
+        if (mMediaPlayer != null && mMediaController != null) {
+            mMediaController.setMediaPlayer(this);
+            mMediaController.setAnchorView(this);
+            mMediaController.setEnabled(isInPlaybackState());
         }
-        return true;
-      } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-        if (mMediaPlayer.isPlaying()) {
-          pause();
-          mMediaController.show();
+    }
+
+    public void setOnPreparedListener(OnPreparedListener l) {
+        mOnPreparedListener = l;
+    }
+
+    public void setOnCompletionListener(OnCompletionListener l) {
+        mOnCompletionListener = l;
+    }
+
+    public void setOnErrorListener(OnErrorListener l) {
+        mOnErrorListener = l;
+    }
+
+    public void setOnBufferingUpdateListener(OnBufferingUpdateListener l) {
+        mOnBufferingUpdateListener = l;
+    }
+
+    public void setOnSeekCompleteListener(OnSeekCompleteListener l) {
+        mOnSeekCompleteListener = l;
+    }
+
+    public void setOnTimedTextListener(OnTimedTextListener l) {
+        mOnTimedTextListener = l;
+    }
+
+    public void setOnInfoListener(OnInfoListener l) {
+        mOnInfoListener = l;
+    }
+
+    private void release(boolean cleartargetstate) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+            mCurrentState = STATE_IDLE;
+            if (cleartargetstate)
+                mTargetState = STATE_IDLE;
         }
-        return true;
-      } else {
-        toggleMediaControlsVisiblity();
-      }
     }
 
-    return super.onKeyDown(keyCode, event);
-  }
-
-  private void toggleMediaControlsVisiblity() {
-    if (mMediaController.isShowing()) {
-      mMediaController.hide();
-    } else {
-      mMediaController.show();
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (isInPlaybackState() && mMediaController != null)
+            toggleMediaControlsVisiblity();
+        return false;
     }
-  }
 
-  public void start() {
-    if (isInPlaybackState()) {
-      mMediaPlayer.start();
-      mCurrentState = STATE_PLAYING;
+    @Override
+    public boolean onTrackballEvent(MotionEvent ev) {
+        if (isInPlaybackState() && mMediaController != null)
+            toggleMediaControlsVisiblity();
+        return false;
     }
-    mTargetState = STATE_PLAYING;
-  }
 
-  public void pause() {
-    if (isInPlaybackState()) {
-      if (mMediaPlayer.isPlaying()) {
-        mMediaPlayer.pause();
-        mCurrentState = STATE_PAUSED;
-      }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        boolean isKeyCodeSupported = keyCode != KeyEvent.KEYCODE_BACK && keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN && keyCode != KeyEvent.KEYCODE_MENU && keyCode != KeyEvent.KEYCODE_CALL && keyCode != KeyEvent.KEYCODE_ENDCALL;
+        if (isInPlaybackState() && isKeyCodeSupported && mMediaController != null) {
+            if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_SPACE) {
+                if (mMediaPlayer.isPlaying()) {
+                    pause();
+                    mMediaController.show();
+                } else {
+                    start();
+                    mMediaController.hide();
+                }
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+                if (!mMediaPlayer.isPlaying()) {
+                    start();
+                    mMediaController.hide();
+                }
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+                if (mMediaPlayer.isPlaying()) {
+                    pause();
+                    mMediaController.show();
+                }
+                return true;
+            } else {
+                toggleMediaControlsVisiblity();
+            }
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
-    mTargetState = STATE_PAUSED;
-  }
 
-  public void suspend() {
-    if (isInPlaybackState()) {
-      release(false);
-      mCurrentState = STATE_SUSPEND_UNSUPPORTED;
-      Log.d("Unable to suspend video. Release MediaPlayer.");
+    private void toggleMediaControlsVisiblity() {
+        if (mMediaController.isShowing()) {
+            mMediaController.hide();
+        } else {
+            mMediaController.show();
+        }
     }
-  }
 
-  public void resume() {
-    if (mSurfaceHolder == null && mCurrentState == STATE_SUSPEND) {
-      mTargetState = STATE_RESUME;
-    } else if (mCurrentState == STATE_SUSPEND_UNSUPPORTED) {
-      openVideo();
+    public void start() {
+        if (isInPlaybackState()) {
+            mMediaPlayer.start();
+            mCurrentState = STATE_PLAYING;
+        }
+        mTargetState = STATE_PLAYING;
     }
-  }
 
-  public long getDuration() {
-    if (isInPlaybackState()) {
-      if (mDuration > 0)
+    public void pause() {
+        if (isInPlaybackState()) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+                mCurrentState = STATE_PAUSED;
+            }
+        }
+        mTargetState = STATE_PAUSED;
+    }
+
+    public void suspend() {
+        if (isInPlaybackState()) {
+            release(false);
+            mCurrentState = STATE_SUSPEND_UNSUPPORTED;
+            Log.d("Unable to suspend video. Release MediaPlayer.");
+        }
+    }
+
+    public void resume() {
+        if (mSurfaceHolder == null && mCurrentState == STATE_SUSPEND) {
+            mTargetState = STATE_RESUME;
+        } else if (mCurrentState == STATE_SUSPEND_UNSUPPORTED) {
+            openVideo();
+        }
+    }
+
+    public long getDuration() {
+        if (isInPlaybackState()) {
+            if (mDuration > 0)
+                return mDuration;
+            mDuration = mMediaPlayer.getDuration();
+            return mDuration;
+        }
+        mDuration = -1;
         return mDuration;
-      mDuration = mMediaPlayer.getDuration();
-      return mDuration;
     }
-    mDuration = -1;
-    return mDuration;
-  }
 
-  public long getCurrentPosition() {
-    if (isInPlaybackState())
-      return mMediaPlayer.getCurrentPosition();
-    return 0;
-  }
-
-  public void seekTo(long msec) {
-    if (isInPlaybackState()) {
-      mMediaPlayer.seekTo(msec);
-      mSeekWhenPrepared = 0;
-    } else {
-      mSeekWhenPrepared = msec;
+    public long getCurrentPosition() {
+        if (isInPlaybackState())
+            return mMediaPlayer.getCurrentPosition();
+        return 0;
     }
-  }
 
-  public boolean isPlaying() {
-    return isInPlaybackState() && mMediaPlayer.isPlaying();
-  }
+    public void seekTo(long msec) {
+        if (isInPlaybackState()) {
+            mMediaPlayer.seekTo(msec);
+            mSeekWhenPrepared = 0;
+        } else {
+            mSeekWhenPrepared = msec;
+        }
+    }
 
-  public int getBufferPercentage() {
-    if (mMediaPlayer != null)
-      return mCurrentBufferPercentage;
-    return 0;
-  }
+    public boolean isPlaying() {
+        return isInPlaybackState() && mMediaPlayer.isPlaying();
+    }
 
-  public void setVolume(float leftVolume, float rightVolume) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.setVolume(leftVolume, rightVolume);
-  }
+    public int getBufferPercentage() {
+        if (mMediaPlayer != null)
+            return mCurrentBufferPercentage;
+        return 0;
+    }
 
-  public int getVideoWidth() {
-    return mVideoWidth;
-  }
+    public void setVolume(float leftVolume, float rightVolume) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setVolume(leftVolume, rightVolume);
+    }
 
-  public int getVideoHeight() {
-    return mVideoHeight;
-  }
+    public int getVideoWidth() {
+        return mVideoWidth;
+    }
 
-  public float getVideoAspectRatio() {
-    return mVideoAspectRatio;
-  }
+    public int getVideoHeight() {
+        return mVideoHeight;
+    }
 
-  /**
-   * Must set before {@link #setVideoURI}
-   * @param chroma
-   */
-  public void setVideoChroma(int chroma) {
-    getHolder().setFormat(chroma == MediaPlayer.VIDEOCHROMA_RGB565 ? PixelFormat.RGB_565 : PixelFormat.RGBA_8888); // PixelFormat.RGB_565
-    mVideoChroma = chroma;
-  }
+    public float getVideoAspectRatio() {
+        return mVideoAspectRatio;
+    }
 
-  public void setHardwareDecoder(boolean hardware) {
-    mHardwareDecoder= hardware;
-  }
+    /**
+     * Must set before {@link #setVideoURI}
+     *
+     * @param chroma
+     */
+    public void setVideoChroma(int chroma) {
+        getHolder().setFormat(chroma == MediaPlayer.VIDEOCHROMA_RGB565 ? PixelFormat.RGB_565 : PixelFormat.RGBA_8888); // PixelFormat.RGB_565
+        mVideoChroma = chroma;
+    }
 
-  public void setVideoQuality(int quality) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.setVideoQuality(quality);
-  }
+    public void setHardwareDecoder(boolean hardware) {
+        mHardwareDecoder = hardware;
+    }
 
-  public void setBufferSize(int bufSize) {
-    mBufSize = bufSize;
-  }
+    public void setVideoQuality(int quality) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setVideoQuality(quality);
+    }
 
-  public boolean isBuffering() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.isBuffering();
-    return false;
-  }
+    public void setBufferSize(int bufSize) {
+        mBufSize = bufSize;
+    }
 
-  public String getMetaEncoding() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.getMetaEncoding();
-    return null;
-  }
+    public boolean isBuffering() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.isBuffering();
+        return false;
+    }
 
-  public void setMetaEncoding(String encoding) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.setMetaEncoding(encoding);
-  }
+    public String getMetaEncoding() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getMetaEncoding();
+        return null;
+    }
 
-  public SparseArray<MediaFormat> getAudioTrackMap(String encoding) {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.findTrackFromTrackInfo(TrackInfo.MEDIA_TRACK_TYPE_AUDIO, mMediaPlayer.getTrackInfo(encoding));
-    return null;
-  }
+    public void setMetaEncoding(String encoding) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setMetaEncoding(encoding);
+    }
 
-  public int getAudioTrack() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.getAudioTrack();
-    return -1;
-  }
+    public SparseArray<MediaFormat> getAudioTrackMap(String encoding) {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.findTrackFromTrackInfo(TrackInfo.MEDIA_TRACK_TYPE_AUDIO, mMediaPlayer.getTrackInfo(encoding));
+        return null;
+    }
 
-  public void setAudioTrack(int audioIndex) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.selectTrack(audioIndex);
-  }
+    public int getAudioTrack() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getAudioTrack();
+        return -1;
+    }
 
-  public void setTimedTextShown(boolean shown) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.setTimedTextShown(shown);
-  }
+    public void setAudioTrack(int audioIndex) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.selectTrack(audioIndex);
+    }
 
-  public void setTimedTextEncoding(String encoding) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.setTimedTextEncoding(encoding);
-  }
+    public void setTimedTextShown(boolean shown) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setTimedTextShown(shown);
+    }
 
-  public int getTimedTextLocation() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.getTimedTextLocation();
-    return -1;
-  }
+    public void setTimedTextEncoding(String encoding) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.setTimedTextEncoding(encoding);
+    }
 
-  public void addTimedTextSource(String subPath) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.addTimedTextSource(subPath);
-  }
+    public int getTimedTextLocation() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getTimedTextLocation();
+        return -1;
+    }
 
-  public String getTimedTextPath() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.getTimedTextPath();
-    return null;
-  }
+    public void addTimedTextSource(String subPath) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.addTimedTextSource(subPath);
+    }
 
-  public void setSubTrack(int trackId) {
-    if (mMediaPlayer != null)
-      mMediaPlayer.selectTrack(trackId);
-  }
+    public String getTimedTextPath() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getTimedTextPath();
+        return null;
+    }
 
-  public int getTimedTextTrack() {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.getTimedTextTrack();
-    return -1;
-  }
+    public void setSubTrack(int trackId) {
+        if (mMediaPlayer != null)
+            mMediaPlayer.selectTrack(trackId);
+    }
 
-  public SparseArray<MediaFormat> getSubTrackMap(String encoding) {
-    if (mMediaPlayer != null)
-      return mMediaPlayer.findTrackFromTrackInfo(TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT, mMediaPlayer.getTrackInfo(encoding));
-    return null;
-  }
+    public int getTimedTextTrack() {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getTimedTextTrack();
+        return -1;
+    }
 
-  protected boolean isInPlaybackState() {
-    return (mMediaPlayer != null && mCurrentState != STATE_ERROR && mCurrentState != STATE_IDLE && mCurrentState != STATE_PREPARING);
-  }
+    public SparseArray<MediaFormat> getSubTrackMap(String encoding) {
+        if (mMediaPlayer != null)
+            return mMediaPlayer.findTrackFromTrackInfo(TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT, mMediaPlayer.getTrackInfo(encoding));
+        return null;
+    }
 
-  public void initVideoLayout(int videoLayout) {
-    this.mVideoLayout = videoLayout;
-  }
+    protected boolean isInPlaybackState() {
+        return (mMediaPlayer != null && mCurrentState != STATE_ERROR && mCurrentState != STATE_IDLE && mCurrentState != STATE_PREPARING);
+    }
+
+    public int getCurrentState() {
+        return mCurrentState;
+    }
 }

@@ -33,20 +33,22 @@
 
         <activity android:name=".vitamio.VitamioAudioActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
 
         <activity android:name=".vitamio.VitamioVideoActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".vitamio.PlayAudioByVideoView"/>
-        <activity android:name=".LiveRoomActivity"/>
-        <activity android:name=".HalfLiveActivity"/>
+        <activity android:name=".vitamio.PlayAudioByVideoView" />
+        <activity android:name=".LiveRoomActivity" />
+        <activity
+            android:name=".HalfLiveActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

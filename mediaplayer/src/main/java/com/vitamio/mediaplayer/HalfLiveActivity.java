@@ -1,10 +1,16 @@
 package com.vitamio.mediaplayer;
 
+import android.app.Dialog;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
@@ -29,6 +35,7 @@ public class HalfLiveActivity extends FragmentActivity {
     private long roomId;
     private boolean needResume;
 
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +77,26 @@ public class HalfLiveActivity extends FragmentActivity {
 //        videoView.initVideoLayout(VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH);
         videoView.setVideoPath(path);
         videoView.requestFocus();
-        videoView.setMediaController(new MediaController(this));
+        MediaController mediaController = new MediaController(this);
+        mediaController.setOrientationChangeListener(new MediaController.OnOrientationChangeListener() {
+            @Override
+            public void toLandscape() {
+//                findViewById(R.id.markerView).setVisibility(View.VISIBLE);
+//                videoView.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                    }
+//                }, 30);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+
+            @Override
+            public void toPortrait() {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        });
+        videoView.setMediaController(mediaController);
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
@@ -106,7 +132,7 @@ public class HalfLiveActivity extends FragmentActivity {
                     case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                         //Begin buffer, pauseVideo playing
                         if (videoView.isPlaying()) {
-                            pauseVideo();
+//                            pauseVideo();
                             needResume = true;
                         }
 //                        showProgressBar();//TODO
@@ -138,13 +164,18 @@ public class HalfLiveActivity extends FragmentActivity {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "===onPause===");
-        pauseVideo();
+//        pauseVideo();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         release();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     /**

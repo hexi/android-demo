@@ -22,7 +22,19 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/mediacontroller_button"
         android:src="@drawable/mediacontroller_to_landscape" />
+
+    <ImageButton
+        android:id="@+id/mediacontroller_to_portrait"
+        style="@style/MediaController_Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:visibility="gone"
+        android:background="@drawable/mediacontroller_button"
+        android:src="@drawable/mediacontroller_to_portrait" />
 
 </RelativeLayout>

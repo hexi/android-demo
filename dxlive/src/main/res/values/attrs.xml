@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="VideoView">
+        <attr name="videoLayout" format="integer">
+            <enum name="video_layout_fit_parent" value="4"/>
+            <enum name="video_layout_fit_window_height" value="5"/>
+            <enum name="video_layout_fit_window_width" value="6" />
+            <enum name="video_layout_fit_parent_land" value="7" />
+        </attr>
+    </declare-styleable>
+</resources>

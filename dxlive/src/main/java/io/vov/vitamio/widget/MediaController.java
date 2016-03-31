@@ -82,6 +82,7 @@ public class MediaController extends FrameLayout {
     private boolean mFromXml = false;
     private ImageButton mPauseButton;
     private ImageButton mToLandscapeButton;
+    private ImageButton mToPortraitButton;
     private AudioManager mAM;
     private OnShownListener mShownListener;
     private OnHiddenListener mHiddenListener;
@@ -185,6 +186,7 @@ public class MediaController extends FrameLayout {
     private void initControllerView(View v) {
         mPauseButton = (ImageButton) v.findViewById(getResources().getIdentifier("mediacontroller_play_pause", "id", mContext.getPackageName()));
         mToLandscapeButton = (ImageButton) v.findViewById(getResources().getIdentifier("mediacontroller_to_landscape", "id", mContext.getPackageName()));
+        mToPortraitButton = (ImageButton) v.findViewById(getResources().getIdentifier("mediacontroller_to_portrait", "id", mContext.getPackageName()));
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
@@ -195,6 +197,15 @@ public class MediaController extends FrameLayout {
             public void onClick(View v) {
                 if (mOrientationChangeListener != null) {
                     mOrientationChangeListener.toLandscape();
+                }
+            }
+        });
+
+        mToPortraitButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOrientationChangeListener != null) {
+                    mOrientationChangeListener.toPortrait();
                 }
             }
         });
@@ -312,6 +323,16 @@ public class MediaController extends FrameLayout {
         return false;
     }
 
+    public void showToLandButton() {
+        mToLandscapeButton.setVisibility(VISIBLE);
+        mToPortraitButton.setVisibility(GONE);
+    }
+
+    public void showToPortraitButton() {
+        mToLandscapeButton.setVisibility(GONE);
+        mToPortraitButton.setVisibility(VISIBLE);
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
@@ -370,7 +391,9 @@ public class MediaController extends FrameLayout {
     }
 
     public interface OnOrientationChangeListener {
-        public void toLandscape();
+        void toLandscape();
+
+        void toPortrait();
     }
 
     public interface MediaPlayerControl {

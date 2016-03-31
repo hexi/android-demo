@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/mediacontroller_bg">
+    android:background="@android:color/transparent">
 
     <ImageButton
         android:id="@+id/mediacontroller_play_pause"
@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:background="@drawable/mediacontroller_button"
-        android:contentDescription="@string/mediacontroller_play_pause"
+        android:background="@android:color/transparent"
         android:src="@drawable/mediacontroller_pause" />
 
     <ImageButton
@@ -22,7 +21,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
-        android:background="@drawable/mediacontroller_button"
+        android:background="@android:color/transparent"
         android:src="@drawable/mediacontroller_to_landscape" />
 
     <ImageButton
@@ -34,7 +33,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
         android:visibility="gone"
-        android:background="@drawable/mediacontroller_button"
+        android:background="@android:color/transparent"
         android:src="@drawable/mediacontroller_to_portrait" />
 
 </RelativeLayout>

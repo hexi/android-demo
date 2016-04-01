@@ -7,4 +7,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="安卓原生播放音频"/>
+
+    <Button
+        android:id="@+id/bindService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="bindService"
+        android:onClick="bindService"/>
+
+    <Button
+        android:id="@+id/startService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="startService"
+        android:onClick="startService"/>
 </LinearLayout>

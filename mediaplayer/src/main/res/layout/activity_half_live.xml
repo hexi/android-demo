@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
-    <io.vov.vitamio.widget.VideoView
-        android:id="@+id/surface_view"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        app:videoLayout="video_layout_fit_window_width"/>
+    <!--<io.vov.vitamio.widget.VideoView-->
+        <!--android:id="@+id/surface_view"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="200dp"-->
+        <!--app:videoLayout="video_layout_fit_window_width"/>-->
 
     <View
         android:id="@+id/markerView"

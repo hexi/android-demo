@@ -1,10 +1,15 @@
 package com.vitamio.mediaplayer.fragment;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,107 +20,87 @@ import android.widget.Toast;
 
 import com.vitamio.mediaplayer.MyMediaPlayer;
 import com.vitamio.mediaplayer.R;
+import com.vitamio.mediaplayer.service.AudioService;
+import com.vitamio.mediaplayer.service.VideoService;
 
 import java.io.IOException;
+
+import io.vov.vitamio.widget.VideoView;
+
 
 /**
  * Created by hexi on 16/3/24.
  */
-public class AndroidAudioFragment extends Fragment {
+public class AndroidAudioFragment extends Fragment implements View.OnClickListener, AudioService.AudioServiceListener {
 
     private static final String TAG = "AndroidAudioFragment";
 
-    private MyMediaPlayer mediaPlayer;
 
     String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
-    //    String path = "http://jorgesys.net/i/irina_delivery@117489/master.m3u8";
 
+    AudioService audioService;
+
+    private boolean bound;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
+            audioService = binder.getService();
+            audioService.setAudioServiceListener(AndroidAudioFragment.this);
+            Log.d(TAG, "===service:" + audioService);
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            bound = false;
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_android_audio, container, false);
 
+        view.findViewById(R.id.bindService).setOnClickListener(this);
+        view.findViewById(R.id.startService).setOnClickListener(this);
         return view;
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.bindService) {
+            bindService(v);
+        } else if (v.getId() == R.id.startService) {
+            startService(v);
+        }
+    }
+
+    public void bindService(View view) {
+        Log.d(TAG, "===bindService===");
+        Intent intent = new Intent(this.getActivity(), AudioService.class);
+        intent.putExtra(AudioService.INTENT_PATH, path);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void startService(View view) {
+        Log.d(TAG, "===startService===");
+        Intent intent = new Intent(this.getActivity(), AudioService.class);
+        intent.putExtra(AudioService.INTENT_PATH, path);
+        getActivity().startService(intent);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        createMediaPlayer();
-    }
-
-    private void createMediaPlayer() {
-        try {
-            Log.d(TAG, "===createMediaPlayer===");
-            Uri uri = Uri.parse(path);
-            mediaPlayer = new MyMediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setLooping(true);
-            mediaPlayer.setDataSource(getActivity(), uri);
-            mediaPlayer.prepareAsync();
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mediaPlayer.setPrepared(true);
-                    Log.d(TAG, "===onPrepared===");
-                    if (getUserVisibleHint()) {
-                        startPlay();
-                    }
-                }
-            });
-            mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-                @Override
-                public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                    Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
-                    switch (what) {
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                            //Begin buffer, pauseVideo playing
-                            if (mediaPlayer.isPlaying()) {
-                                pausePlay();
-                            }
-                            break;
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                            //The buffering is done, resume playing
-                            startPlay();
-                            break;
-
-                    }
-                    return true;
-                }
-            });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    Log.d(TAG, "===onCompletion, thread:" + Thread.currentThread());
-                    mediaPlayer.setPrepared(false);
-                    release();
-                }
-            });
-            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Log.d(TAG, String.format("===onError, what:%d, extra:%d", what, extra));
-                    mediaPlayer.setPrepared(false);
-                    switch (extra) {
-                        case MyMediaPlayer.MEDIA_ERROR_IO:
-                        case MyMediaPlayer.MEDIA_ERROR_TIMED_OUT: {
-                            Log.e(TAG, "===音频网路异常===");
-                            mediaPlayer.reset();
-                            return true;
-                        }
-                    }
-                    return true;
-                }
-            });
-
-        } catch (IOException e) {
-            if (mediaPlayer != null) {
-                mediaPlayer.setPrepared(false);
-            }
-            e.printStackTrace();
-        }
+        Intent intent = new Intent(this.getActivity(), AudioService.class);
+        intent.putExtra(AudioService.INTENT_PATH, path);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getActivity().startService(intent);
     }
 
     @Override
@@ -125,6 +110,12 @@ public class AndroidAudioFragment extends Fragment {
         Log.d(TAG, "===onResume, isVisibleToUser:" + isVisibleToUser);
         if (isVisibleToUser) {
             startPlay();
+        }
+    }
+
+    private void startPlay() {
+        if (bound) {
+            audioService.startPlay();
         }
     }
 
@@ -141,37 +132,46 @@ public class AndroidAudioFragment extends Fragment {
         }
     }
 
-    public void pausePlay() {
-        Log.d(TAG, "===pause===");
-        if (mediaPlayer == null
-                || !mediaPlayer.isPlaying()) {
-            return;
+    private void pausePlay() {
+        if (bound) {
+            audioService.pausePlay();
         }
-        mediaPlayer.pause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "===onDestroy===");
-        release();
-    }
-
-    private void release() {
-        if (mediaPlayer == null) {
-            return;
+        if (bound) {
+            getActivity().unbindService(mConnection);
         }
-        mediaPlayer.release();
-        mediaPlayer.setPrepared(false);
-        mediaPlayer = null;
     }
 
-    private void startPlay() {
-        Log.d(TAG, "===startPlay, isPrepared:" + mediaPlayer.isPrepared());
-        if (mediaPlayer.isPrepared()) {
-            mediaPlayer.start();
-        } else {
-            mediaPlayer.prepareAsync();
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        startPlay();
+    }
+
+    @Override
+    public void onBufferingEnd(int extra) {
+        startPlay();
+    }
+
+    @Override
+    public void onBufferingStart(int extra) {
+
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        switch (extra) {
+            case MediaPlayer.MEDIA_ERROR_IO:
+            case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {
+                pausePlay();
+                return true;
+            }
+            default:
+                return false;
         }
     }
 }

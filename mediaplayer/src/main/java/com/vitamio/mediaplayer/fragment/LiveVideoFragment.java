@@ -183,7 +183,7 @@ public class LiveVideoFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "===onPause===");
-        pauseVideo();
+//        pauseVideo();
     }
 
     @Override
@@ -218,6 +218,7 @@ public class LiveVideoFragment extends Fragment {
         if (videoView == null) {
             return;
         }
+        Log.d(TAG, "===pauseVideo===");
         videoView.pause();
     }
 

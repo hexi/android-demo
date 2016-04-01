@@ -45,10 +45,15 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".vitamio.PlayAudioByVideoView" />
-        <activity android:name=".LiveRoomActivity" />
+        <activity
+            android:name=".LiveRoomActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HalfLiveActivity"
             android:screenOrientation="portrait" />
+
+        <service android:name=".service.VideoService"/>
+        <service android:name=".service.AudioService"/>
     </application>
 
 </manifest>

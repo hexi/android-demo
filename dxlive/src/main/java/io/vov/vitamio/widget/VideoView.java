@@ -18,13 +18,13 @@
 package io.vov.vitamio.widget;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -42,6 +42,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import io.vov.vitamio.MediaFormat;
@@ -170,11 +171,35 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         }
 
         public void surfaceDestroyed(SurfaceHolder holder) {
-            mSurfaceHolder = null;
-            if (mMediaController != null) mMediaController.hide();
-            release(true);
+            if (!isAppAtBackground(getContext().getApplicationContext())) {
+                mSurfaceHolder = null;
+                if (mMediaController != null) {
+                    mMediaController.hide();
+                }
+                release(true);
+            } else {
+                mCurrentState = STATE_SWITCH_BACKGROUND;
+            }
         }
     };
+
+    private static boolean isAppAtBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.processName.equals(context.getPackageName())) {
+                if (appProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private static final int STATE_SWITCH_BACKGROUND = 9;
     private Uri mUri;
     private long mDuration;
     private int mCurrentState = STATE_IDLE;
@@ -475,6 +500,12 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
     private void openVideo() {
         if (mUri == null || mSurfaceHolder == null || !Vitamio.isInitialized(mContext))
             return;
+
+        if (mCurrentState == STATE_SWITCH_BACKGROUND) {
+            mCurrentState = STATE_RESUME;
+            mMediaPlayer.prepareAsync();
+            return;
+        }
 
         Intent i = new Intent("com.android.music.musicservicecommand");
         i.putExtra("command", "pause");
@@ -825,5 +856,11 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
     public int getCurrentState() {
         return mCurrentState;
+    }
+
+    public void setWakeMode(Context context, int wakeMode) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setWakeMode(context, wakeMode);
+        }
     }
 }

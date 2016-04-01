@@ -1,11 +1,16 @@
 package com.vitamio.mediaplayer;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.vitamio.mediaplayer.service.AudioService;
 import com.vitamio.mediaplayer.vitamio.PlayAudioByVideoView;
 import com.vitamio.mediaplayer.vitamio.VitamioAudioActivity;
 import com.vitamio.mediaplayer.vitamio.VitamioVideoActivity;
@@ -43,6 +48,27 @@ public class MainActivity extends AppCompatActivity {
     public void showHalfLive(View view) {
         Intent intent = new Intent(this, HalfLiveActivity.class);
         startActivity(intent);
+    }
+
+    String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
+            Log.d(TAG, "===service:" + binder.getService());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+    public void bindService(View view) {
+        Log.d(TAG, "===bindService===");
+        Intent intent = new Intent(this, AudioService.class);
+        intent.putExtra(AudioService.INTENT_PATH, path);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override

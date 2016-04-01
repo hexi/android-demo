@@ -35,7 +35,7 @@ public class PlayAudioByVideoView extends Activity {
 
             @Override
             public void onPrepared(MediaPlayer mp) {
-                Log.d(TAG, "===onPrepared===");
+                Log.d(TAG, "===onAudioPrepared===");
                 videoView.start();
             }
         });
@@ -50,7 +50,7 @@ public class PlayAudioByVideoView extends Activity {
         videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.d(TAG, String.format("===onError, what:%d, extra:%d", what, extra));
+                Log.d(TAG, String.format("===onAudioError, what:%d, extra:%d", what, extra));
                 return true;
             }
         });

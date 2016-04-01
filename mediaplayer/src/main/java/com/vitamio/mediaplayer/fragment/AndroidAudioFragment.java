@@ -50,6 +50,10 @@ public class AndroidAudioFragment extends Fragment implements View.OnClickListen
             audioService = binder.getService();
             audioService.setAudioServiceListener(AndroidAudioFragment.this);
             Log.d(TAG, "===service:" + audioService);
+
+            Intent intent = new Intent(getActivity(), AudioService.class);
+            intent.putExtra(AudioService.INTENT_PATH, path);
+            getActivity().startService(intent);
             bound = true;
         }
 
@@ -66,6 +70,9 @@ public class AndroidAudioFragment extends Fragment implements View.OnClickListen
 
         view.findViewById(R.id.bindService).setOnClickListener(this);
         view.findViewById(R.id.startService).setOnClickListener(this);
+        view.findViewById(R.id.unBindService).setOnClickListener(this);
+        view.findViewById(R.id.stopService).setOnClickListener(this);
+
         return view;
     }
 
@@ -76,6 +83,10 @@ public class AndroidAudioFragment extends Fragment implements View.OnClickListen
             bindService(v);
         } else if (v.getId() == R.id.startService) {
             startService(v);
+        } else if (v.getId() == R.id.unBindService) {
+            getActivity().unbindService(mConnection);
+        } else if (v.getId() == R.id.stopService) {
+            getActivity().stopService(new Intent(this.getActivity(), AudioService.class));
         }
     }
 
@@ -97,10 +108,7 @@ public class AndroidAudioFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Intent intent = new Intent(this.getActivity(), AudioService.class);
-        intent.putExtra(AudioService.INTENT_PATH, path);
-        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        getActivity().startService(intent);
+        getActivity().bindService(new Intent(this.getActivity(), AudioService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -144,26 +152,27 @@ public class AndroidAudioFragment extends Fragment implements View.OnClickListen
         Log.d(TAG, "===onDestroy===");
         if (bound) {
             getActivity().unbindService(mConnection);
+            getActivity().stopService(new Intent(getActivity().getApplicationContext(), AudioService.class));
         }
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
+    public void onAudioPrepared(MediaPlayer mp) {
         startPlay();
     }
 
     @Override
-    public void onBufferingEnd(int extra) {
+    public void onAudioBufferingEnd(int extra) {
         startPlay();
     }
 
     @Override
-    public void onBufferingStart(int extra) {
+    public void onAudioBufferingStart(int extra) {
 
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public boolean onAudioError(MediaPlayer mp, int what, int extra) {
         switch (extra) {
             case MediaPlayer.MEDIA_ERROR_IO:
             case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {

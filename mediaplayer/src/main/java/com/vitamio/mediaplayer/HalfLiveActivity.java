@@ -12,6 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
+import com.vitamio.mediaplayer.service.AudioService;
 import com.vitamio.mediaplayer.service.VideoService;
 
 import io.vov.vitamio.LibsChecker;
@@ -22,15 +24,16 @@ import io.vov.vitamio.widget.VideoView;
 /**
  * Created by hexi on 16/3/28.
  */
-public class HalfLiveActivity extends FragmentActivity implements VideoService.VideoServiceListener, MediaController.OnOrientationChangeListener {
+public class HalfLiveActivity extends FragmentActivity implements VideoService.VideoServiceListener, MediaController.OnOrientationChangeListener, ScreenOffOnReceiver.ScreenOnOffListener, AudioService.AudioServiceListener {
     private static final String TAG = "HalfLiveActivity";
 
     private static final String INTENT_LIVE_PATH = "intent_live_path";
-    private static final String INTENT_ROOM_ID = "intent_room_id";
 
     private ViewGroup contentContainer;
     VideoService videoService;
     private boolean bound;
+    ScreenOffOnReceiver screenOffOnReceiver;
+
 
     private String livePath = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
 
@@ -62,6 +65,35 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
         }
     };
 
+    String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
+
+    AudioService audioService;
+    private boolean audioBound;
+    private ServiceConnection audioConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
+            audioService = binder.getService();
+            audioService.setAudioServiceListener(HalfLiveActivity.this);
+
+            if (!audioService.isMediaPlayerCreated()) {
+                Intent intent = new Intent(HalfLiveActivity.this, AudioService.class);
+                intent.putExtra(AudioService.INTENT_PATH, path);
+                startService(intent);
+            } else {
+                audioService.startPlay();
+            }
+            audioBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            audioBound = false;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +108,9 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
 
         Intent intent = new Intent(this, VideoService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        screenOffOnReceiver = new ScreenOffOnReceiver(HalfLiveActivity.this);
+        registerReceiver(screenOffOnReceiver, ScreenOffOnReceiver.getIntentFilter());
     }
 
     @Override
@@ -87,8 +122,12 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "===onResume===");
         if (bound) {
             videoService.startVideo();
+        }
+        if (audioBound) {
+            audioService.pausePlay();
         }
     }
 
@@ -96,7 +135,16 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     public void onPause() {
         super.onPause();
         Log.d(TAG, "===onPause===");
-//        pauseVideo();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "===onStop===");
+        if (!AppUtil.isAppOnForeground(getApplicationContext())) {
+            Log.d(TAG, "===app is on background===");
+            pauseVideoAndStartAudio();
+        }
     }
 
     @Override
@@ -104,7 +152,13 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
         super.onDestroy();
         if (bound) {
             unbindService(mConnection);
+            stopService(new Intent(this, VideoService.class));
         }
+        if (audioBound) {
+            unbindService(audioConnection);
+            stopService(new Intent(this, AudioService.class));
+        }
+        unregisterReceiver(screenOffOnReceiver);
     }
 
     @Override
@@ -155,5 +209,57 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     @Override
     public void toPortrait() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    public void screenOn() {
+
+    }
+
+    @Override
+    public void screenOff() {
+        pauseVideoAndStartAudio();
+    }
+
+    private void pauseVideoAndStartAudio() {
+        pauseVideo();
+        if (audioBound) {
+            audioService.startPlay();
+        } else {
+            Intent intent = new Intent(this, AudioService.class);
+            bindService(intent, audioConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    public void startVideo() {
+        if (bound) {
+            videoService.startVideo();
+        }
+    }
+
+    public void pauseVideo() {
+        if (bound) {
+            videoService.pauseVideo();
+        }
+    }
+
+    @Override
+    public void onAudioPrepared(android.media.MediaPlayer mp) {
+        audioService.startPlay();
+    }
+
+    @Override
+    public void onAudioBufferingEnd(int extra) {
+        audioService.startPlay();
+    }
+
+    @Override
+    public void onAudioBufferingStart(int extra) {
+
+    }
+
+    @Override
+    public boolean onAudioError(android.media.MediaPlayer mp, int what, int extra) {
+        return true;
     }
 }

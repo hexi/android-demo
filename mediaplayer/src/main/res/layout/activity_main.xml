@@ -45,4 +45,25 @@
         android:text="bindService"
         android:onClick="bindService"/>
 
+    <Button
+        android:id="@+id/unBindService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="unBindService"
+        android:onClick="unBindService"/>
+
+    <Button
+        android:id="@+id/startService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="startService"
+        android:onClick="startService"/>
+
+    <Button
+        android:id="@+id/screenReceiver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="screenReceiver"
+        android:onClick="screenReceiver"/>
+
 </LinearLayout>

@@ -31,10 +31,10 @@ public class AudioService extends Service {
         }
     }
     public interface AudioServiceListener {
-        void onPrepared(MediaPlayer mp);
-        void onBufferingEnd(int extra);
-        void onBufferingStart(int extra);
-        boolean onError(MediaPlayer mp, int what, int extra);
+        void onAudioPrepared(MediaPlayer mp);
+        void onAudioBufferingEnd(int extra);
+        void onAudioBufferingStart(int extra);
+        boolean onAudioError(MediaPlayer mp, int what, int extra);
     }
 
     private MyMediaPlayer mediaPlayer;
@@ -72,9 +72,9 @@ public class AudioService extends Service {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mediaPlayer.setPrepared(true);
-                    Log.d(TAG, "===onPrepared===");
+                    Log.d(TAG, "===onAudioPrepared===");
                     if (audioServiceListener != null) {
-                        audioServiceListener.onPrepared(mp);
+                        audioServiceListener.onAudioPrepared(mp);
                     }
 //                        startPlay(); //TODO
                 }
@@ -87,13 +87,13 @@ public class AudioService extends Service {
                         case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                             //Begin buffer, pauseVideo playing
                             if (audioServiceListener != null) {
-                                audioServiceListener.onBufferingStart(extra);
+                                audioServiceListener.onAudioBufferingStart(extra);
                             }
                             break;
                         case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                             //The buffering is done, resume playing
                             if (audioServiceListener != null) {
-                                audioServiceListener.onBufferingEnd(extra);
+                                audioServiceListener.onAudioBufferingEnd(extra);
                             }
 //                            startPlay(); //TODO
                             break;
@@ -112,10 +112,10 @@ public class AudioService extends Service {
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Log.d(TAG, String.format("===onError, what:%d, extra:%d", what, extra));
+                    Log.d(TAG, String.format("===onAudioError, what:%d, extra:%d", what, extra));
                     mediaPlayer.setPrepared(false);
                     if (audioServiceListener != null) {
-                        return audioServiceListener.onError(mp, what, extra);
+                        return audioServiceListener.onAudioError(mp, what, extra);
                     } else {
                         return false;
                     }
@@ -154,6 +154,10 @@ public class AudioService extends Service {
         mediaPlayer.release();
         mediaPlayer.setPrepared(false);
         mediaPlayer = null;
+    }
+
+    public boolean isMediaPlayerCreated() {
+        return mediaPlayer != null;
     }
 
     @Override

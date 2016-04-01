@@ -171,7 +171,7 @@ public class VideoService extends Service {
         if (listener != null) {
             listener.onVideoViewCreated(videoView);
         }
-        return super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, Service.START_REDELIVER_INTENT, startId);
     }
 
     @Override

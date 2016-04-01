@@ -46,9 +46,9 @@ public class LiveRoomActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                return createVideoFragment();
-            }
+//            if (position == 0) {
+//                return createVideoFragment();
+//            }
             return createTextLiveFragment();
         }
 

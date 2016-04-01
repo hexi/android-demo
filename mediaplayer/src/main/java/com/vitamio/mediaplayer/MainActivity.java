@@ -71,6 +71,21 @@ public class MainActivity extends AppCompatActivity {
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    public void unBindService(View view) {
+        unbindService(mConnection);
+    }
+
+    public void startService(View view) {
+        Intent intent = new Intent(this, AudioService.class);
+        intent.putExtra(AudioService.INTENT_PATH, path);
+        startService(intent);
+    }
+
+    public void screenReceiver(View view) {
+        Intent intent = new Intent(this, ScreenReceiverActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -105,7 +105,7 @@ public class LiveVideoFragment extends Fragment {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                Log.d(TAG, "===onPrepared, isVisibleToUser:" + getUserVisibleHint());
+                Log.d(TAG, "===onAudioPrepared, isVisibleToUser:" + getUserVisibleHint());
                 // optional need Vitamio 4.0
                 mediaPlayer.setPlaybackSpeed(1.0f);
                 startVideo();

@@ -39,7 +39,6 @@ public class VideoService extends Service {
     private static final String TAG = "VideoService";
     private VideoBinder binder = new VideoBinder();
     private VideoView videoView;
-    WifiManager.WifiLock wifiLock;
     VideoServiceListener listener;
     MediaController.OnOrientationChangeListener orientationChangeListener;
 
@@ -72,10 +71,6 @@ public class VideoService extends Service {
             }
             videoView.setMediaController(mediaController);
         }
-        videoView.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
-        wifiLock.acquire();
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -189,7 +184,6 @@ public class VideoService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "===onUnbind===");
-        wifiLock.release();
         release();
     }
 

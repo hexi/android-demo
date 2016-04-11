@@ -20,6 +20,8 @@ public class DragUpLayout extends RelativeLayout {
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
+    private int clickViewId;
+    private View clickView;
     private boolean debug = true;
     private MotionEvent currentDownEvent;
     private double MOVE_THRESHOLD = 5;
@@ -50,6 +52,7 @@ public class DragUpLayout extends RelativeLayout {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragUpLayout);
         try {
             drawViewId = a.getResourceId(R.styleable.DragUpLayout_drawViewId, -1);
+            clickViewId = a.getResourceId(R.styleable.DragUpLayout_clickViewId, -1);
         } finally {
             a.recycle();
         }
@@ -140,14 +143,12 @@ public class DragUpLayout extends RelativeLayout {
         super.onFinishInflate();
         logd("===onFinishInflate===");
         dragView = findViewById(drawViewId);
+        clickView = findViewById(clickViewId);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        final int topBound = getHeight() - dragView.getHeight();
-        final int bottomBound = getHeight();
-        logd("===onAttachedToWindow, toBound:%d, bottomBound:%d", topBound, bottomBound);
         initViewDragHelper();
     }
 
@@ -159,6 +160,7 @@ public class DragUpLayout extends RelativeLayout {
             dragHelper.cancel();
             return false;
         }
+
         return dragHelper.shouldInterceptTouchEvent(ev);
     }
 
@@ -173,11 +175,25 @@ public class DragUpLayout extends RelativeLayout {
         } else if (action == MotionEvent.ACTION_UP) {
             double distance = distance(event, currentDownEvent);
             if (distance < MOVE_THRESHOLD && onClickListener != null) {
-                onClickListener.onClick(this);
+                if (touchInClickView(currentDownEvent)) {
+                    clickView.performClick();
+                } else {
+                    onClickListener.onClick(this);
+                }
             }
         }
         dragHelper.processTouchEvent(event);
         return true;
+    }
+
+    private boolean touchInClickView(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        if (x >= clickView.getLeft() && x <= clickView.getRight()
+                && y >= clickView.getTop() && y <= clickView.getBottom()) {
+            return true;
+        }
+        return false;
     }
 
     private double distance(MotionEvent end, MotionEvent start) {

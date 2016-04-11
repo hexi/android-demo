@@ -1,4 +1,3 @@
-include ':servicedemo'
 include(':app',
         ':broadcastintenttest',
         ':tablayout',
@@ -21,5 +20,6 @@ include(':app',
         ':swipelayout',
         ':networklistener',
         ':mediaplayer',
-        ':dxlive'
+        ':dxlive',
+        ':servicedemo'
 )

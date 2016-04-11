@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false"  >
+    <item android:drawable="@drawable/audio_playing_00" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_01" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_02" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_03" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_04" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_05" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_06" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_07" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_08" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_09" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_10" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_11" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_12" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_13" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_14" android:duration="62" />
+    <item android:drawable="@drawable/audio_playing_15" android:duration="62" />
+</animation-list>

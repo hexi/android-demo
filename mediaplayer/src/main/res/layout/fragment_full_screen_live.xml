@@ -3,12 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:drawViewId="@+id/dragView">
+    app:drawViewId="@+id/dragView"
+    app:clickViewId="@+id/recycler_view">
 
     <io.vov.vitamio.widget.VideoView
         android:id="@+id/surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/disable_scroll_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="不能滚动" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -16,24 +23,32 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
+    <com.vitamio.mediaplayer.view.MyRecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FFBEE780"></com.vitamio.mediaplayer.view.MyRecyclerView>
+
     <LinearLayout
         android:id="@+id/dragView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-300dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="-300dp"
         android:background="#FF94BBCF"
-        android:visibility="gone"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <Button
             android:id="@+id/button0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:text="点我"/>
+            android:text="点我" />
     </LinearLayout>
 
 </com.vitamio.mediaplayer.DragUpLayout>

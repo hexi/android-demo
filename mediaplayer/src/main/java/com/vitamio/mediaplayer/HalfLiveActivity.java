@@ -47,7 +47,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
             videoService.setListener(HalfLiveActivity.this);
             videoService.setOrientationChangeListener(HalfLiveActivity.this);
 
-            Intent intent = new Intent(HalfLiveActivity.this, VideoService.class);
+            Intent intent = new Intent(HalfLiveActivity.this.getApplicationContext(), VideoService.class);
             intent.putExtra(VideoService.INTENT_PATH, livePath);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 intent.putExtra(VideoService.INTENT_VIDEO_LAYOUT, VideoView.VIDEO_LAYOUT_FIT_PARENT_LAND);
@@ -79,7 +79,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
             audioService.setAudioServiceListener(HalfLiveActivity.this);
 
             if (!audioService.isMediaPlayerCreated()) {
-                Intent intent = new Intent(HalfLiveActivity.this, AudioService.class);
+                Intent intent = new Intent(HalfLiveActivity.this.getApplicationContext(), AudioService.class);
                 intent.putExtra(AudioService.INTENT_PATH, path);
                 startService(intent);
             } else {

@@ -2,6 +2,7 @@ package com.vitamio.mediaplayer.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.vitamio.mediaplayer.R;
+import com.vitamio.mediaplayer.adapter.MyAdapter;
+import com.vitamio.mediaplayer.view.MyRecyclerView;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
@@ -25,6 +28,8 @@ public class LiveVideoFragment extends Fragment {
 
     VideoView videoView;
     ProgressBar progress;
+    MyRecyclerView recyclerView;
+    MyAdapter adapter;
 
     String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
     private boolean needResume;
@@ -34,6 +39,12 @@ public class LiveVideoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_full_screen_live, container, false);
         videoView = (VideoView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
+        recyclerView = (MyRecyclerView) view.findViewById(R.id.recycler_view);
+
+        adapter = new MyAdapter(getActivity());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter.setData(mockData());
 
 //        this.path = retrievePath(getArguments() != null ? getArguments() : savedInstanceState);
 
@@ -52,7 +63,39 @@ public class LiveVideoFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.disable_scroll_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disableScroll(v);
+            }
+        });
+
+        recyclerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===recycler view clicked");
+                recyclerView.setCanScroll(true);
+            }
+        });
+
         return view;
+    }
+
+    public void disableScroll(View view) {
+        boolean isIntercept = recyclerView.isCanScroll();
+        Log.d(TAG, "===isIntercept: "+ isIntercept);
+        recyclerView.setCanScroll(false);
+        adapter.notifyDataSetChanged();
+    }
+
+
+    private String[] mockData() {
+        int size = 5;
+        String[] s = new String[size];
+        for (int i = 0; i < size; i++) {
+            s[i] = "测试评论" + i;
+        }
+        return s;
     }
 
     @Override

@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
-    <io.vov.vitamio.widget.VideoView
-        android:id="@+id/surface_view"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        app:videoLayout="video_layout_fit_window_width"/>
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_widthPercent="100%"
+        app:layout_aspectRatio="178%">
+        <io.vov.vitamio.widget.VideoView
+            android:id="@+id/surface_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:videoLayout="video_layout_fit_window_width"/>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:layout_marginRight="15dp">
+
+            <TextView
+                android:id="@+id/no_wifi_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="当前没有wifi，继续观看需花费流量"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+    </FrameLayout>
 
     <View
         android:id="@+id/markerView"
@@ -17,4 +43,4 @@
         android:layout_height="200dp"
         android:visibility="gone"
         android:background="#FFEFD44B"></View>
-</RelativeLayout>
+</android.support.percent.PercentRelativeLayout>

@@ -9,7 +9,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.telecom.VideoProfile;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
@@ -24,46 +27,21 @@ import io.vov.vitamio.widget.VideoView;
 /**
  * Created by hexi on 16/3/28.
  */
-public class HalfLiveActivity extends FragmentActivity implements VideoService.VideoServiceListener, MediaController.OnOrientationChangeListener, ScreenOffOnReceiver.ScreenOnOffListener, AudioService.AudioServiceListener {
+public class HalfLiveActivity extends FragmentActivity implements VideoService.VideoServiceListener,
+        MediaController.OnOrientationChangeListener,
+        ScreenOffOnReceiver.ScreenOnOffListener,
+        AudioService.AudioServiceListener {
     private static final String TAG = "HalfLiveActivity";
 
     private static final String INTENT_LIVE_PATH = "intent_live_path";
 
     private ViewGroup contentContainer;
     VideoService videoService;
-    private boolean bound;
     ScreenOffOnReceiver screenOffOnReceiver;
+    VideoView videoView;
 
 
     private String livePath = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            VideoService.VideoBinder binder = (VideoService.VideoBinder) service;
-            videoService = binder.getService();
-            videoService.setListener(HalfLiveActivity.this);
-            videoService.setOrientationChangeListener(HalfLiveActivity.this);
-
-            Intent intent = new Intent(HalfLiveActivity.this.getApplicationContext(), VideoService.class);
-            intent.putExtra(VideoService.INTENT_PATH, livePath);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                intent.putExtra(VideoService.INTENT_VIDEO_LAYOUT, VideoView.VIDEO_LAYOUT_FIT_PARENT_LAND);
-            } else {
-                intent.putExtra(VideoService.INTENT_VIDEO_LAYOUT, VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH);
-            }
-            intent.putExtra(VideoService.INTENT_SHOW_MEDIA_CONTROLLER, true);
-            startService(intent);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            bound = false;
-        }
-    };
 
     String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
 
@@ -79,9 +57,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
             audioService.setAudioServiceListener(HalfLiveActivity.this);
 
             if (!audioService.isMediaPlayerCreated()) {
-                Intent intent = new Intent(HalfLiveActivity.this.getApplicationContext(), AudioService.class);
-                intent.putExtra(AudioService.INTENT_PATH, path);
-                startService(intent);
+                audioService.createMediaPlayer(path);
             } else {
                 audioService.startPlay();
             }
@@ -106,11 +82,28 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
             return;
         }
 
-        Intent intent = new Intent(this, VideoService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        videoView = (VideoView) findViewById(R.id.surface_view);
+
+        initVideo();
 
         screenOffOnReceiver = new ScreenOffOnReceiver(HalfLiveActivity.this);
         registerReceiver(screenOffOnReceiver, ScreenOffOnReceiver.getIntentFilter());
+    }
+
+    private void initVideo() {
+        if (!TextUtils.isEmpty(livePath)) {
+            videoView.setVisibility(View.VISIBLE);
+            int videoLayout;
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                videoLayout = VideoView.VIDEO_LAYOUT_FIT_PARENT_LAND;
+            } else {
+                videoLayout = VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH;
+            }
+            videoService = new VideoService(this, videoView, new VideoService.Param(livePath, videoLayout, true));
+            videoService.setListener(this);
+            videoService.setOrientationChangeListener(this);
+            videoService.initVideoView();
+        }
     }
 
     @Override
@@ -123,9 +116,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     public void onResume() {
         super.onResume();
         Log.d(TAG, "===onResume===");
-        if (bound) {
-            videoService.startVideo();
-        }
+        videoService.startVideo();
         if (audioBound) {
             audioService.pausePlay();
         }
@@ -150,9 +141,9 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (bound) {
-            unbindService(mConnection);
-            stopService(new Intent(this, VideoService.class));
+        if (videoService != null) {
+            videoService.release();
+            videoService = null;
         }
         if (audioBound) {
             unbindService(audioConnection);
@@ -197,11 +188,6 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public void onVideoViewCreated(VideoView videoView) {
-        contentContainer.addView(videoView, 0);
-    }
-
-    @Override
     public void toLandscape() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
@@ -232,13 +218,13 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     public void startVideo() {
-        if (bound) {
+        if (videoService != null) {
             videoService.startVideo();
         }
     }
 
     public void pauseVideo() {
-        if (bound) {
+        if (videoService != null) {
             videoService.pauseVideo();
         }
     }

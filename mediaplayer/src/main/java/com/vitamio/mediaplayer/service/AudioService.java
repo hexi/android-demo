@@ -22,7 +22,6 @@ import java.io.IOException;
  * Created by hexi on 16/3/31.
  */
 public class AudioService extends Service {
-    public static final String INTENT_PATH = "intent_path";
     private static final String TAG = "AudioService";
 
     public class AudioBinder extends Binder {
@@ -41,9 +40,15 @@ public class AudioService extends Service {
     AudioBinder binder = new AudioBinder();
     WifiLock wifiLock;
     AudioServiceListener audioServiceListener;
+    private String path;
+    private boolean needResume;
 
     public void setAudioServiceListener(AudioServiceListener audioServiceListener) {
         this.audioServiceListener = audioServiceListener;
+    }
+
+    public boolean isMediaPlayerCreated() {
+        return mediaPlayer != null;
     }
 
     @Nullable
@@ -54,9 +59,11 @@ public class AudioService extends Service {
         return binder;
     }
 
-    private void createMediaPlayer(String path) {
+    public void createMediaPlayer(String path) {
         try {
             Log.d(TAG, "===createMediaPlayer===");
+            this.path = path;
+            this.needResume = false;
             Uri uri = Uri.parse(path);
             mediaPlayer = new MyMediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -76,7 +83,6 @@ public class AudioService extends Service {
                     if (audioServiceListener != null) {
                         audioServiceListener.onAudioPrepared(mp);
                     }
-//                        startPlay(); //TODO
                 }
             });
             mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
@@ -95,7 +101,6 @@ public class AudioService extends Service {
                             if (audioServiceListener != null) {
                                 audioServiceListener.onAudioBufferingEnd(extra);
                             }
-//                            startPlay(); //TODO
                             break;
 
                     }
@@ -114,6 +119,7 @@ public class AudioService extends Service {
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     Log.d(TAG, String.format("===onAudioError, what:%d, extra:%d", what, extra));
                     mediaPlayer.setPrepared(false);
+                    needResume = true;
                     if (audioServiceListener != null) {
                         return audioServiceListener.onAudioError(mp, what, extra);
                     } else {
@@ -130,12 +136,18 @@ public class AudioService extends Service {
         }
     }
 
-    public void startPlay() {
+    public boolean startPlay() {
+        if (mediaPlayer == null) {
+            return false;
+        }
+        if (needResume) {
+            return resume();
+        }
         if (mediaPlayer.isPrepared()) {
             mediaPlayer.start();
-        } else {
-            mediaPlayer.prepareAsync();
+            return true;
         }
+        return false;
     }
 
     public void pausePlay() {
@@ -147,6 +159,23 @@ public class AudioService extends Service {
         mediaPlayer.pause();
     }
 
+
+    public boolean resume() {
+        if (mediaPlayer == null || !needResume) {
+            return false;
+        }
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(path));
+            mediaPlayer.prepareAsync();
+            needResume = false;
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private void release() {
         if (mediaPlayer == null) {
             return;
@@ -154,26 +183,16 @@ public class AudioService extends Service {
         mediaPlayer.release();
         mediaPlayer.setPrepared(false);
         mediaPlayer = null;
-    }
 
-    public boolean isMediaPlayerCreated() {
-        return mediaPlayer != null;
+        if (wifiLock != null) {
+            wifiLock.release();
+        }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "===onCreate===");
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "===onStartCommand===");
-
-        String path = intent.getStringExtra(INTENT_PATH);
-        createMediaPlayer(path);
-
-        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -185,9 +204,8 @@ public class AudioService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "===onUnbind===");
+        Log.d(TAG, "===onDestroy===");
         release();
-        wifiLock.release();
         audioServiceListener = null;
     }
 

@@ -20,6 +20,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.junit.Test;
 
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -366,4 +368,13 @@ public class UnitTest {
         }
         return array;
     }
+
+    @Test
+    public void testNull() {
+        String a = null;
+        Object b = a;
+        String c = (String) b;
+        System.out.println(c);
+    }
+
 }

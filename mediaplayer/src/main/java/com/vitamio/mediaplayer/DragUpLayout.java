@@ -122,6 +122,7 @@ public class DragUpLayout extends RelativeLayout {
 
         });
 
+        dragHelper.setMinVelocity(1500);
     }
 
     @Override

@@ -50,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void playAudio(View view) {
+        Intent intent = new Intent(this, PlayAudioActivity.class);
+        startActivity(intent);
+    }
+
     String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -66,19 +71,11 @@ public class MainActivity extends AppCompatActivity {
     };
     public void bindService(View view) {
         Log.d(TAG, "===bindService===");
-        Intent intent = new Intent(this, AudioService.class);
-        intent.putExtra(AudioService.INTENT_PATH, path);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, AudioService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void unBindService(View view) {
         unbindService(mConnection);
-    }
-
-    public void startService(View view) {
-        Intent intent = new Intent(this, AudioService.class);
-        intent.putExtra(AudioService.INTENT_PATH, path);
-        startService(intent);
     }
 
     public void screenReceiver(View view) {

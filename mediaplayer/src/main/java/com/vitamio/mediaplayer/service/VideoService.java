@@ -1,13 +1,6 @@
 package com.vitamio.mediaplayer.service;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.net.wifi.WifiManager;
-import android.os.Binder;
-import android.os.IBinder;
-import android.os.PowerManager;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import io.vov.vitamio.MediaPlayer;
@@ -17,30 +10,54 @@ import io.vov.vitamio.widget.VideoView;
 /**
  * Created by hexi on 16/3/31.
  */
-public class VideoService extends Service {
-    public static final String INTENT_VIDEO_LAYOUT = "intent_video_layout";
-    public static String INTENT_PATH = "intent_path";
-    public static final String INTENT_SHOW_MEDIA_CONTROLLER = "intent_show_media_controller";
-
-    public class VideoBinder extends Binder {
-        public VideoService getService() {
-            return VideoService.this;
-        }
-    }
+public class VideoService {
+    private static final String TAG = "VideoService";
 
     public interface VideoServiceListener {
         void onPrepared(MediaPlayer mp);
         void onBufferingEnd(int extra);
         void onBufferingStart(int extra);
         boolean onError(MediaPlayer mp, int what, int extra);
-        void onVideoViewCreated(VideoView videoView);
     }
 
-    private static final String TAG = "VideoService";
-    private VideoBinder binder = new VideoBinder();
+    public static class Param {
+        public String path;
+        public int videoLayout;
+        public boolean showController;
+
+        public Param(String path, int videoLayout, boolean showController) {
+            this.path = path;
+            this.videoLayout = videoLayout;
+            this.showController = showController;
+        }
+
+        public Param(String path, int videoLayout) {
+            this.path = path;
+            this.videoLayout = videoLayout;
+        }
+    }
+
+
     private VideoView videoView;
+    private Param param;
     VideoServiceListener listener;
     MediaController.OnOrientationChangeListener orientationChangeListener;
+    private Context context;
+    private boolean needReopen;
+
+    public void setNeedReopen() {
+        needReopen = true;
+    }
+
+    public boolean isNeedReopen() {
+        return needReopen;
+    }
+
+    public VideoService(Context context, VideoView videoView, Param param) {
+        this.context = context.getApplicationContext();
+        this.videoView = videoView;
+        this.param = param;
+    }
 
 
     public void setListener(VideoServiceListener listener) {
@@ -51,21 +68,14 @@ public class VideoService extends Service {
         this.orientationChangeListener = orientationChangeListener;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "===onBind===");
-
-        return binder;
-    }
-
-    public void setupVideo(String path, int videoLayout, boolean showController) {
-        videoView = new VideoView(getApplicationContext());
-        videoView.setVideoPath(path);
-        videoView.initVideoLayout(videoLayout);
+    public void initVideoView() {
+        needReopen = false;
+        videoView.setVideoPath(param.path);
+        videoView.setHardwareDecoder(true);
+        videoView.initVideoLayout(param.videoLayout);
         videoView.requestFocus();
-        if (showController) {
-            MediaController mediaController = new MediaController(getApplicationContext());
+        if (param.showController) {
+            MediaController mediaController = new MediaController(context);
             if (orientationChangeListener != null) {
                 mediaController.setOrientationChangeListener(orientationChangeListener);
             }
@@ -75,6 +85,7 @@ public class VideoService extends Service {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                Log.d(TAG, "===onPrepared===");
                 // optional need Vitamio 4.0
                 mediaPlayer.setPlaybackSpeed(1.0f);
                 if (listener != null) {
@@ -96,7 +107,11 @@ public class VideoService extends Service {
         videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
+//                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d", what, extra));
                 switch (what) {
+                    case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
+
+                        break;
                     case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                         //Begin buffer, pauseVideo playing
                         if (listener != null) {
@@ -124,6 +139,17 @@ public class VideoService extends Service {
 //                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
             }
         });
+
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.d(TAG, "===onCompletion===");
+                if (needReopen) {
+                    initVideoView();
+                }
+            }
+        });
+
     }
 
     /**
@@ -152,39 +178,6 @@ public class VideoService extends Service {
             videoView.stopPlayback();
             videoView = null;
         }
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "===onCreate===");
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "===onStartCommand===");
-        release();
-        String path = intent.getStringExtra(INTENT_PATH);
-        int videoLayout = intent.getIntExtra(INTENT_VIDEO_LAYOUT, VideoView.VIDEO_LAYOUT_FIT_WINDOW_HEIGHT);
-        boolean showController = intent.getBooleanExtra(INTENT_SHOW_MEDIA_CONTROLLER, false);
-        setupVideo(path, videoLayout, showController);
-        if (listener != null) {
-            listener.onVideoViewCreated(videoView);
-        }
-        return super.onStartCommand(intent, Service.START_REDELIVER_INTENT, startId);
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "===onUnbind===");
-        return super.onUnbind(intent);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "===onUnbind===");
-        release();
     }
 
 }

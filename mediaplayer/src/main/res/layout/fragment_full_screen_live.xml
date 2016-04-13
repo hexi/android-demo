@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:drawViewId="@+id/dragView"
+    app:drawViewId="@+id/drag_view"
     app:clickViewId="@+id/recycler_view">
 
     <io.vov.vitamio.widget.VideoView
@@ -30,8 +30,8 @@
         android:layout_alignParentBottom="true"
         android:background="#FFBEE780"></com.vitamio.mediaplayer.view.MyRecyclerView>
 
-    <LinearLayout
-        android:id="@+id/dragView"
+    <com.vitamio.mediaplayer.view.DragView
+        android:id="@+id/drag_view"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentBottom="true"
@@ -49,6 +49,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:text="点我" />
-    </LinearLayout>
+    </com.vitamio.mediaplayer.view.DragView>
 
 </com.vitamio.mediaplayer.DragUpLayout>

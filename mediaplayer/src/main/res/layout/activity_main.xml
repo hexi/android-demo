@@ -39,6 +39,12 @@
         android:text="showHalfLive" />
 
     <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="playAudio"
+        android:text="playAudio" />
+
+    <Button
         android:id="@+id/bindService"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,13 +57,6 @@
         android:layout_height="wrap_content"
         android:text="unBindService"
         android:onClick="unBindService"/>
-
-    <Button
-        android:id="@+id/startService"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="startService"
-        android:onClick="startService"/>
 
     <Button
         android:id="@+id/screenReceiver"

@@ -78,6 +78,13 @@ public class LiveVideoFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.drag_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===drag view clicked===");
+            }
+        });
+
         return view;
     }
 

@@ -26,10 +26,9 @@ public class MyViewGroup extends LinearLayout {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         String actionName = Utils.getActionName(event);
-        Log.d(TAG, "onInterceptTouchEvent(start) :"+actionName);
-        // boolean ret = super.onInterceptTouchEvent(event);
-        boolean ret = true;
-        Log.d(TAG, "onInterceptTouchEvent( end ) :"+actionName+", ret="+ret);
+        Log.d(TAG, "dispatchTouchEvent(start) :"+actionName);
+        boolean ret = super.dispatchTouchEvent(event);
+        Log.d(TAG, "dispatchTouchEvent( end ) :"+actionName+", ret="+ret);
         return ret;
     }
 
@@ -46,7 +45,8 @@ public class MyViewGroup extends LinearLayout {
     public boolean onInterceptTouchEvent(MotionEvent event) {
         String actionName = Utils.getActionName(event);
         Log.d(TAG, "onInterceptTouchEvent(start) :"+actionName);
-        boolean ret = super.onInterceptTouchEvent(event);
+        // boolean ret = super.onInterceptTouchEvent(event);
+        boolean ret = true;
         Log.d(TAG, "onInterceptTouchEvent( end ) :"+actionName+", ret="+ret);
         return ret;
     }

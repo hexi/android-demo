@@ -1,14 +1,21 @@
 package com.example.hexi.canvastest.activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.example.hexi.canvastest.QuotationSocketManager;
 import com.example.hexi.canvastest.R;
+import com.example.hexi.canvastest.view.NoTradePermissionDialog;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,25 +23,57 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void showDialog(View view) {
+        NoTradePermissionDialog dialog = new NoTradePermissionDialog(this);
+        dialog.show();
+    }
+
+    public void stopSocket(View view) {
+        QuotationSocketManager.stopSocket(this);
+    }
+
+    public void cancelStopSocket(View view) {
+        QuotationSocketManager.cancelStopSocket(this);
+    }
+
+    public void startSelf(View view) {
+        Intent i = new Intent(MainActivity.this, MainActivity.class);
+        startActivity(i);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "===onStop===");
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        Log.d(TAG, "===onWindowFocusChanged, hasFocus:"+hasFocus);
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d(TAG, "===onBackPressed===");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "===onStart===");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "===onResume===");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "===onPause===");
     }
 }

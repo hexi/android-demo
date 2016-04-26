@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void getAudioManager(View view) {
+        AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        Log.d(TAG, "===am:" + am);
+    }
+
     public void playAudio(View view) {
         Intent intent = new Intent(this, PlayAudioActivity.class);
         startActivity(intent);
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
+
     public void bindService(View view) {
         Log.d(TAG, "===bindService===");
         bindService(new Intent(this, AudioService.class), mConnection, Context.BIND_AUTO_CREATE);

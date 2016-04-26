@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Created by hexi on 16/3/31.
  */
-public class AudioService extends Service {
+public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "AudioService";
 
     public class AudioBinder extends Binder {
@@ -143,11 +143,33 @@ public class AudioService extends Service {
         if (needResume) {
             return resume();
         }
+        AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        int result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        Log.d(TAG, "===request focus result:"+result);
+        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            return false;
+        }
         if (mediaPlayer.isPrepared()) {
             mediaPlayer.start();
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            // Pause playback
+            pausePlay();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // Resume playback
+            startPlay();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+            am.abandonAudioFocus(this);
+            // Stop playback
+            pausePlay();
+        }
     }
 
     public void pausePlay() {

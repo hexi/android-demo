@@ -36,9 +36,11 @@ public class MyView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         String actionName = Utils.getActionName(event);
         Log.d(TAG, "onTouchEvent(start) :"+actionName);
-        boolean ret = super.onTouchEvent(event);
+        // boolean ret = super.onTouchEvent(event);
+        boolean ret = true;
         Log.d(TAG, "onTouchEvent( end ) :"+actionName+", ret="+ret);
         return ret;
+
     }
 
 }

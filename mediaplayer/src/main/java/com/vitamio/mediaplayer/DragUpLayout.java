@@ -2,6 +2,8 @@ package com.vitamio.mediaplayer;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -20,12 +22,23 @@ public class DragUpLayout extends RelativeLayout {
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
+    private boolean debug = true;
     private int clickViewId;
     private View clickView;
-    private boolean debug = true;
     private MotionEvent currentDownEvent;
     private double MOVE_THRESHOLD = 5;
     OnClickListener onClickListener;
+    OnDragUpListener onDragUpListener;
+    boolean enableDrag = true;
+    boolean marginBottom = true;
+
+    public void setEnableDrag(boolean enableDrag) {
+        this.enableDrag = enableDrag;
+    }
+
+    public void setOnDragUpListener(OnDragUpListener onDragListener) {
+        this.onDragUpListener = onDragListener;
+    }
 
     @Override
     public void setOnClickListener(OnClickListener l) {
@@ -47,6 +60,25 @@ public class DragUpLayout extends RelativeLayout {
         init(context, attrs, defStyleAttr);
     }
 
+    private final static String STATE_PARCELABLE = "state_parcelable";
+    private static final String STATE_ENABLE_DRAG = "state_enable_drag";
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        Bundle bundle = (Bundle) state;
+        super.onRestoreInstanceState(bundle.getParcelable(STATE_PARCELABLE));
+        enableDrag = bundle.getBoolean(STATE_ENABLE_DRAG, true);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        Parcelable parcelable = super.onSaveInstanceState();
+        bundle.putParcelable(STATE_PARCELABLE, parcelable);
+        bundle.putBoolean(STATE_ENABLE_DRAG, enableDrag);
+        return bundle;
+    }
+
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
 
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragUpLayout);
@@ -63,10 +95,23 @@ public class DragUpLayout extends RelativeLayout {
         dragHelper = ViewDragHelper.create(this, 1f, new ViewDragHelper.Callback() {
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
+                if (!enableDrag) {
+                    return false;
+                }
                 logd("===tryCaptureView===");
+//                if (marginBottom) {
+//                    marginBottom = false;
+//                    int height = dragView.getMeasuredHeight();
+//                    logd(TAG, "===reLayout teacherIntro, height:"+height);
+//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)dragView.getLayoutParams();
+//                    layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin, layoutParams.rightMargin, -height);
+//                    dragView.setLayoutParams(layoutParams);
+//                }
+
                 if (dragView.getVisibility() != VISIBLE) {
                     dragView.setVisibility(VISIBLE);
                 }
+
                 if (child != dragView) {
                     dragHelper.captureChildView(dragView, pointerId);
                     return false;
@@ -79,6 +124,17 @@ public class DragUpLayout extends RelativeLayout {
             public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy);
                 logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
+                final int topBound = getHeight() - dragView.getHeight();
+                final int bottomBound = getHeight();
+
+                if (onDragUpListener == null) {
+                    return;
+                }
+                if (top == topBound) {
+                    onDragUpListener.onDragViewUp();
+                } else if (top == bottomBound) {
+                    onDragUpListener.onDragViewDown();
+                }
             }
 
             @Override
@@ -122,7 +178,6 @@ public class DragUpLayout extends RelativeLayout {
 
         });
 
-        dragHelper.setMinVelocity(1500);
     }
 
     @Override
@@ -145,6 +200,9 @@ public class DragUpLayout extends RelativeLayout {
         logd("===onFinishInflate===");
         dragView = findViewById(drawViewId);
         clickView = findViewById(clickViewId);
+        if (clickViewId != -1) {
+            clickView = findViewById(clickViewId);
+        }
     }
 
     @Override
@@ -161,7 +219,6 @@ public class DragUpLayout extends RelativeLayout {
             dragHelper.cancel();
             return false;
         }
-
         return dragHelper.shouldInterceptTouchEvent(ev);
     }
 
@@ -188,6 +245,9 @@ public class DragUpLayout extends RelativeLayout {
     }
 
     private boolean touchInClickView(MotionEvent event) {
+        if (clickView == null) {
+            return false;
+        }
         float x = event.getX();
         float y = event.getY();
         if (x >= clickView.getLeft() && x <= clickView.getRight()
@@ -204,4 +264,8 @@ public class DragUpLayout extends RelativeLayout {
         return dis;
     }
 
+    public interface OnDragUpListener {
+        void onDragViewUp();
+        void onDragViewDown();
+    }
 }

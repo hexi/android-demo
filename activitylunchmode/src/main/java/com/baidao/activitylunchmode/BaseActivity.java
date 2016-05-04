@@ -50,6 +50,12 @@ public class BaseActivity extends Activity {
         Log.d(TAG, "===onDestroy " + this.toString());
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "===onNewIntent " + this.toString());
+    }
+
     public void startStandard(View view) {
         Intent i = new Intent(this, StandardActivity.class);
         startActivity(i);

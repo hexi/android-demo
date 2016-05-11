@@ -29,7 +29,7 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
 
     private static final String TAG = "AndroidAudioFragment";
 
-    String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
+    String path = "http://ytxhls.evideocloud.net/live/audio_ytxlive1__8X7KVoa865E0/audio_ytxlive1__8X7KVoa865E0.m3u8";
 
     View audioStateContainer;
     ImageView audioStateView;

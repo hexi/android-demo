@@ -218,15 +218,15 @@ public class LiveVideoFragment extends Fragment {
     private void initDanmaku(View root) {
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 3); // 滚动弹幕最大显示5行
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 3); // 滚动弹幕最大显示3行
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_BOTTOM, true);
 
         mDanmakuView = (IDanmakuView) root.findViewById(R.id.sv_danmaku);
         mContext = DanmakuContext.create();
-        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
+        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 0)
                 .setDuplicateMergingEnabled(false)
                 .setScrollSpeedFactor(1.2f)
                 .setScaleTextSize(1.2f)
@@ -302,7 +302,6 @@ public class LiveVideoFragment extends Fragment {
         // for(int i=0;i<100;i++){
         // }
         danmaku.text = "这是一条弹幕" + System.nanoTime();
-        danmaku.padding = 5;
         danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
         danmaku.isLive = islive;
         danmaku.time = mDanmakuView.getCurrentTime() + 1200;
@@ -310,7 +309,7 @@ public class LiveVideoFragment extends Fragment {
         danmaku.textColor = Color.RED;
         danmaku.textShadowColor = Color.WHITE;
         // danmaku.underlineColor = Color.GREEN;
-        danmaku.borderColor = Color.GREEN;
+//        danmaku.borderColor = Color.GREEN;
         mDanmakuView.addDanmaku(danmaku);
 
     }

@@ -24,6 +24,10 @@ import java.io.IOException;
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "AudioService";
 
+    public void finish() {
+        stopSelf();
+    }
+
     public class AudioBinder extends Binder {
         public AudioService getService() {
             return AudioService.this;

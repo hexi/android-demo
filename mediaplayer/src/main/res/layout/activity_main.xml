@@ -1,74 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
-
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="playVitamioVideo"
-        android:text="vitamio.videoView" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="playVitamioVideo"
+            android:text="vitamio.videoView"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="playVitamioAudio"
-        android:text="vitamio.audio" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="playVitamioAudio"
+            android:text="vitamio.audio"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="playAudioByVideoView"
-        android:text="vitamio.play.audio.by.video.view" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="playAudioByVideoView"
+            android:text="vitamio.play.audio.by.video.view"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showLiveRoom"
-        android:text="showLiveRoom" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showLiveRoom"
+            android:text="show_live_room"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showHalfLive"
-        android:text="showHalfLive" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showHalfLive"
+            android:text="show_half_live"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="playAudio"
-        android:text="playAudio" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="playAudio"
+            android:text="play_audio"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/bindService"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="bindService"
-        android:onClick="bindService"/>
+        <Button
+            android:id="@+id/bindService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="bindService"
+            android:text="bind_service"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/unBindService"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="unBindService"
-        android:onClick="unBindService"/>
+        <Button
+            android:id="@+id/unBindService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unBindService"
+            android:text="unbind_service"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/screenReceiver"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="screenReceiver"
-        android:onClick="screenReceiver"/>
+        <Button
+            android:id="@+id/screenReceiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="screenReceiver"
+            android:text="screen_receiver"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="getAudioManager"
-        android:onClick="getAudioManager"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="getAudioManager"
+            android:text="get_audio_manager"
+            android:textAllCaps="false" />
 
-</LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="finishService"
+            android:text="finish_service"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</ScrollView>

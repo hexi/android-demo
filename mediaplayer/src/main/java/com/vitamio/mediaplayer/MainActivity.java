@@ -61,18 +61,23 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
+    boolean bound;
+    AudioService audioService;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
-            Log.d(TAG, "===service:" + binder.getService());
+            audioService = binder.getService();
+            Log.d(TAG, "===service:" + audioService);
+            bound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "===onServiceDisconnected===");
+            bound = false;
         }
     };
 
@@ -82,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void unBindService(View view) {
-        unbindService(mConnection);
+        unbindService();
     }
 
     public void screenReceiver(View view) {
@@ -90,9 +95,23 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void finishService(View view) {
+        unbindService();
+        stopService(new Intent(this, AudioService.class));
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "===onDestroy===");
+        unbindService();
+
+    }
+
+    private void unbindService() {
+        if (bound) {
+            bound = false;
+            unbindService(mConnection);
+        }
     }
 }

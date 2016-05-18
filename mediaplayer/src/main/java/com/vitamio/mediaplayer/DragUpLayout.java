@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+
 /**
  * Created by hexi on 16/3/26.
  */
@@ -22,7 +23,7 @@ public class DragUpLayout extends RelativeLayout {
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
-    private boolean debug = true;
+    private boolean debug = false;
     private int clickViewId;
     private View clickView;
     private MotionEvent currentDownEvent;
@@ -30,7 +31,6 @@ public class DragUpLayout extends RelativeLayout {
     OnClickListener onClickListener;
     OnDragUpListener onDragUpListener;
     boolean enableDrag = true;
-    boolean marginBottom = true;
 
     public void setEnableDrag(boolean enableDrag) {
         this.enableDrag = enableDrag;
@@ -99,19 +99,9 @@ public class DragUpLayout extends RelativeLayout {
                     return false;
                 }
                 logd("===tryCaptureView===");
-//                if (marginBottom) {
-//                    marginBottom = false;
-//                    int height = dragView.getMeasuredHeight();
-//                    logd(TAG, "===reLayout teacherIntro, height:"+height);
-//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)dragView.getLayoutParams();
-//                    layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin, layoutParams.rightMargin, -height);
-//                    dragView.setLayoutParams(layoutParams);
-//                }
-
                 if (dragView.getVisibility() != VISIBLE) {
                     dragView.setVisibility(VISIBLE);
                 }
-
                 if (child != dragView) {
                     dragHelper.captureChildView(dragView, pointerId);
                     return false;
@@ -219,6 +209,7 @@ public class DragUpLayout extends RelativeLayout {
             dragHelper.cancel();
             return false;
         }
+
         return dragHelper.shouldInterceptTouchEvent(ev);
     }
 

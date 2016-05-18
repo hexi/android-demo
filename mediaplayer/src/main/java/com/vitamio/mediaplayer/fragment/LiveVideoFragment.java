@@ -1,14 +1,12 @@
 package com.vitamio.mediaplayer.fragment;
 
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ImageSpan;
@@ -20,17 +18,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.vitamio.mediaplayer.R;
+import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
+import com.vitamio.mediaplayer.model.DanmakuChat;
 import com.vitamio.mediaplayer.view.MyRecyclerView;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
@@ -39,18 +35,10 @@ import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.danmaku.loader.ILoader;
 import master.flame.danmaku.danmaku.loader.IllegalDataException;
 import master.flame.danmaku.danmaku.loader.android.DanmakuLoaderFactory;
-import master.flame.danmaku.danmaku.model.BaseDanmaku;
-import master.flame.danmaku.danmaku.model.DanmakuTimer;
-import master.flame.danmaku.danmaku.model.IDanmakus;
-import master.flame.danmaku.danmaku.model.IDisplayer;
-import master.flame.danmaku.danmaku.model.android.BaseCacheStuffer;
-import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
-import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.danmaku.parser.android.BiliDanmukuParser;
-import master.flame.danmaku.danmaku.util.IOUtils;
 import master.flame.danmaku.danmaku.util.SystemClock;
 
 /**
@@ -64,58 +52,10 @@ public class LiveVideoFragment extends Fragment {
     ProgressBar progress;
     MyRecyclerView recyclerView;
     MyAdapter adapter;
+
     private IDanmakuView mDanmakuView;
-    private DanmakuContext mContext;
-    private BaseDanmakuParser mParser;
+    private DanmakuAdapter danmakuAdapter;
 
-    private BaseCacheStuffer.Proxy mCacheStufferAdapter = new BaseCacheStuffer.Proxy() {
-
-        private Drawable mDrawable;
-
-        @Override
-        public void prepareDrawing(final BaseDanmaku danmaku, boolean fromWorkerThread) {
-            if (danmaku.text instanceof Spanned) { // 根据你的条件检查是否需要需要更新弹幕
-                // FIXME 这里只是简单启个线程来加载远程url图片，请使用你自己的异步线程池，最好加上你的缓存池
-                new Thread() {
-
-                    @Override
-                    public void run() {
-                        String url = "http://www.bilibili.com/favicon.ico";
-                        InputStream inputStream = null;
-                        Drawable drawable = mDrawable;
-                        if(drawable == null) {
-                            try {
-                                URLConnection urlConnection = new URL(url).openConnection();
-                                inputStream = urlConnection.getInputStream();
-                                drawable = BitmapDrawable.createFromStream(inputStream, "bitmap");
-                                mDrawable = drawable;
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            } finally {
-                                IOUtils.closeQuietly(inputStream);
-                            }
-                        }
-                        if (drawable != null) {
-                            drawable.setBounds(0, 0, 100, 100);
-                            SpannableStringBuilder spannable = createSpannable(drawable);
-                            danmaku.text = spannable;
-                            if(mDanmakuView != null) {
-                                mDanmakuView.invalidateDanmaku(danmaku, false);
-                            }
-                            return;
-                        }
-                    }
-                }.start();
-            }
-        }
-
-        @Override
-        public void releaseResource(BaseDanmaku danmaku) {
-            // TODO 重要:清理含有ImageSpan的text中的一些占用内存的资源 例如drawable
-        }
-    };
     private Timer timer;
 
     private SpannableStringBuilder createSpannable(Drawable drawable) {
@@ -216,102 +156,26 @@ public class LiveVideoFragment extends Fragment {
     }
 
     private void initDanmaku(View root) {
-        // 设置最大显示行数
-        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 3); // 滚动弹幕最大显示3行
-        // 设置是否禁止重叠
-        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
-        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_BOTTOM, true);
-
         mDanmakuView = (IDanmakuView) root.findViewById(R.id.sv_danmaku);
-        mContext = DanmakuContext.create();
-        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 0)
-                .setDuplicateMergingEnabled(false)
-                .setScrollSpeedFactor(1.2f)
-                .setScaleTextSize(1.2f)
-                .setCacheStuffer(new SpannedCacheStuffer(), mCacheStufferAdapter) // 图文混排使用SpannedCacheStuffer
-//        .setCacheStuffer(new BackgroundCacheStuffer())  // 绘制背景使用BackgroundCacheStuffer
-                .setMaximumLines(maxLinesPair)
-                .preventOverlapping(overlappingEnablePair);
-        if (mDanmakuView != null) {
-            mParser = createParser(null);
-            mDanmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
-                @Override
-                public void updateTimer(DanmakuTimer timer) {
-                }
-
-                @Override
-                public void drawingFinished() {
-
-                }
-
-                @Override
-                public void danmakuShown(BaseDanmaku danmaku) {
-//                    Log.d("DFM", "danmakuShown(): text=" + danmaku.text);
-                }
-
-                @Override
-                public void prepared() {
-                    mDanmakuView.start();
-                }
-            });
-            mDanmakuView.setOnDanmakuClickListener(new IDanmakuView.OnDanmakuClickListener() {
-                @Override
-                public void onDanmakuClick(BaseDanmaku latest) {
-                    Log.d("DFM", "onDanmakuClick text:" + latest.text);
-                }
-
-                @Override
-                public void onDanmakuClick(IDanmakus danmakus) {
-                    Log.d("DFM", "onDanmakuClick danmakus size:" + danmakus.size());
-                }
-            });
-            mDanmakuView.prepare(mParser, mContext);
-            mDanmakuView.enableDanmakuDrawingCache(true);
-
-//            ((View) mDanmakuView).setOnClickListener(new View.OnClickListener() {
-//
-//                @Override
-//                public void onClick(View view) {
-//                    mMediaController.setVisibility(View.VISIBLE);
-//                }
-//            });
-        }
-
+        danmakuAdapter = new DanmakuAdapter(mDanmakuView);
+        danmakuAdapter.init();
         timer = new Timer();
         timer.schedule(new AsyncAddTask(), 0, 1000);
     }
 
     class AsyncAddTask extends TimerTask {
+        final AtomicLong counter = new AtomicLong(0);
 
         @Override
         public void run() {
             for (int i = 0; i < 20; i++) {
-                addDanmaku(true);
-                SystemClock.sleep(20);
+                long id = counter.getAndAdd(1);
+                String nickname = String.format("模拟用户[%d]", id);
+                String content = String.format(":这是一条弹幕, contentId:%d", id);
+                danmakuAdapter.addDanmaku(new DanmakuChat(nickname, content));
+                SystemClock.sleep(500);
             }
         }
-    }
-
-    private void addDanmaku(boolean islive) {
-        BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
-        if (danmaku == null || mDanmakuView == null) {
-            return;
-        }
-        // for(int i=0;i<100;i++){
-        // }
-        danmaku.text = "这是一条弹幕" + System.nanoTime();
-        danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
-        danmaku.isLive = islive;
-        danmaku.time = mDanmakuView.getCurrentTime() + 1200;
-        danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
-        danmaku.textColor = Color.RED;
-        danmaku.textShadowColor = Color.WHITE;
-        // danmaku.underlineColor = Color.GREEN;
-//        danmaku.borderColor = Color.GREEN;
-        mDanmakuView.addDanmaku(danmaku);
-
     }
 
     public void disableScroll() {

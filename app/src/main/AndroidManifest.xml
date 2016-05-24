@@ -70,6 +70,8 @@
             <!--</intent-filter>-->
         </activity>
 
+        <service android:name=".service.TestService"/>
+
     </application>
 
 </manifest>

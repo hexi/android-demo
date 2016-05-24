@@ -1,15 +1,19 @@
 package com.example.hexi.canvastest.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.example.hexi.canvastest.QuotationSocketManager;
 import com.example.hexi.canvastest.R;
+import com.example.hexi.canvastest.service.TestService;
 import com.example.hexi.canvastest.view.NoTradePermissionDialog;
 
 
@@ -17,12 +21,81 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
 
+    boolean bound;
+    TestService testService;
+
+    public ServiceConnection bindAndStartConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "===onServiceConnected===");
+            testService = ((TestService.ServiceBinder) service).getService();
+            bound = true;
+
+            Intent intent = createIntent();
+            startService(intent);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "===onServiceDisconnected===");
+            bound = false;
+        }
+    };
+
+    public ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "===onServiceConnected===");
+            testService = ((TestService.ServiceBinder) service).getService();
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "===onServiceDisconnected===");
+            bound = false;
+        }
+    };
+
+    @NonNull
+    private Intent createIntent() {
+        Intent intent = new Intent(MainActivity.this, TestService.class);
+        intent.putExtra("path", "http://www.google.com");
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.cr).setClickable(true);
+    }
+
+    public void bindServiceAndStart(View view) {
+        Intent intent = new Intent(this, TestService.class);
+        bindService(intent, bindAndStartConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void bindService(View view) {
+        Intent intent = new Intent(this, TestService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void startServiceByIntent(View view) {
+        startService(createIntent());
+    }
+
+    public void startServiceNoIntent(View view) {
+        startService(new Intent(this, TestService.class));
+    }
+
+    public void unbindService(View view) {
+        unbindService(connection);
+    }
+
+    public void unbindServiceWithStartConn(View view) {
+        unbindService(bindAndStartConnection);
     }
 
     public void showDialog(View view) {

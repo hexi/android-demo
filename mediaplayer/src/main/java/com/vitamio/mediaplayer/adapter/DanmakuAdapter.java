@@ -25,6 +25,7 @@ import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.danmaku.parser.android.BiliDanmukuParser;
+import master.flame.danmaku.ui.widget.DanmakuView;
 
 /**
  * Created by hexi on 16/5/13.
@@ -112,7 +113,7 @@ public class DanmakuAdapter {
     public void init() {
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 3); // 滚动弹幕最大显示3行
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示3行
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
@@ -149,20 +150,20 @@ public class DanmakuAdapter {
                     danmakuView.start();
                 }
             });
-            danmakuView.setOnDanmakuClickListener(new IDanmakuView.OnDanmakuClickListener() {
-                @Override
-                public void onDanmakuClick(BaseDanmaku latest) {
-                    Log.d("DFM", "onDanmakuClick text:" + latest.text);
-                }
-
-                @Override
-                public void onDanmakuClick(IDanmakus danmakus) {
-                    Log.d("DFM", "onDanmakuClick danmakus size:" + danmakus.size());
-                }
-            });
+//            danmakuView.setOnDanmakuClickListener(new IDanmakuView.OnDanmakuClickListener() {
+//                @Override
+//                public void onDanmakuClick(BaseDanmaku latest) {
+//                    Log.d("DFM", "onDanmakuClick text:" + latest.text);
+//                }
+//
+//                @Override
+//                public void onDanmakuClick(IDanmakus danmakus) {
+//                    Log.d("DFM", "onDanmakuClick danmakus size:" + danmakus.size());
+//                }
+//            });
+            ((DanmakuView)danmakuView).setClickable(false);
             danmakuView.prepare(danmakuParser, context);
             danmakuView.enableDanmakuDrawingCache(true);
-
         }
 
     }

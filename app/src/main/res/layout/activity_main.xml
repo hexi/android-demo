@@ -9,11 +9,12 @@
         <!--android:layout_height="300dp"-->
         <!--android:background="#ccc" />-->
 
-    <!--<com.example.hexi.canvastest.view.ClearRect-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="200dp"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:background="#ccc" />-->
+    <com.example.hexi.canvastest.view.ClearRect
+        android:id="@+id/cr"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"
+        android:background="#ccc" />
 
     <Button
         android:layout_width="match_parent"

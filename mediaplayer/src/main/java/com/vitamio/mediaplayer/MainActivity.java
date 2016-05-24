@@ -7,16 +7,17 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.vitamio.mediaplayer.fragment.TestFragment;
 import com.vitamio.mediaplayer.service.AudioService;
 import com.vitamio.mediaplayer.vitamio.PlayAudioByVideoView;
 import com.vitamio.mediaplayer.vitamio.VitamioAudioActivity;
 import com.vitamio.mediaplayer.vitamio.VitamioVideoActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -98,6 +99,28 @@ public class MainActivity extends AppCompatActivity {
     public void finishService(View view) {
         unbindService();
         stopService(new Intent(this, AudioService.class));
+    }
+
+    TestFragment testFragment;
+
+    public void testArguments(View view) {
+        testFragment = new TestFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_layout, testFragment)
+                .commit();
+    }
+
+    public void detachFragment(View view) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .detach(testFragment).commit();
+    }
+
+    public void removeFragment(View view) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .remove(testFragment).commit();
     }
 
     @Override

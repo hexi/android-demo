@@ -204,13 +204,24 @@ public class DragUpLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
-
+        boolean ret;
         if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
             dragHelper.cancel();
-            return false;
+            ret = false;
+        } else {
+            ret = dragHelper.shouldInterceptTouchEvent(ev);
         }
 
-        return dragHelper.shouldInterceptTouchEvent(ev);
+        Log.d(TAG, String.format("===onInterceptTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        final int action = MotionEventCompat.getActionMasked(ev);
+        boolean ret = super.dispatchTouchEvent(ev);
+        Log.d(TAG, String.format("===dispatchTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
     }
 
     @Override
@@ -232,6 +243,7 @@ public class DragUpLayout extends RelativeLayout {
             }
         }
         dragHelper.processTouchEvent(event);
+        Log.d(TAG, String.format("===onTouchEvent, action:%d, ret:%b", action, true));
         return true;
     }
 

@@ -173,7 +173,7 @@ public class LiveVideoFragment extends Fragment {
                 String nickname = String.format("模拟用户[%d]", id);
                 String content = String.format(":这是一条弹幕, contentId:%d", id);
                 danmakuAdapter.addDanmaku(new DanmakuChat(nickname, content));
-                SystemClock.sleep(500);
+                SystemClock.sleep(100);
             }
         }
     }

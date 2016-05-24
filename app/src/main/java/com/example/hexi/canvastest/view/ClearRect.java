@@ -6,7 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.hexi.canvastest.R;
@@ -65,4 +68,13 @@ public class ClearRect extends View {
         canvas.drawPath(path, paint);
 
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        final int action = MotionEventCompat.getActionMasked(event);
+        boolean ret = super.onTouchEvent(event);
+        Log.d(TAG, String.format("===onTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
+    }
+
 }

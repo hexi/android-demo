@@ -89,5 +89,31 @@
             android:onClick="finishService"
             android:text="finish_service"
             android:textAllCaps="false" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="testArguments"
+            android:text="test_arguments"
+            android:textAllCaps="false" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="detachFragment"
+            android:text="detach_fragment"
+            android:textAllCaps="false" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="removeFragment"
+            android:text="remove_fragment"
+            android:textAllCaps="false" />
+
+        <FrameLayout
+            android:id="@+id/frame_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"></FrameLayout>
     </LinearLayout>
 </ScrollView>

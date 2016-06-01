@@ -1,86 +1,94 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <!--<com.example.hexi.canvastest.view.FillPathView-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="300dp"-->
-        <!--android:background="#ccc" />-->
+    <!--android:layout_width="300dp"-->
+    <!--android:layout_height="300dp"-->
+    <!--android:background="#ccc" />-->
 
-    <com.example.hexi.canvastest.view.ClearRect
-        android:id="@+id/cr"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="5dp"
-        android:background="#ccc" />
+    <!--<com.example.hexi.canvastest.view.ClearRect-->
+    <!--android:id="@+id/cr"-->
+    <!--android:layout_width="300dp"-->
+    <!--android:layout_height="200dp"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:background="#ccc" />-->
+    <com.example.hexi.canvastest.view.SwitchView
+        app:textLeft="限价"
+        app:textRight="市价"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="bindServiceAndStart"
         android:text="bindServiceAndStart"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="bindService"
         android:text="bindService"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startServiceByIntent"
         android:text="startServiceByIntent"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startServiceNoIntent"
         android:text="startServiceNoIntent"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="unbindService"
         android:text="unbindService"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="unbindServiceWithStartConn"
         android:text="unbindServiceWithStartConn"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="showDialog"
-        android:text="showDialog"/>
+        android:text="showDialog" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="stopSocket"
-        android:text="stopSocket"/>
+        android:text="stopSocket" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="cancelStopSocket"
-        android:text="cancelStopSocket"/>
+        android:text="cancelStopSocket" />
 
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startSelf"
-        android:text="start_self"/>
+        android:text="start_self" />
 
 </LinearLayout>

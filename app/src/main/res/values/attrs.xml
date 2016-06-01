@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SwitchView">
+        <attr name="textLeft" format="string" />
+        <attr name="textRight" format="string" />
+        <attr name="leftChecked" format="boolean" />
+        <attr name="backgroundColor" format="color" />
+    </declare-styleable>
+</resources>

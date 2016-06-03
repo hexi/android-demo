@@ -4,17 +4,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import com.example.hexi.canvastest.QuotationSocketManager;
 import com.example.hexi.canvastest.R;
 import com.example.hexi.canvastest.service.TestService;
+import com.example.hexi.canvastest.view.CheckView;
 import com.example.hexi.canvastest.view.NoTradePermissionDialog;
+import com.example.hexi.canvastest.view.OnCheckStatusChangedListener;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -68,6 +70,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ((CheckView) findViewById(R.id.checkbox)).setOnCheckStatusChangedListener(new OnCheckStatusChangedListener() {
+            @Override
+            public void onCheckStatusChanged(boolean check) {
+                Log.d(TAG, "===onCheckStatusChanged:"+check);
+            }
+        });
     }
 
     public void bindServiceAndStart(View view) {

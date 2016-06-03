@@ -6,4 +6,10 @@
         <attr name="leftChecked" format="boolean" />
         <attr name="backgroundColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="CheckView">
+        <attr name="checked" format="boolean" />
+        <attr name="checkedImage" format="reference" />
+        <attr name="uncheckedImage" format="reference" />
+    </declare-styleable>
 </resources>

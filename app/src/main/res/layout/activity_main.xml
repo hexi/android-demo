@@ -15,14 +15,26 @@
     <!--android:layout_height="200dp"-->
     <!--android:layout_marginTop="5dp"-->
     <!--android:background="#ccc" />-->
-    <com.example.hexi.canvastest.view.SwitchView
-        app:textLeft="限价"
-        app:textRight="市价"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp" />
+
+    <!--<com.example.hexi.canvastest.view.SwitchView-->
+        <!--app:textLeft="限价"-->
+        <!--app:textRight="市价"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_marginLeft="15dp"-->
+        <!--android:layout_marginRight="15dp"-->
+        <!--android:layout_marginTop="10dp" />-->
+
+    <com.example.hexi.canvastest.view.CheckView
+        xmlns:checkView="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        checkView:checked="false"
+        checkView:checkedImage="@drawable/checkbox_checked"
+        checkView:uncheckedImage="@drawable/checkbox_unchecked"/>
 
     <Button
         android:layout_width="match_parent"

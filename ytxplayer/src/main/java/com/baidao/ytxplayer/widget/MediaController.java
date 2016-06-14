@@ -3,6 +3,7 @@ package com.baidao.ytxplayer.widget;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
@@ -176,6 +177,13 @@ public class MediaController extends FrameLayout implements IMediaController {
                 }
             }
         });
+
+        boolean isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        if (isLandscape) {
+            showToPortraitButton();
+        } else {
+            showToLandButton();
+        }
 
     }
 

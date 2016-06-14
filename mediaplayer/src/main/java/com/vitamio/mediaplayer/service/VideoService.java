@@ -2,22 +2,33 @@ package com.vitamio.mediaplayer.service;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.MediaController;
-import io.vov.vitamio.widget.VideoView;
+import com.baidao.ytxplayer.util.ScreenResolution;
+import com.baidao.ytxplayer.widget.MediaController;
+import com.pili.pldroid.player.AVOptions;
+import com.pili.pldroid.player.PLMediaPlayer;
+import com.pili.pldroid.player.widget.PLVideoTextureView;
+import com.pili.pldroid.player.widget.PLVideoView;
+
 
 /**
  * Created by hexi on 16/3/31.
  */
 public class VideoService {
     private static final String TAG = "VideoService";
+    public static final int LAYOUT_PORTRAIT_FULL_SCREEN = 0;
+    public static final int LAYOUT_PORTRAIT_HALL_SCREEN = 1;
+    public static final int LAYOUT_LANDSCAPE_FULL_SCREEN = 2;
 
     public interface VideoServiceListener {
-        void onPrepared(MediaPlayer mp);
+        void onPrepared(PLMediaPlayer mp);
+
         void onBufferingEnd(int extra);
+
         void onBufferingStart(int extra);
-        boolean onError(MediaPlayer mp, int what, int extra);
+
+        boolean onError(PLMediaPlayer mp, int errorCode);
     }
 
     public static class Param {
@@ -35,10 +46,15 @@ public class VideoService {
             this.path = path;
             this.videoLayout = videoLayout;
         }
+
+        public Param(String path, boolean showController) {
+            this.path = path;
+            this.showController = showController;
+        }
     }
 
 
-    private VideoView videoView;
+    private PLVideoTextureView videoView;
     private Param param;
     VideoServiceListener listener;
     MediaController.OnOrientationChangeListener orientationChangeListener;
@@ -53,7 +69,7 @@ public class VideoService {
         return needReopen;
     }
 
-    public VideoService(Context context, VideoView videoView, Param param) {
+    public VideoService(Context context, PLVideoTextureView videoView, Param param) {
         this.context = context.getApplicationContext();
         this.videoView = videoView;
         this.param = param;
@@ -70,79 +86,102 @@ public class VideoService {
 
     public void initVideoView() {
         needReopen = false;
-        videoView.setVideoPath(param.path);
-        videoView.setHardwareDecoder(true);
-        videoView.initVideoLayout(param.videoLayout);
+        AVOptions options = new AVOptions();
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        // Some optimization with buffering mechanism when be set to 1
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        options.setInteger(AVOptions.KEY_MEDIACODEC, 1);
+        // whether start play automatically after prepared, default value is 1
+        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
+        videoView.setAVOptions(options);
+
+        if (param.videoLayout == LAYOUT_PORTRAIT_HALL_SCREEN) {
+            videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        } else if (param.videoLayout == LAYOUT_LANDSCAPE_FULL_SCREEN) {
+            videoView.setDisplayOrientation(0);
+            videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
+        } else {
+            videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
+        }
         videoView.requestFocus();
+        videoView.setVideoPath(param.path);
+
         if (param.showController) {
             MediaController mediaController = new MediaController(context);
+            mediaController.setAnchorView(videoView);
             if (orientationChangeListener != null) {
                 mediaController.setOrientationChangeListener(orientationChangeListener);
             }
             videoView.setMediaController(mediaController);
         }
 
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        videoView.setOnPreparedListener(new PLMediaPlayer.OnPreparedListener() {
             @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
+            public void onPrepared(PLMediaPlayer mediaPlayer) {
                 Log.d(TAG, "===onPrepared===");
-                // optional need Vitamio 4.0
-                mediaPlayer.setPlaybackSpeed(1.0f);
                 if (listener != null) {
                     listener.onPrepared(mediaPlayer);
                 }
             }
         });
 
-        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+        videoView.setOnErrorListener(new PLMediaPlayer.OnErrorListener() {
             @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
+            public boolean onError(PLMediaPlayer mp, int errorCode) {
                 if (listener != null) {
-                    return listener.onError(mp, what, extra);
+                    return listener.onError(mp, errorCode);
                 }
                 return false;
             }
         });
 
-        videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+        videoView.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
             @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-//                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d", what, extra));
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int what, int extra) {
+                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d", what, extra));
                 switch (what) {
-                    case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
-
+                    case PLMediaPlayer.MEDIA_INFO_UNKNOWN:
+                        //未知消息
                         break;
-                    case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+
+                    case PLMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                        //第一帧视频已成功渲染
+                        break;
+
+                    case PLMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START:
+                        //第一帧音频已成功播放
+                        break;
+
+                    case PLMediaPlayer.MEDIA_INFO_BUFFERING_START:
                         //Begin buffer, pauseVideo playing
                         if (listener != null) {
                             listener.onBufferingStart(extra);
                         }
                         break;
-                    case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                    case PLMediaPlayer.MEDIA_INFO_BUFFERING_END:
                         //The buffering is done, resume playing
                         if (listener != null) {
                             listener.onBufferingEnd(extra);
                         }
-                        break;
-                    case MediaPlayer.MEDIA_INFO_DOWNLOAD_RATE_CHANGED:
-                        //Display video download speed
-                        Log.d(TAG, "download rate:" + extra);
                         break;
                 }
                 return true;
             }
         });
 
-        videoView.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+        videoView.setOnBufferingUpdateListener(new PLMediaPlayer.OnBufferingUpdateListener() {
             @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-//                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
+            public void onBufferingUpdate(PLMediaPlayer plMediaPlayer, int percent) {
+                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
             }
         });
 
-        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        videoView.setOnCompletionListener(new PLMediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
+            public void onCompletion(PLMediaPlayer mp) {
                 Log.d(TAG, "===onCompletion===");
                 if (needReopen) {
                     initVideoView();
@@ -150,6 +189,36 @@ public class VideoService {
             }
         });
 
+    }
+
+    public void toLandscape() {
+        int videoWidth = videoView.getWidth();
+        int videoHeight = videoView.getHeight();
+        Pair<Integer, Integer> res = ScreenResolution.getResolution(videoView.getContext());
+        int windowWidth = res.first.intValue();
+        int windowHeight = res.second.intValue();
+        float scaleX = (float) windowWidth / videoHeight;
+        float scaleY = (float) windowHeight / videoWidth;
+
+        float tx = windowWidth - videoHeight;
+        float ty = windowHeight - videoWidth;
+
+        Log.d(TAG, String.format("===toLandscape, videoWidth:%d, videoHeight:%d, " +
+                        "windowWidth:%d, windowHeight:%d, scaleX:%f, scaleY:%f, " +
+                "tx:%f, ty:%f", videoWidth, videoHeight
+                , windowWidth, windowHeight, scaleX, scaleY, tx, ty));
+
+        videoView.setDisplayOrientation(270);
+
+        videoView.setTranslationX(tx);
+
+        videoView.setScaleX(scaleX);
+        videoView.setScaleY(scaleY);
+    }
+
+    public void toHalfPortrait() {
+        videoView.setDisplayOrientation(-90);
+        videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
     }
 
     /**

@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
@@ -14,6 +13,7 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.pili.pldroid.player.PLMediaPlayer;
 import com.vitamio.mediaplayer.MyMediaPlayer;
 
 import java.io.IOException;
@@ -34,10 +34,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         }
     }
     public interface AudioServiceListener {
-        void onAudioPrepared(MediaPlayer mp);
+        void onAudioPrepared(PLMediaPlayer mp);
         void onAudioBufferingEnd(int extra);
         void onAudioBufferingStart(int extra);
-        boolean onAudioError(MediaPlayer mp, int what, int extra);
+        boolean onAudioError(PLMediaPlayer mp, int errorCode);
     }
 
     private MyMediaPlayer mediaPlayer;
@@ -70,8 +70,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
             this.needResume = false;
             Uri uri = Uri.parse(path);
             mediaPlayer = new MyMediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setLooping(true);
             mediaPlayer.setDataSource(getApplicationContext(), uri);
             mediaPlayer.prepareAsync();
             mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -79,9 +77,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                     .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
             wifiLock.acquire();
 
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            mediaPlayer.setOnPreparedListener(new PLMediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
+                public void onPrepared(PLMediaPlayer mp) {
                     mediaPlayer.setPrepared(true);
                     Log.d(TAG, "===onAudioPrepared===");
                     if (audioServiceListener != null) {
@@ -89,18 +87,18 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                     }
                 }
             });
-            mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+            mediaPlayer.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
                 @Override
-                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                public boolean onInfo(PLMediaPlayer mp, int what, int extra) {
                     Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
                     switch (what) {
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                        case PLMediaPlayer.MEDIA_INFO_BUFFERING_START:
                             //Begin buffer, pauseVideo playing
                             if (audioServiceListener != null) {
                                 audioServiceListener.onAudioBufferingStart(extra);
                             }
                             break;
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                        case PLMediaPlayer.MEDIA_INFO_BUFFERING_END:
                             //The buffering is done, resume playing
                             if (audioServiceListener != null) {
                                 audioServiceListener.onAudioBufferingEnd(extra);
@@ -111,21 +109,21 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
                     return true;
                 }
             });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            mediaPlayer.setOnCompletionListener(new PLMediaPlayer.OnCompletionListener() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
+                public void onCompletion(PLMediaPlayer mp) {
                     Log.d(TAG, "===onCompletion, thread:" + Thread.currentThread());
                     //这个方法在本地缓存播放完了会回调，对于网络流并不知道什么时候播放结束
                 }
             });
-            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            mediaPlayer.setOnErrorListener(new PLMediaPlayer.OnErrorListener() {
                 @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Log.d(TAG, String.format("===onAudioError, what:%d, extra:%d", what, extra));
+                public boolean onError(PLMediaPlayer mp, int errorCode) {
+                    Log.d(TAG, String.format("===onAudioError, errorCode:%d", errorCode));
                     mediaPlayer.setPrepared(false);
                     needResume = true;
                     if (audioServiceListener != null) {
-                        return audioServiceListener.onAudioError(mp, what, extra);
+                        return audioServiceListener.onAudioError(mp, errorCode);
                     } else {
                         return false;
                     }

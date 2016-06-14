@@ -6,23 +6,22 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
-import android.telecom.VideoProfile;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.baidao.ytxplayer.widget.MediaController;
+import com.pili.pldroid.player.PLMediaPlayer;
+import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
 import com.vitamio.mediaplayer.service.AudioService;
 import com.vitamio.mediaplayer.service.VideoService;
 
-import io.vov.vitamio.LibsChecker;
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.MediaController;
-import io.vov.vitamio.widget.VideoView;
 
 /**
  * Created by hexi on 16/3/28.
@@ -38,7 +37,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     private ViewGroup contentContainer;
     VideoService videoService;
     ScreenOffOnReceiver screenOffOnReceiver;
-    VideoView videoView;
+    PLVideoTextureView videoView;
 
 
     private String livePath = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
@@ -77,12 +76,12 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
         Log.d(TAG, "===onCreate===");
         setContentView(R.layout.activity_half_live);
         contentContainer = (ViewGroup) findViewById(R.id.content_container);
-        if (!LibsChecker.checkVitamioLibs(this)) {
+        if (!isLiveStreaming(path)) {
             finish();
             return;
         }
 
-        videoView = (VideoView) findViewById(R.id.surface_view);
+        videoView = (PLVideoTextureView) findViewById(R.id.surface_view);
 
         initVideo();
 
@@ -90,16 +89,26 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
         registerReceiver(screenOffOnReceiver, ScreenOffOnReceiver.getIntentFilter());
     }
 
+    private boolean isLiveStreaming(String url) {
+        if (url.startsWith("rtmp://")
+                || (url.startsWith("http://") && url.endsWith(".m3u8"))
+                || (url.startsWith("http://") && url.endsWith(".flv"))) {
+            return true;
+        }
+        return false;
+    }
+
     private void initVideo() {
         if (!TextUtils.isEmpty(livePath)) {
             videoView.setVisibility(View.VISIBLE);
             int videoLayout;
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                videoLayout = VideoView.VIDEO_LAYOUT_FIT_PARENT_LAND;
+                videoLayout = VideoService.LAYOUT_LANDSCAPE_FULL_SCREEN;
             } else {
-                videoLayout = VideoView.VIDEO_LAYOUT_FIT_WINDOW_WIDTH;
+                videoLayout = VideoService.LAYOUT_PORTRAIT_HALL_SCREEN;
             }
-            videoService = new VideoService(this, videoView, new VideoService.Param(livePath, videoLayout, true));
+            videoService = new VideoService(this, videoView,
+                    new VideoService.Param(livePath, videoLayout, true));
             videoService.setListener(this);
             videoService.setOrientationChangeListener(this);
             videoService.initVideoView();
@@ -158,7 +167,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
+    public void onPrepared(PLMediaPlayer mp) {
         videoService.startVideo();
     }
 
@@ -173,13 +182,12 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(TAG, String.format("===video played error, what:%d, extra:%d", what, extra));
-        switch (what) {
-            case MediaPlayer.MEDIA_ERROR_IO:
-            case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {
-                return true;
-            }
+    public boolean onError(PLMediaPlayer mp, int errorCode) {
+        Log.d(TAG, String.format("===video played error, errorCode:%d", errorCode));
+        switch (errorCode) {
+            case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+            case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+            case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
             case MediaPlayer.MEDIA_ERROR_UNKNOWN: {
                 return true;
             }
@@ -190,11 +198,13 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     @Override
     public void toLandscape() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        videoService.toLandscape();
     }
 
     @Override
     public void toPortrait() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        videoService.toHalfPortrait();
     }
 
     @Override
@@ -230,7 +240,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public void onAudioPrepared(android.media.MediaPlayer mp) {
+    public void onAudioPrepared(PLMediaPlayer mp) {
         audioService.startPlay();
     }
 
@@ -245,7 +255,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public boolean onAudioError(android.media.MediaPlayer mp, int what, int extra) {
+    public boolean onAudioError(PLMediaPlayer mp, int errorCode) {
         return true;
     }
 }

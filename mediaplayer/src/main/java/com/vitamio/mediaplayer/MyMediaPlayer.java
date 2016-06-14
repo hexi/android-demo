@@ -1,9 +1,11 @@
 package com.vitamio.mediaplayer;
 
+import com.pili.pldroid.player.PLMediaPlayer;
+
 /**
  * Created by hexi on 16/3/24.
  */
-public class MyMediaPlayer extends android.media.MediaPlayer {
+public class MyMediaPlayer extends PLMediaPlayer {
 
     private boolean prepared;
 

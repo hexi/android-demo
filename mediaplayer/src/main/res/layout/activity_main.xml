@@ -10,26 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="playVitamioVideo"
-            android:text="vitamio.videoView"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="playVitamioAudio"
-            android:text="vitamio.audio"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="playAudioByVideoView"
-            android:text="vitamio.play.audio.by.video.view"
-            android:textAllCaps="false" />
 
         <Button
             android:layout_width="match_parent"
@@ -43,13 +23,6 @@
             android:layout_height="wrap_content"
             android:onClick="showHalfLive"
             android:text="show_half_live"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="playAudio"
-            android:text="play_audio"
             android:textAllCaps="false" />
 
         <Button

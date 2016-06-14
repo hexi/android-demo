@@ -2,6 +2,7 @@ package com.vitamio.mediaplayer.fragment;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +18,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.pili.pldroid.player.PLMediaPlayer;
+import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
 import com.vitamio.mediaplayer.model.DanmakuChat;
+import com.vitamio.mediaplayer.service.VideoService;
 import com.vitamio.mediaplayer.view.MyRecyclerView;
 
 import java.io.InputStream;
@@ -28,9 +32,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.vov.vitamio.LibsChecker;
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.VideoView;
 import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.danmaku.loader.ILoader;
 import master.flame.danmaku.danmaku.loader.IllegalDataException;
@@ -44,14 +45,15 @@ import master.flame.danmaku.danmaku.util.SystemClock;
 /**
  * Created by hexi on 16/3/17.
  */
-public class LiveVideoFragment extends Fragment {
+public class LiveVideoFragment extends Fragment implements VideoService.VideoServiceListener {
     private static final String TAG = "LiveVideoFragment";
     public static final String INTENT_PATH = "intent.path";
 
-    VideoView videoView;
+    PLVideoTextureView videoView;
     ProgressBar progress;
     MyRecyclerView recyclerView;
     MyAdapter adapter;
+    VideoService videoService;
 
     private IDanmakuView mDanmakuView;
     private DanmakuAdapter danmakuAdapter;
@@ -100,7 +102,7 @@ public class LiveVideoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_full_screen_live, container, false);
-        videoView = (VideoView) view.findViewById(R.id.surface);
+        videoView = (PLVideoTextureView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
         recyclerView = (MyRecyclerView) view.findViewById(R.id.recycler_view);
 
@@ -163,6 +165,35 @@ public class LiveVideoFragment extends Fragment {
         timer.schedule(new AsyncAddTask(), 0, 1000);
     }
 
+    @Override
+    public void onPrepared(PLMediaPlayer mp) {
+        videoService.startVideo();
+    }
+
+    @Override
+    public void onBufferingEnd(int extra) {
+        videoService.startVideo();
+    }
+
+    @Override
+    public void onBufferingStart(int extra) {
+
+    }
+
+    @Override
+    public boolean onError(PLMediaPlayer mp, int errorCode) {
+        Log.d(TAG, String.format("===video played error, errorCode:%d", errorCode));
+        switch (errorCode) {
+            case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+            case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+            case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN: {
+                return true;
+            }
+        }
+        return false;
+    }
+
     class AsyncAddTask extends TimerTask {
         final AtomicLong counter = new AtomicLong(0);
 
@@ -203,11 +234,20 @@ public class LiveVideoFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (!LibsChecker.checkVitamioLibs(getActivity())) {
+        if (!isLiveStreaming(path)) {
             Log.e(TAG, "checkVitamioLibs return false");
             return;
         }
         setupVideo(path);
+    }
+
+    private boolean isLiveStreaming(String url) {
+        if (url.startsWith("rtmp://")
+                || (url.startsWith("http://") && url.endsWith(".m3u8"))
+                || (url.startsWith("http://") && url.endsWith(".flv"))) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -240,77 +280,11 @@ public class LiveVideoFragment extends Fragment {
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        videoView.setVideoPath(path);
-        videoView.requestFocus();
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                Log.d(TAG, "===onAudioPrepared, isVisibleToUser:" + getUserVisibleHint());
-                // optional need Vitamio 4.0
-                mediaPlayer.setPlaybackSpeed(1.0f);
-                startVideo();
-            }
-        });
-
-        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.d(TAG, String.format("===video played error, what:%d, extra:%d", what, extra));
-                switch (what) {
-                    case MediaPlayer.MEDIA_ERROR_IO:
-                    case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {
-                        return true;
-                    }
-                    case MediaPlayer.MEDIA_ERROR_UNKNOWN: {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-//                Log.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
-                switch (what) {
-                    case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                        //Begin buffer, pauseVideo playing
-                        if (videoView.isPlaying()) {
-                            pauseVideo();
-                            needResume = true;
-                        }
-                        showProgressBar();
-                        break;
-                    case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                        //The buffering is done, resume playing
-                        hideProgressBar();
-                        if (needResume)
-                            startVideo();
-                        break;
-                    case MediaPlayer.MEDIA_INFO_DOWNLOAD_RATE_CHANGED:
-                        //Display video download speed
-                        Log.d(TAG, "download rate:" + extra);
-                        break;
-                }
-                return true;
-            }
-        });
-
-        videoView.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-//                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
-            }
-        });
-    }
-
-    private void showProgressBar() {
-        progress.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgressBar() {
-        progress.setVisibility(View.GONE);
+        videoService = new VideoService(this.getActivity(), videoView,
+                new VideoService.Param(path, VideoService.LAYOUT_PORTRAIT_FULL_SCREEN, false));
+        videoService.setListener(this);
+        videoService.initVideoView();
+        videoView.setBufferingIndicator(progress);
     }
 
     @Override

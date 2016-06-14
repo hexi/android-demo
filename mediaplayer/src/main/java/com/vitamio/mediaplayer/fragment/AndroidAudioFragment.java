@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -15,9 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.ImageView;
 
+import com.pili.pldroid.player.PLMediaPlayer;
 import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.service.AudioService;
 
@@ -29,7 +28,7 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
 
     private static final String TAG = "AndroidAudioFragment";
 
-    String path = "http://ytxhls.evideocloud.net/live/audio_ytxlive1__8X7KVoa865E0/audio_ytxlive1__8X7KVoa865E0.m3u8";
+    String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
 
     View audioStateContainer;
     ImageView audioStateView;
@@ -167,7 +166,7 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
     }
 
     @Override
-    public void onAudioPrepared(MediaPlayer mp) {
+    public void onAudioPrepared(PLMediaPlayer mp) {
         Log.d(TAG, "===onAudioPrepared, visibleToUser:" + getUserVisibleHint());
         if (getUserVisibleHint()) {
             startPlay();
@@ -187,9 +186,9 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
     }
 
     @Override
-    public boolean onAudioError(MediaPlayer mp, int what, int extra) {
-        Log.e(TAG, String.format("===onAudioError, what:%d, extra:%d", what, extra));
-        switch (extra) {
+    public boolean onAudioError(PLMediaPlayer mp, int errorCode) {
+        Log.e(TAG, String.format("===onAudioError, errorCode:%d", errorCode));
+        switch (errorCode) {
 //            case MediaPlayer.MEDIA_ERROR_IO:
 //            case MediaPlayer.MEDIA_ERROR_TIMED_OUT: {
 //                pausePlay();

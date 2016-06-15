@@ -1,4 +1,4 @@
-package com.vitamio.mediaplayer.service;
+package com.baidao.ytxplayer.service;
 
 import android.app.Service;
 import android.content.Context;
@@ -13,8 +13,8 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.baidao.ytxplayer.MyMediaPlayer;
 import com.pili.pldroid.player.PLMediaPlayer;
-import com.vitamio.mediaplayer.MyMediaPlayer;
 
 import java.io.IOException;
 
@@ -23,10 +23,6 @@ import java.io.IOException;
  */
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "AudioService";
-
-    public void finish() {
-        stopSelf();
-    }
 
     public class AudioBinder extends Binder {
         public AudioService getService() {
@@ -38,6 +34,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         void onAudioBufferingEnd(int extra);
         void onAudioBufferingStart(int extra);
         boolean onAudioError(PLMediaPlayer mp, int errorCode);
+
+        void onAudioLossFocus();
+        void onAudioGainFocus();
     }
 
     private MyMediaPlayer mediaPlayer;
@@ -53,6 +52,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
     public boolean isMediaPlayerCreated() {
         return mediaPlayer != null;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+        this.needResume = true;
+        if (mediaPlayer != null) {
+            mediaPlayer.setPrepared(false);
+        }
     }
 
     @Nullable
@@ -138,7 +145,28 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         }
     }
 
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            // Pause playback
+            if (audioServiceListener != null) {
+                audioServiceListener.onAudioLossFocus();
+            }
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // Resume playback
+            if (audioServiceListener != null) {
+                audioServiceListener.onAudioGainFocus();
+            }
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            // Stop playback
+            if (audioServiceListener != null) {
+                audioServiceListener.onAudioLossFocus();
+            }
+        }
+    }
+
     public boolean startPlay() {
+        Log.d(TAG, "===startPlay===");
         if (mediaPlayer == null) {
             return false;
         }
@@ -147,7 +175,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         }
         AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         int result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        Log.d(TAG, "===request focus result:"+result);
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             return false;
         }
@@ -156,22 +183,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onAudioFocusChange(int focusChange) {
-        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            // Pause playback
-            pausePlay();
-        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            // Resume playback
-            startPlay();
-        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-            AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-            am.abandonAudioFocus(this);
-            // Stop playback
-            pausePlay();
-        }
     }
 
     public void pausePlay() {
@@ -188,6 +199,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         if (mediaPlayer == null || !needResume) {
             return false;
         }
+        unRegisterFocusListener();
         mediaPlayer.reset();
         try {
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(path));
@@ -200,10 +212,20 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
         }
     }
 
+    private void unRegisterFocusListener() {
+        try {
+            AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+            am.abandonAudioFocus(this);
+        } catch (Exception e) {
+            Log.e(TAG, "abandonAudioFocus error ", e);
+        }
+    }
+
     private void release() {
         if (mediaPlayer == null) {
             return;
         }
+        unRegisterFocusListener();
         mediaPlayer.release();
         mediaPlayer.setPrepared(false);
         mediaPlayer = null;

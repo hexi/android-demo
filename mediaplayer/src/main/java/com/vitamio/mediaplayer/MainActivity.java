@@ -1,18 +1,14 @@
 package com.vitamio.mediaplayer;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.vitamio.mediaplayer.fragment.TestFragment;
-import com.vitamio.mediaplayer.service.AudioService;
 
 public class MainActivity extends FragmentActivity {
 
@@ -39,43 +35,9 @@ public class MainActivity extends FragmentActivity {
         Log.d(TAG, "===am:" + am);
     }
 
-    boolean bound;
-    AudioService audioService;
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
-            audioService = binder.getService();
-            Log.d(TAG, "===service:" + audioService);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(TAG, "===onServiceDisconnected===");
-            bound = false;
-        }
-    };
-
-    public void bindService(View view) {
-        Log.d(TAG, "===bindService===");
-        bindService(new Intent(this, AudioService.class), mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    public void unBindService(View view) {
-        unbindService();
-    }
-
     public void screenReceiver(View view) {
         Intent intent = new Intent(this, ScreenReceiverActivity.class);
         startActivity(intent);
-    }
-
-    public void finishService(View view) {
-        unbindService();
-        stopService(new Intent(this, AudioService.class));
     }
 
     TestFragment testFragment;
@@ -104,14 +66,7 @@ public class MainActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "===onDestroy===");
-        unbindService();
 
     }
 
-    private void unbindService() {
-        if (bound) {
-            bound = false;
-            unbindService(mConnection);
-        }
-    }
 }

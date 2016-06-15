@@ -1,10 +1,11 @@
-package com.vitamio.mediaplayer.service;
+package com.baidao.ytxplayer.util;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import com.baidao.ytxplayer.util.ScreenResolution;
 import com.baidao.ytxplayer.widget.MediaController;
 import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLMediaPlayer;
@@ -15,20 +16,22 @@ import com.pili.pldroid.player.widget.PLVideoView;
 /**
  * Created by hexi on 16/3/31.
  */
-public class VideoService {
+public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "VideoService";
+
     public static final int LAYOUT_PORTRAIT_FULL_SCREEN = 0;
     public static final int LAYOUT_PORTRAIT_HALL_SCREEN = 1;
     public static final int LAYOUT_LANDSCAPE_FULL_SCREEN = 2;
 
     public interface VideoServiceListener {
-        void onPrepared(PLMediaPlayer mp);
+        void onVideoPrepared(PLMediaPlayer mp);
+        void onVideoBufferingEnd(int extra);
+        boolean onVideoError(PLMediaPlayer mp, int errorCode);
 
-        void onBufferingEnd(int extra);
+        void onVideoBufferingStart(int extra);
+        void onVideoLossFocus();
+        void onVideoGainFocus();
 
-        void onBufferingStart(int extra);
-
-        boolean onError(PLMediaPlayer mp, int errorCode);
     }
 
     public static class Param {
@@ -45,11 +48,6 @@ public class VideoService {
         public Param(String path, int videoLayout) {
             this.path = path;
             this.videoLayout = videoLayout;
-        }
-
-        public Param(String path, boolean showController) {
-            this.path = path;
-            this.showController = showController;
         }
     }
 
@@ -69,7 +67,7 @@ public class VideoService {
         return needReopen;
     }
 
-    public VideoService(Context context, PLVideoTextureView videoView, Param param) {
+    public VideoManager(Context context, PLVideoTextureView videoView, Param param) {
         this.context = context.getApplicationContext();
         this.videoView = videoView;
         this.param = param;
@@ -123,7 +121,7 @@ public class VideoService {
             public void onPrepared(PLMediaPlayer mediaPlayer) {
                 Log.d(TAG, "===onPrepared===");
                 if (listener != null) {
-                    listener.onPrepared(mediaPlayer);
+                    listener.onVideoPrepared(mediaPlayer);
                 }
             }
         });
@@ -132,7 +130,7 @@ public class VideoService {
             @Override
             public boolean onError(PLMediaPlayer mp, int errorCode) {
                 if (listener != null) {
-                    return listener.onError(mp, errorCode);
+                    return listener.onVideoError(mp, errorCode);
                 }
                 return false;
             }
@@ -140,7 +138,7 @@ public class VideoService {
 
         videoView.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
             @Override
-            public boolean onInfo(PLMediaPlayer plMediaPlayer, int what, int extra) {
+            public boolean onInfo(PLMediaPlayer mp, int what, int extra) {
                 Log.d(TAG, String.format("===onInfo, what:%d, extra:%d", what, extra));
                 switch (what) {
                     case PLMediaPlayer.MEDIA_INFO_UNKNOWN:
@@ -158,13 +156,13 @@ public class VideoService {
                     case PLMediaPlayer.MEDIA_INFO_BUFFERING_START:
                         //Begin buffer, pauseVideo playing
                         if (listener != null) {
-                            listener.onBufferingStart(extra);
+                            listener.onVideoBufferingStart(extra);
                         }
                         break;
                     case PLMediaPlayer.MEDIA_INFO_BUFFERING_END:
                         //The buffering is done, resume playing
                         if (listener != null) {
-                            listener.onBufferingEnd(extra);
+                            listener.onVideoBufferingEnd(extra);
                         }
                         break;
                 }
@@ -174,8 +172,8 @@ public class VideoService {
 
         videoView.setOnBufferingUpdateListener(new PLMediaPlayer.OnBufferingUpdateListener() {
             @Override
-            public void onBufferingUpdate(PLMediaPlayer plMediaPlayer, int percent) {
-                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
+            public void onBufferingUpdate(PLMediaPlayer mp, int percent) {
+//                Log.d(TAG, "===onBufferingUpdate, percent:" + percent);
             }
         });
 
@@ -184,11 +182,41 @@ public class VideoService {
             public void onCompletion(PLMediaPlayer mp) {
                 Log.d(TAG, "===onCompletion===");
                 if (needReopen) {
+                    unRegisterFocusListener();
                     initVideoView();
                 }
             }
         });
 
+    }
+
+    private void unRegisterFocusListener() {
+        try {
+            AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            am.abandonAudioFocus(this);
+        } catch (Exception e) {
+            Log.e(TAG, "abandonAudioFocus error ", e);
+        }
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            // Pause playback
+            if (listener != null) {
+                listener.onVideoLossFocus();
+            }
+        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // Resume playback
+            if (listener != null) {
+                listener.onVideoGainFocus();
+            }
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+            // Stop playback
+            if (listener != null) {
+                listener.onVideoLossFocus();
+            }
+        }
     }
 
     public void toLandscape() {
@@ -205,7 +233,7 @@ public class VideoService {
 
         Log.d(TAG, String.format("===toLandscape, videoWidth:%d, videoHeight:%d, " +
                         "windowWidth:%d, windowHeight:%d, scaleX:%f, scaleY:%f, " +
-                "tx:%f, ty:%f", videoWidth, videoHeight
+                        "tx:%f, ty:%f", videoWidth, videoHeight
                 , windowWidth, windowHeight, scaleX, scaleY, tx, ty));
 
         videoView.setDisplayOrientation(270);
@@ -228,6 +256,11 @@ public class VideoService {
         if (videoView == null) {
             return;
         }
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        int result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            return;
+        }
         videoView.start();
     }
 
@@ -247,6 +280,18 @@ public class VideoService {
             videoView.stopPlayback();
             videoView = null;
         }
+        unRegisterFocusListener();
     }
 
+    public static boolean isLiveStreaming(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return false;
+        }
+        if (url.startsWith("rtmp://")
+                || (url.startsWith("http://") && url.endsWith(".m3u8"))
+                || (url.startsWith("http://") && url.endsWith(".flv"))) {
+            return true;
+        }
+        return false;
+    }
 }

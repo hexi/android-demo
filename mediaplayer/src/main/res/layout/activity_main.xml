@@ -25,21 +25,6 @@
             android:text="show_half_live"
             android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/bindService"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="bindService"
-            android:text="bind_service"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/unBindService"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="unBindService"
-            android:text="unbind_service"
-            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/screenReceiver"
@@ -54,13 +39,6 @@
             android:layout_height="wrap_content"
             android:onClick="getAudioManager"
             android:text="get_audio_manager"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="finishService"
-            android:text="finish_service"
             android:textAllCaps="false" />
 
         <Button

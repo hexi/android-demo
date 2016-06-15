@@ -16,9 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.baidao.ytxplayer.service.AudioService;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.vitamio.mediaplayer.R;
-import com.vitamio.mediaplayer.service.AudioService;
 
 
 /**
@@ -199,5 +199,15 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
         }
         pausePlay();
         return true;
+    }
+
+    @Override
+    public void onAudioLossFocus() {
+        pausePlay();
+    }
+
+    @Override
+    public void onAudioGainFocus() {
+        startPlay();
     }
 }

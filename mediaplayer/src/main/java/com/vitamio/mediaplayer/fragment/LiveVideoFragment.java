@@ -18,13 +18,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.baidao.ytxplayer.util.VideoManager;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
 import com.vitamio.mediaplayer.model.DanmakuChat;
-import com.vitamio.mediaplayer.service.VideoService;
 import com.vitamio.mediaplayer.view.MyRecyclerView;
 
 import java.io.InputStream;
@@ -45,7 +45,7 @@ import master.flame.danmaku.danmaku.util.SystemClock;
 /**
  * Created by hexi on 16/3/17.
  */
-public class LiveVideoFragment extends Fragment implements VideoService.VideoServiceListener {
+public class LiveVideoFragment extends Fragment implements VideoManager.VideoServiceListener {
     private static final String TAG = "LiveVideoFragment";
     public static final String INTENT_PATH = "intent.path";
 
@@ -53,7 +53,7 @@ public class LiveVideoFragment extends Fragment implements VideoService.VideoSer
     ProgressBar progress;
     MyRecyclerView recyclerView;
     MyAdapter adapter;
-    VideoService videoService;
+    VideoManager videoService;
 
     private IDanmakuView mDanmakuView;
     private DanmakuAdapter danmakuAdapter;
@@ -166,22 +166,32 @@ public class LiveVideoFragment extends Fragment implements VideoService.VideoSer
     }
 
     @Override
-    public void onPrepared(PLMediaPlayer mp) {
+    public void onVideoPrepared(PLMediaPlayer mp) {
         videoService.startVideo();
     }
 
     @Override
-    public void onBufferingEnd(int extra) {
+    public void onVideoBufferingEnd(int extra) {
         videoService.startVideo();
     }
 
     @Override
-    public void onBufferingStart(int extra) {
+    public void onVideoBufferingStart(int extra) {
 
     }
 
     @Override
-    public boolean onError(PLMediaPlayer mp, int errorCode) {
+    public void onVideoLossFocus() {
+        pauseVideo();
+    }
+
+    @Override
+    public void onVideoGainFocus() {
+        startVideo();
+    }
+
+    @Override
+    public boolean onVideoError(PLMediaPlayer mp, int errorCode) {
         Log.d(TAG, String.format("===video played error, errorCode:%d", errorCode));
         switch (errorCode) {
             case PLMediaPlayer.ERROR_CODE_IO_ERROR:
@@ -280,8 +290,8 @@ public class LiveVideoFragment extends Fragment implements VideoService.VideoSer
         if (TextUtils.isEmpty(path)) {
             return;
         }
-        videoService = new VideoService(this.getActivity(), videoView,
-                new VideoService.Param(path, VideoService.LAYOUT_PORTRAIT_FULL_SCREEN, false));
+        videoService = new VideoManager(this.getActivity(), videoView,
+                new VideoManager.Param(path, VideoManager.LAYOUT_PORTRAIT_FULL_SCREEN, false));
         videoService.setListener(this);
         videoService.initVideoView();
         videoView.setBufferingIndicator(progress);

@@ -15,18 +15,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.baidao.ytxplayer.service.AudioService;
+import com.baidao.ytxplayer.util.VideoManager;
 import com.baidao.ytxplayer.widget.MediaController;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
-import com.vitamio.mediaplayer.service.AudioService;
-import com.vitamio.mediaplayer.service.VideoService;
 
 
 /**
  * Created by hexi on 16/3/28.
  */
-public class HalfLiveActivity extends FragmentActivity implements VideoService.VideoServiceListener,
+public class HalfLiveActivity extends FragmentActivity implements VideoManager.VideoServiceListener,
         MediaController.OnOrientationChangeListener,
         ScreenOffOnReceiver.ScreenOnOffListener,
         AudioService.AudioServiceListener {
@@ -35,7 +35,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     private static final String INTENT_LIVE_PATH = "intent_live_path";
 
     private ViewGroup contentContainer;
-    VideoService videoService;
+    VideoManager videoService;
     ScreenOffOnReceiver screenOffOnReceiver;
     PLVideoTextureView videoView;
 
@@ -103,12 +103,12 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
             videoView.setVisibility(View.VISIBLE);
             int videoLayout;
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                videoLayout = VideoService.LAYOUT_LANDSCAPE_FULL_SCREEN;
+                videoLayout = VideoManager.LAYOUT_LANDSCAPE_FULL_SCREEN;
             } else {
-                videoLayout = VideoService.LAYOUT_PORTRAIT_HALL_SCREEN;
+                videoLayout = VideoManager.LAYOUT_PORTRAIT_HALL_SCREEN;
             }
-            videoService = new VideoService(this, videoView,
-                    new VideoService.Param(livePath, videoLayout, true));
+            videoService = new VideoManager(this, videoView,
+                    new VideoManager.Param(livePath, videoLayout, true));
             videoService.setListener(this);
             videoService.setOrientationChangeListener(this);
             videoService.initVideoView();
@@ -167,22 +167,32 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     }
 
     @Override
-    public void onPrepared(PLMediaPlayer mp) {
+    public void onVideoPrepared(PLMediaPlayer mp) {
         videoService.startVideo();
     }
 
     @Override
-    public void onBufferingEnd(int extra) {
+    public void onVideoBufferingEnd(int extra) {
         videoService.startVideo();
     }
 
     @Override
-    public void onBufferingStart(int extra) {
+    public void onVideoBufferingStart(int extra) {
 
     }
 
     @Override
-    public boolean onError(PLMediaPlayer mp, int errorCode) {
+    public void onVideoLossFocus() {
+        pauseVideo();
+    }
+
+    @Override
+    public void onVideoGainFocus() {
+        startVideo();
+    }
+
+    @Override
+    public boolean onVideoError(PLMediaPlayer mp, int errorCode) {
         Log.d(TAG, String.format("===video played error, errorCode:%d", errorCode));
         switch (errorCode) {
             case PLMediaPlayer.ERROR_CODE_IO_ERROR:
@@ -257,5 +267,15 @@ public class HalfLiveActivity extends FragmentActivity implements VideoService.V
     @Override
     public boolean onAudioError(PLMediaPlayer mp, int errorCode) {
         return true;
+    }
+
+    @Override
+    public void onAudioLossFocus() {
+        audioService.pausePlay();
+    }
+
+    @Override
+    public void onAudioGainFocus() {
+        audioService.startPlay();
     }
 }

@@ -4,4 +4,8 @@
         <attr name="drawViewId" format="reference" />
         <attr name="clickViewId" format="reference" />
     </declare-styleable>
+    <declare-styleable name="DragLeftLayout">
+        <attr name="DragLeft_drawViewId" format="reference" />
+        <attr name="DragLeft_contentViewId" format="reference" />
+    </declare-styleable>
 </resources>

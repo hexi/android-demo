@@ -1,4 +1,4 @@
-package com.vitamio.mediaplayer;
+package com.vitamio.mediaplayer.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
+
+import com.vitamio.mediaplayer.R;
 
 
 /**

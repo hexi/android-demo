@@ -62,6 +62,13 @@
             android:text="remove_fragment"
             android:textAllCaps="false" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startDragLeftActivity"
+            android:text="drag_left_activity"
+            android:textAllCaps="false" />
+
         <FrameLayout
             android:id="@+id/frame_layout"
             android:layout_width="match_parent"

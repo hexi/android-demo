@@ -40,7 +40,9 @@ public class DragLeftViewHelper {
 
     public boolean needSettle(View releasedChild, float xvel, float yvel) {
         boolean isDragLeft = isTarget(releasedChild);
-        boolean needSettle = contentView.getRight() < parent.getRight();
+        final int leftBound = parent.getLeft() - contentWidth;
+        final int rightBound = parent.getLeft();
+        boolean needSettle = this.contentLeft > leftBound && this.contentLeft < rightBound;
         logd("===onViewReleased, xvel:%f, yvel:%f, needSettle:%b, isDragView:%b",
                 xvel, yvel, needSettle, isDragLeft);
         return isDragLeft && needSettle;

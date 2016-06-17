@@ -52,7 +52,9 @@ public class DragUpViewHelper {
 
     public boolean needSettle(View releasedChild, float xvel, float yvel) {
         boolean isDragUp = isTarget(releasedChild);
-        boolean needSettle = releasedChild.getTop() > (parent.getHeight() - contentHeight);
+        final int topBound = parent.getHeight() - contentHeight;
+        final int bottomBound = parent.getHeight();
+        boolean needSettle = releasedChild.getTop() > topBound && releasedChild.getTop() < bottomBound;
         logd("===onViewReleased, xvel:%f, yvel:%f, isDragUp:%b, needSettle:%b",
                 xvel, yvel, isDragUp, needSettle);
         return isDragUp && needSettle;

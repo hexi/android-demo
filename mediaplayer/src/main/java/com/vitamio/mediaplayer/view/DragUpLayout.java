@@ -33,6 +33,8 @@ public class DragUpLayout extends RelativeLayout {
     OnClickListener onClickListener;
     OnDragUpListener onDragUpListener;
     boolean enableDrag = true;
+    private int dragViewTop;
+    private int drawViewHeight;
 
     public void setEnableDrag(boolean enableDrag) {
         this.enableDrag = enableDrag;
@@ -95,6 +97,7 @@ public class DragUpLayout extends RelativeLayout {
 
     private void initViewDragHelper() {
         dragHelper = ViewDragHelper.create(this, 1f, new ViewDragHelper.Callback() {
+
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
                 if (!enableDrag) {
@@ -116,7 +119,7 @@ public class DragUpLayout extends RelativeLayout {
             public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy);
                 logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
-                final int topBound = getHeight() - dragView.getHeight();
+                final int topBound = getHeight() - drawViewHeight;
                 final int bottomBound = getHeight();
 
                 if (onDragUpListener == null) {
@@ -142,28 +145,31 @@ public class DragUpLayout extends RelativeLayout {
 
             @Override
             public int clampViewPositionVertical(View child, int top, int dy) {
-                final int topBound = getHeight() - dragView.getHeight();
+                final int topBound = getHeight() - drawViewHeight;
                 final int bottomBound = getHeight();
                 logd("===clampViewPositionVertical, top:%d, dy:%d, topBound:%d, bottomBound:%d",
                         top, dy, topBound, bottomBound);
                 final int newTop = Math.min(Math.max(top, topBound), bottomBound);
+                dragViewTop = newTop;
                 return newTop;
             }
 
             @Override
             public void onViewReleased(View releasedChild, float xvel, float yvel) {
-                int topBound = getHeight() - dragView.getHeight();
+                int topBound = getHeight() - drawViewHeight;
                 int left = dragView.getLeft();
                 logd("===onViewReleased, xvel:%f, yvel:%f, childTop:%d, topBound:%d, isDragView:%b",
                         xvel, yvel, releasedChild.getTop(), topBound, (releasedChild == dragView));
                 if (releasedChild == dragView && releasedChild.getTop() > topBound) {
+                    int top;
                     if (yvel < 0) {
-                        //fling up
-//                        dragHelper.flingCapturedView(releasedChild.getLeft(), topBound, releasedChild.getLeft(), getHeight());
-                        dragHelper.settleCapturedViewAt(left, topBound);
+                        top = topBound;
                     } else {
-                        dragHelper.settleCapturedViewAt(left, getHeight());
+                        top = getHeight();
+
                     }
+                    dragViewTop = top;
+                    dragHelper.settleCapturedViewAt(left, top);
                     invalidate();
                 }
             }
@@ -176,8 +182,8 @@ public class DragUpLayout extends RelativeLayout {
     public void computeScroll() {
         if (dragHelper.continueSettling(true)) {
 //            ViewCompat.postInvalidateOnAnimation(this);
+            invalidate();
         }
-        invalidate();
     }
 
     private void logd(String tpl, Object... args) {
@@ -206,24 +212,13 @@ public class DragUpLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
-        boolean ret;
+
         if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
             dragHelper.cancel();
-            ret = false;
-        } else {
-            ret = dragHelper.shouldInterceptTouchEvent(ev);
+            return false;
         }
 
-        Log.d(TAG, String.format("===onInterceptTouchEvent, action:%d, ret:%b", action, ret));
-        return ret;
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        final int action = MotionEventCompat.getActionMasked(ev);
-        boolean ret = super.dispatchTouchEvent(ev);
-        Log.d(TAG, String.format("===dispatchTouchEvent, action:%d, ret:%b", action, ret));
-        return ret;
+        return dragHelper.shouldInterceptTouchEvent(ev);
     }
 
     @Override
@@ -245,8 +240,26 @@ public class DragUpLayout extends RelativeLayout {
             }
         }
         dragHelper.processTouchEvent(event);
-        Log.d(TAG, String.format("===onTouchEvent, action:%d, ret:%b", action, true));
         return true;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        logd("===onMeasure===");
+        if (drawViewHeight <= 0) {
+            drawViewHeight = dragView.getMeasuredHeight();
+            dragViewTop = getMeasuredHeight();
+            logd("===onMeasure, drawViewTop:%d, drawViewHeight:%d", dragViewTop, drawViewHeight);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        int bottom = dragViewTop + drawViewHeight;
+        logd("===onLayout, changed:%b, dragViewTop:%d, dragViewBottom:%d", changed, dragViewTop, bottom);
+        dragView.layout(dragView.getLeft(), dragViewTop, dragView.getRight(), bottom);
     }
 
     private boolean touchInClickView(MotionEvent event) {

@@ -25,7 +25,7 @@ public class DragUpLayout extends RelativeLayout {
     private ViewDragHelper dragHelper;
     private View dragView;
     private int drawViewId;
-    private boolean debug = false;
+    private boolean debug = true;
     private int clickViewId;
     private View clickView;
     private MotionEvent currentDownEvent;
@@ -247,9 +247,9 @@ public class DragUpLayout extends RelativeLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         logd("===onMeasure===");
-        if (drawViewHeight <= 0) {
+        if (dragViewTop <= 0) {
+            dragViewTop = getBottom();
             drawViewHeight = dragView.getMeasuredHeight();
-            dragViewTop = getMeasuredHeight();
             logd("===onMeasure, drawViewTop:%d, drawViewHeight:%d", dragViewTop, drawViewHeight);
         }
     }

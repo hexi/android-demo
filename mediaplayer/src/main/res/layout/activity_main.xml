@@ -76,6 +76,13 @@
             android:text="swipe_activity"
             android:textAllCaps="false" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startDragUpActivity"
+            android:text="drag_up_activity"
+            android:textAllCaps="false" />
+
         <FrameLayout
             android:id="@+id/frame_layout"
             android:layout_width="match_parent"

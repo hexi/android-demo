@@ -38,9 +38,9 @@ public class DragUpViewHelper {
     public int clampViewPositionVertical(View child, int top, int dy) {
         final int topBound = parent.getHeight() - contentHeight;
         final int bottomBound = parent.getHeight();
-        logd("===clampViewPositionVertical, top:%d, dy:%d, topBound:%d, bottomBound:%d",
-                top, dy, topBound, bottomBound);
         final int newTop = Math.min(Math.max(top, topBound), bottomBound);
+        logd("===clampViewPositionVertical, top:%d, dy:%d, topBound:%d, bottomBound:%d, newTop:%d",
+                top, dy, topBound, bottomBound, newTop);
         contentTop = newTop;
 
         return newTop;
@@ -62,11 +62,11 @@ public class DragUpViewHelper {
 
     public int settleTopTo(View releasedChild, float xvel, float yvel) {
         final int top;
-        int topBound = parent.getHeight() - contentHeight;
+        int topBound = parent.getBottom() - contentHeight;
         if (yvel < 0) {
             top = topBound;
         } else {
-            top = parent.getHeight();
+            top = parent.getBottom();
 
         }
         contentTop = top;
@@ -75,6 +75,9 @@ public class DragUpViewHelper {
     }
 
     public void onMeasure() {
+        if (contentView == null) {
+            return;
+        }
         if (contentTop <= 0) {
             contentTop = parent.getBottom();
             contentHeight = contentView.getMeasuredHeight();
@@ -83,6 +86,9 @@ public class DragUpViewHelper {
     }
 
     public void onLayout(boolean changed, int l, int t, int r, int b) {
+        if (contentView == null) {
+            return;
+        }
         int bottom = contentTop + contentHeight;
         logd("===onLayout, changed:%b, contentTop:%d, dragViewBottom:%d", changed, contentTop, bottom);
         contentView.layout(contentView.getLeft(), contentTop, contentView.getRight(), bottom);

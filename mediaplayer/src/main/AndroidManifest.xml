@@ -37,6 +37,8 @@
         <activity android:name=".DragLeftActivity" />
 
         <activity android:name=".SwipeActivity" />
+
+        <activity android:name=".DragUpActivity" />
     </application>
 
 </manifest>

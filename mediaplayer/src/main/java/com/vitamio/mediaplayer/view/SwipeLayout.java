@@ -152,7 +152,6 @@ public class SwipeLayout extends RelativeLayout {
             @Override
             public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy);
-                logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
                 boolean isDragUpView = dragUpViewHelper.isTarget(changedView);
                 if (isDragUpView) {
                     final int topBound = getHeight() - dragUpContentView.getHeight();

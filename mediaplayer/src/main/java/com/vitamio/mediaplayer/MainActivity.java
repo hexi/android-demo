@@ -35,6 +35,11 @@ public class MainActivity extends FragmentActivity {
         startActivity(intent);
     }
 
+    public void startDragUpActivity(View view) {
+        Intent intent = new Intent(this, DragUpActivity.class);
+        startActivity(intent);
+    }
+
     public void startSwipeActivity(View view) {
         Intent intent = new Intent(this, SwipeActivity.class);
         startActivity(intent);

@@ -63,12 +63,18 @@ public class DragLeftViewHelper {
     }
 
     public void onLayout(boolean changed, int l, int t, int r, int b) {
+        if (contentView == null) {
+            return;
+        }
         int right = contentLeft + contentWidth;
         logd("===onLayout, changed:%b, dragLeftContentViewLeft:%d, contentViewRight:%d", changed, contentLeft, right);
         contentView.layout(contentLeft, contentView.getTop(), right, contentView.getBottom());
     }
 
     public void layout(final int left, final int top) {
+        if (contentView == null) {
+            return;
+        }
         int right = left + contentWidth;
         int bottom = top + contentView.getMeasuredHeight();
         this.contentLeft = left;
@@ -76,6 +82,9 @@ public class DragLeftViewHelper {
     }
 
     public void onMeasure() {
+        if (contentView == null) {
+            return;
+        }
         if (contentWidth <= 0) {
             contentWidth = contentView.getMeasuredWidth();
             contentLeft = parent.getLeft() - contentWidth;

@@ -77,4 +77,10 @@ public class DragLeftViewHelper {
     public boolean isTarget(View child) {
         return child == contentView;
     }
+
+    public void showContentView() {
+        if (contentView.getVisibility() != View.VISIBLE) {
+            contentView.setVisibility(View.VISIBLE);
+        }
+    }
 }

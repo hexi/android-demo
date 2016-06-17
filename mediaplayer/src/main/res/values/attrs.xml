@@ -11,5 +11,6 @@
     <declare-styleable name="SwipeLayout">
         <attr name="SwipeLayout_dragLeftId" format="reference" />
         <attr name="SwipeLayout_dragLeftContentId" format="reference" />
+        <attr name="SwipeLayout_dragUpContentId" format="reference" />
     </declare-styleable>
 </resources>

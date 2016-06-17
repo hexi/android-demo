@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.view.helper.DragLeftViewHelper;
+import com.vitamio.mediaplayer.view.helper.DragUpViewHelper;
 
 
 /**
@@ -24,15 +25,22 @@ public class SwipeLayout extends RelativeLayout {
     private static final String TAG = "SwipeLayout";
 
     private ViewDragHelper dragHelper;
+
+    //drag left
     private int drawLeftViewId;
     private View dragLeftView;
     private int dragLeftContentViewId;
     private View dragLeftContentView;
+    private DragLeftViewHelper dragLeftViewHelper;
+
+    //drag up
+    private int dragUpContentViewId;
+    private View dragUpContentView;
+    private DragUpViewHelper dragUpViewHelper;
 
     private boolean debug = true;
     boolean enableDrag = true;
 
-    DragLeftViewHelper dragLeftViewHelper;
 
     public void setEnableDrag(boolean enableDrag) {
         this.enableDrag = enableDrag;
@@ -88,6 +96,8 @@ public class SwipeLayout extends RelativeLayout {
         try {
             drawLeftViewId = a.getResourceId(R.styleable.SwipeLayout_SwipeLayout_dragLeftId, -1);
             dragLeftContentViewId = a.getResourceId(R.styleable.SwipeLayout_SwipeLayout_dragLeftContentId, -1);
+
+            dragUpContentViewId = a.getResourceId(R.styleable.SwipeLayout_SwipeLayout_dragUpContentId, -1);
         } finally {
             a.recycle();
         }
@@ -95,6 +105,11 @@ public class SwipeLayout extends RelativeLayout {
 
     private void initView() {
         initDragLeftHelper();
+        initDragUpHelper();
+    }
+
+    private void initDragUpHelper() {
+        this.dragUpViewHelper = new DragUpViewHelper(this);
     }
 
 
@@ -112,16 +127,22 @@ public class SwipeLayout extends RelativeLayout {
                 }
                 logd("===tryCaptureView===");
                 if (child == dragLeftView) {
+                    dragLeftViewHelper.showContentView();
                     dragHelper.captureChildView(dragLeftContentView, pointerId);
                     return false;
+                } else if (child != dragLeftContentView) {
+                    dragUpViewHelper.showContentView();
+                    dragHelper.captureChildView(dragUpContentView, pointerId);
+                    return false;
+                } else {
+                    return false;
                 }
-                return false;
             }
 
             @Override
             public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy);
-                logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
+//                logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
             }
 
             @Override
@@ -134,6 +155,8 @@ public class SwipeLayout extends RelativeLayout {
             public int clampViewPositionHorizontal(View child, int left, int dx) {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionHorizontal(child, left, dx);
+                } else if (dragUpViewHelper.isTarget(child)){
+                    return dragUpViewHelper.clampViewPositionHorizontal(child, left, dx);
                 } else {
                     return left;
                 }
@@ -143,6 +166,8 @@ public class SwipeLayout extends RelativeLayout {
             public int clampViewPositionVertical(View child, int top, int dy) {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionVertical(child, top, dy);
+                } else if (dragUpViewHelper.isTarget(child)) {
+                      return dragUpViewHelper.clampViewPositionVertical(child, top, dy);
                 } else {
                     return top;
                 }
@@ -154,6 +179,13 @@ public class SwipeLayout extends RelativeLayout {
                 if (needSettleLeft) {
                     int top = dragLeftContentView.getTop();
                     int left = dragLeftViewHelper.settleLeftTo(releasedChild, xvel, yvel);
+                    dragHelper.settleCapturedViewAt(left, top);
+                    invalidate();
+                }
+                boolean needSettleUp = dragUpViewHelper.needSettle(releasedChild, xvel, yvel);
+                if (needSettleUp) {
+                    final int left = dragUpContentView.getLeft();
+                    final int top = dragUpViewHelper.settleTopTo(releasedChild, xvel, yvel);
                     dragHelper.settleCapturedViewAt(left, top);
                     invalidate();
                 }
@@ -183,8 +215,10 @@ public class SwipeLayout extends RelativeLayout {
         logd("===onFinishInflate===");
         dragLeftView = findViewById(drawLeftViewId);
         dragLeftContentView = findViewById(dragLeftContentViewId);
-
         dragLeftViewHelper.setContentView(dragLeftContentView);
+
+        dragUpContentView = findViewById(dragUpContentViewId);
+        dragUpViewHelper.setContentView(dragUpContentView);
     }
 
     @Override
@@ -198,6 +232,7 @@ public class SwipeLayout extends RelativeLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         this.dragLeftViewHelper = null;
+        this.dragUpViewHelper = null;
     }
 
     @Override
@@ -223,12 +258,14 @@ public class SwipeLayout extends RelativeLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         logd("===onMeasure===");
         dragLeftViewHelper.onMeasure();
+        dragUpViewHelper.onMeasure();
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         dragLeftViewHelper.onLayout(changed, l, t, r, b);
+        dragUpViewHelper.onLayout(changed, l, t, r, b);
     }
 
 }

@@ -8,4 +8,8 @@
         <attr name="DragLeft_drawViewId" format="reference" />
         <attr name="DragLeft_contentViewId" format="reference" />
     </declare-styleable>
+    <declare-styleable name="SwipeLayout">
+        <attr name="SwipeLayout_dragLeftId" format="reference" />
+        <attr name="SwipeLayout_dragLeftContentId" format="reference" />
+    </declare-styleable>
 </resources>

@@ -35,6 +35,11 @@ public class MainActivity extends FragmentActivity {
         startActivity(intent);
     }
 
+    public void startSwipeActivity(View view) {
+        Intent intent = new Intent(this, SwipeActivity.class);
+        startActivity(intent);
+    }
+
     public void getAudioManager(View view) {
         AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         Log.d(TAG, "===am:" + am);

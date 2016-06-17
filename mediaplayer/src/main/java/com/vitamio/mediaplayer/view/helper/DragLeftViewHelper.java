@@ -10,8 +10,8 @@ public class DragLeftViewHelper {
     private static final String TAG = "DragLeftViewHelper";
     private View contentView;
     private View parent;
-    private int width;
-    private int left;
+    private int contentWidth;
+    private int contentLeft;
 
     public DragLeftViewHelper(View parent) {
         this.parent = parent;
@@ -22,11 +22,11 @@ public class DragLeftViewHelper {
     }
 
     public int clampViewPositionHorizontal(View child, int left, int dx) {
-        final int leftBound = parent.getLeft() - width;
+        final int leftBound = parent.getLeft() - contentWidth;
         final int rightBound = parent.getLeft();
         final int newLeft = Math.max(Math.min(left, rightBound), leftBound);
         logd("===clampViewPositionHorizontal, leftBound:%d, rightBound:%d, left:%d, newLeft:%d", leftBound, rightBound, left, newLeft);
-        this.left = newLeft;
+        this.contentLeft = newLeft;
         return newLeft;
     }
 
@@ -50,27 +50,34 @@ public class DragLeftViewHelper {
         final int left;
         if (xvel <= 0) {
             //往左华
-            left = parent.getLeft() - width;
+            left = parent.getLeft() - contentWidth;
         } else {
             //往右华
             left = parent.getLeft();
 
         }
-        this.left = left;
+        this.contentLeft = left;
         return left;
     }
 
     public void onLayout(boolean changed, int l, int t, int r, int b) {
-        int right = left + width;
-        logd("===onLayout, changed:%b, dragLeftContentViewLeft:%d, contentViewRight:%d", changed, left, right);
-        contentView.layout(left, contentView.getTop(), right, contentView.getBottom());
+        int right = contentLeft + contentWidth;
+        logd("===onLayout, changed:%b, dragLeftContentViewLeft:%d, contentViewRight:%d", changed, contentLeft, right);
+        contentView.layout(contentLeft, contentView.getTop(), right, contentView.getBottom());
+    }
+
+    public void layout(final int left, final int top) {
+        int right = left + contentWidth;
+        int bottom = top + contentView.getMeasuredHeight();
+        this.contentLeft = left;
+        contentView.layout(left, top, right, bottom);
     }
 
     public void onMeasure() {
-        if (width <= 0) {
-            width = contentView.getMeasuredWidth();
-            left = parent.getLeft() - width;
-            logd("===onMeasure, dragLeftContentViewWidth:%d, dragLeftContentViewLeft:%d", width, left);
+        if (contentWidth <= 0) {
+            contentWidth = contentView.getMeasuredWidth();
+            contentLeft = parent.getLeft() - contentWidth;
+            logd("===onMeasure, dragLeftContentViewWidth:%d, dragLeftContentViewLeft:%d", contentWidth, contentLeft);
         }
     }
 

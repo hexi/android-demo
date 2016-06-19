@@ -57,5 +57,4 @@ dependencies {
     compile 'io.reactivex:rxjava-async-util:0.21.0'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.squareup.wire:wire-runtime:2.0.1'
-    compile 'com.ytx.android.library:server:1.1.0'
 }

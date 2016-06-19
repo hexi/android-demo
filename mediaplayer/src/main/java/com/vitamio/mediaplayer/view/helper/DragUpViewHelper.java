@@ -93,4 +93,5 @@ public class DragUpViewHelper {
         logd("===onLayout, changed:%b, contentTop:%d, dragViewBottom:%d", changed, contentTop, bottom);
         contentView.layout(contentView.getLeft(), contentTop, contentView.getRight(), bottom);
     }
+
 }

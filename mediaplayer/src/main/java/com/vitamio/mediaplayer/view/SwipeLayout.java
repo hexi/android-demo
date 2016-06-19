@@ -41,7 +41,7 @@ public class SwipeLayout extends RelativeLayout {
     private MotionEvent currentDownEvent;
     private double MOVE_THRESHOLD = 5;
     OnClickListener onClickListener;
-    OnDragUpListener onDragUpListener;
+    OnSwipeLayoutListener onSwipeLayoutListener;
 
     private boolean debug = true;
     boolean enableDrag = true;
@@ -53,6 +53,10 @@ public class SwipeLayout extends RelativeLayout {
 
     public void setDragLeftView(View dragLeftView) {
         this.dragLeftView = dragLeftView;
+    }
+
+    public void setOnSwipeLayoutListener(OnSwipeLayoutListener onSwipeLayoutListener) {
+        this.onSwipeLayoutListener = onSwipeLayoutListener;
     }
 
     @Override
@@ -155,18 +159,30 @@ public class SwipeLayout extends RelativeLayout {
             @Override
             public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
                 super.onViewPositionChanged(changedView, left, top, dx, dy);
+                logd("===onViewPositionChanged, left:%d, top:%d, dx:%d, dy:%d", left, top, dx, dy);
                 boolean isDragUpView = dragUpViewHelper.isTarget(changedView);
                 if (isDragUpView) {
+                    logd("===dragging up view===");
                     final int topBound = getHeight() - dragUpContentView.getHeight();
                     final int bottomBound = getHeight();
 
-                    if (onDragUpListener == null) {
+                    if (onSwipeLayoutListener == null) {
                         return;
                     }
                     if (top == topBound) {
-                        onDragUpListener.onDragViewUp();
+                        onSwipeLayoutListener.onDragViewUp();
                     } else if (top == bottomBound) {
-                        onDragUpListener.onDragViewDown();
+                        onSwipeLayoutListener.onDragViewDown();
+                    }
+                }
+                boolean isDragLeftView = dragLeftViewHelper.isTarget(changedView);
+                if (isDragLeftView) {
+                    final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
+                    logd("===dragging left view, left:%d", left);
+                    if (left > leftBound) {
+                        onSwipeLayoutListener.onLeftViewShowing();
+                    } else {
+                        onSwipeLayoutListener.onLeftViewHidden();
                     }
                 }
             }
@@ -285,6 +301,7 @@ public class SwipeLayout extends RelativeLayout {
             double distance = distance(event, currentDownEvent);
             if (distance < MOVE_THRESHOLD) {
                 if (touchInDragLeftView(currentDownEvent)) {
+                    onSwipeLayoutListener.onLeftViewShowing();
                     dragLeftViewHelper.layout(getLeft(), dragLeftContentView.getTop());
                 } else {
                     if (onClickListener != null) {
@@ -332,8 +349,10 @@ public class SwipeLayout extends RelativeLayout {
         dragUpViewHelper.onLayout(changed, l, t, r, b);
     }
 
-    public interface OnDragUpListener {
+    public interface OnSwipeLayoutListener {
         void onDragViewUp();
         void onDragViewDown();
+        void onLeftViewShowing();
+        void onLeftViewHidden();
     }
 }

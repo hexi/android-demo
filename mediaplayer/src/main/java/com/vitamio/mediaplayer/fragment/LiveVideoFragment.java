@@ -1,5 +1,6 @@
 package com.vitamio.mediaplayer.fragment;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -23,7 +24,9 @@ import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
+import com.vitamio.mediaplayer.listener.OnEnablePagingListener;
 import com.vitamio.mediaplayer.model.DanmakuChat;
+import com.vitamio.mediaplayer.view.SwipeLayout;
 
 import java.io.InputStream;
 import java.util.Timer;
@@ -43,14 +46,16 @@ import master.flame.danmaku.danmaku.util.SystemClock;
 /**
  * Created by hexi on 16/3/17.
  */
-public class LiveVideoFragment extends Fragment implements VideoManager.VideoServiceListener {
+public class LiveVideoFragment extends Fragment implements VideoManager.VideoServiceListener, SwipeLayout.OnSwipeLayoutListener {
     private static final String TAG = "LiveVideoFragment";
     public static final String INTENT_PATH = "intent.path";
 
+    SwipeLayout swipeLayout;
     PLVideoTextureView videoView;
     ProgressBar progress;
     MyAdapter adapter;
     VideoManager videoService;
+    private OnEnablePagingListener enablePagingListener;
 
     private IDanmakuView mDanmakuView;
     private DanmakuAdapter danmakuAdapter;
@@ -96,8 +101,17 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnEnablePagingListener) {
+            enablePagingListener = (OnEnablePagingListener) context;
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_full_screen_live, container, false);
+        swipeLayout = (SwipeLayout) view.findViewById(R.id.swipeLayout);
         videoView = (PLVideoTextureView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
         adapter = new MyAdapter(getActivity());
@@ -117,6 +131,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
                 Log.d(TAG, "===screen clicked===");
             }
         });
+        swipeLayout.setOnSwipeLayoutListener(this);
 
         initDanmaku(view);
 
@@ -168,6 +183,26 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
             }
         }
         return false;
+    }
+
+    @Override
+    public void onDragViewUp() {
+
+    }
+
+    @Override
+    public void onDragViewDown() {
+
+    }
+
+    @Override
+    public void onLeftViewShowing() {
+        enablePaging(false);
+    }
+
+    @Override
+    public void onLeftViewHidden() {
+        enablePaging(true);
     }
 
     class AsyncAddTask extends TimerTask {
@@ -314,6 +349,12 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
             } else {
                 pauseVideo();
             }
+        }
+    }
+
+    private void enablePaging(boolean enable) {
+        if (enablePagingListener != null) {
+            enablePagingListener.enablePaging(enable);
         }
     }
 

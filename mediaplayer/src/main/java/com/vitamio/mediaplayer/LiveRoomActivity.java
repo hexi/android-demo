@@ -6,19 +6,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.vitamio.mediaplayer.fragment.AndroidAudioFragment;
 import com.vitamio.mediaplayer.fragment.LiveVideoFragment;
+import com.vitamio.mediaplayer.listener.OnEnablePagingListener;
+import com.vitamio.mediaplayer.view.SwitchViewPage;
 
 /**
  * Created by hexi on 16/3/24.
  */
-public class LiveRoomActivity extends FragmentActivity {
+public class LiveRoomActivity extends FragmentActivity implements OnEnablePagingListener {
     private static final String TAG = "OriginalMediaPlayer";
 
-    ViewPager viewPager;
+    SwitchViewPage viewPager;
     LivePageAdapter pageAdapter;
 
 
@@ -26,9 +27,10 @@ public class LiveRoomActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_original_media_player);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = (SwitchViewPage) findViewById(R.id.viewPager);
         pageAdapter = new LivePageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pageAdapter);
+        viewPager.setPagingEnabled(true);
     }
 
 
@@ -36,6 +38,12 @@ public class LiveRoomActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "===onDestroy===");
+    }
+
+    @Override
+    public void enablePaging(boolean enablePaging) {
+        Log.d(TAG, "===enablePaging, enablePaging:" + enablePaging);
+        this.viewPager.setPagingEnabled(enablePaging);
     }
 
     public class LivePageAdapter extends FragmentPagerAdapter {

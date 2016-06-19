@@ -101,4 +101,5 @@ public class DragLeftViewHelper {
             contentView.setVisibility(View.VISIBLE);
         }
     }
+
 }

@@ -144,6 +144,9 @@ public class SwipeLayout extends RelativeLayout {
                     dragUpViewHelper.showContentView();
                     dragHelper.captureChildView(dragUpContentView, pointerId);
                     return false;
+                }
+                if (child == dragUpContentView) {
+                    return true;
                 } else {
                     return false;
                 }

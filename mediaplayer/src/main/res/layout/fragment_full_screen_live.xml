@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vitamio.mediaplayer.view.DragUpLayout
+<com.vitamio.mediaplayer.view.SwipeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:clickViewId="@+id/recycler_view"
-    app:drawViewId="@+id/drag_view">
+    app:SwipeLayout_dragLeftContentId="@+id/fl_left_content"
+    app:SwipeLayout_dragLeftId="@+id/show_left_content"
+    app:SwipeLayout_dragUpContentId="@+id/drag_up_content">
 
     <com.pili.pldroid.player.widget.PLVideoTextureView
         android:id="@+id/surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <Button
-        android:id="@+id/disable_scroll_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="不能滚动" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -24,22 +19,30 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <com.vitamio.mediaplayer.view.MyRecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        android:background="#FFBEE780"></com.vitamio.mediaplayer.view.MyRecyclerView>
-
     <master.flame.danmaku.ui.widget.DanmakuView
         android:id="@+id/sv_danmaku"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_alignParentBottom="true" />
 
+    <FrameLayout
+        android:id="@+id/fl_left_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e0e71e"></FrameLayout>
+    
+    <TextView
+        android:id="@+id/show_left_content"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:background="#ed72c8"
+        android:gravity="center"
+        android:text="drag_me" />
+    
     <com.vitamio.mediaplayer.view.DragView
-        android:id="@+id/drag_view"
+        android:id="@+id/drag_up_content"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentBottom="true"
@@ -47,8 +50,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="#FF94BBCF"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/button0"
@@ -59,4 +61,4 @@
             android:text="点我" />
     </com.vitamio.mediaplayer.view.DragView>
 
-</com.vitamio.mediaplayer.view.DragUpLayout>
+</com.vitamio.mediaplayer.view.SwipeLayout>

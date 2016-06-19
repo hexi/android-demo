@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -25,7 +24,6 @@ import com.vitamio.mediaplayer.R;
 import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
 import com.vitamio.mediaplayer.model.DanmakuChat;
-import com.vitamio.mediaplayer.view.MyRecyclerView;
 
 import java.io.InputStream;
 import java.util.Timer;
@@ -51,7 +49,6 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
 
     PLVideoTextureView videoView;
     ProgressBar progress;
-    MyRecyclerView recyclerView;
     MyAdapter adapter;
     VideoManager videoService;
 
@@ -97,21 +94,14 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     }
 
     String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
-    private boolean needResume;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_full_screen_live, container, false);
         videoView = (PLVideoTextureView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
-        recyclerView = (MyRecyclerView) view.findViewById(R.id.recycler_view);
-
         adapter = new MyAdapter(getActivity());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter.setData(mockData());
-
-//        this.path = retrievePath(getArguments() != null ? getArguments() : savedInstanceState);
 
         view.findViewById(R.id.button0).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,30 +117,6 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
                 Log.d(TAG, "===screen clicked===");
             }
         });
-
-        view.findViewById(R.id.disable_scroll_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                disableScroll();
-            }
-        });
-
-        recyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "===recycler view clicked");
-                recyclerView.setCanScroll(true);
-            }
-        });
-
-        view.findViewById(R.id.drag_view).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "===drag view clicked===");
-            }
-        });
-
-        disableScroll();
 
         initDanmaku(view);
 
@@ -218,14 +184,6 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
             }
         }
     }
-
-    public void disableScroll() {
-        boolean isIntercept = recyclerView.isCanScroll();
-        Log.d(TAG, "===isIntercept: "+ isIntercept);
-        recyclerView.setCanScroll(false);
-        adapter.notifyDataSetChanged();
-    }
-
 
     private String[] mockData() {
         int size = 5;

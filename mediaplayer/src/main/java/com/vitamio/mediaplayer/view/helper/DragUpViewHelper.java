@@ -13,8 +13,8 @@ public class DragUpViewHelper {
     private int contentHeight;
     private int contentTop;
 
-    public DragUpViewHelper(View view) {
-        this.parent = view;
+    public DragUpViewHelper(View parent) {
+        this.parent = parent;
     }
 
     public void setContentView(View contentView) {
@@ -78,7 +78,7 @@ public class DragUpViewHelper {
         if (contentView == null) {
             return;
         }
-        if (contentTop <= 0) {
+        if (contentTop <= 0 || contentHeight <= 0) {
             contentTop = parent.getBottom();
             contentHeight = contentView.getMeasuredHeight();
             logd("===onMeasure, contentTop:%d, contentHeight:%d", contentTop, contentHeight);

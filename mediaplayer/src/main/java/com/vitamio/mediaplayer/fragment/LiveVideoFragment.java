@@ -56,6 +56,8 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     MyAdapter adapter;
     VideoManager videoService;
     private OnEnablePagingListener enablePagingListener;
+    private View hideLeftContentBtn;
+    private View showLeftContentBtn;
 
     private IDanmakuView mDanmakuView;
     private DanmakuAdapter danmakuAdapter;
@@ -112,6 +114,8 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_full_screen_live, container, false);
         swipeLayout = (SwipeLayout) view.findViewById(R.id.swipeLayout);
+        hideLeftContentBtn = view.findViewById(R.id.hide_left_content);
+        showLeftContentBtn = view.findViewById(R.id.show_left_content);
         videoView = (PLVideoTextureView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
         adapter = new MyAdapter(getActivity());
@@ -203,6 +207,18 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     @Override
     public void onLeftViewHidden() {
         enablePaging(true);
+
+        showLeftContentBtn.setVisibility(View.VISIBLE);
+        hideLeftContentBtn.setVisibility(View.GONE);
+        swipeLayout.setDragLeftView(showLeftContentBtn);
+    }
+
+    @Override
+    public void onLeftViewShown() {
+        enablePaging(false);
+        hideLeftContentBtn.setVisibility(View.VISIBLE);
+        swipeLayout.setDragLeftView(hideLeftContentBtn);
+        showLeftContentBtn.setVisibility(View.GONE);
     }
 
     class AsyncAddTask extends TimerTask {

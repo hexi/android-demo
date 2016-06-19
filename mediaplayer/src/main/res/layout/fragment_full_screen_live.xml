@@ -30,7 +30,9 @@
         android:id="@+id/fl_left_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#e0e71e"></FrameLayout>
+        android:background="#e0e71e">
+
+    </FrameLayout>
     
     <TextView
         android:id="@+id/show_left_content"
@@ -39,6 +41,18 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="50dp"
         android:background="#ed72c8"
+        android:gravity="center"
+        android:text="drag_me" />
+
+    <TextView
+        android:id="@+id/hide_left_content"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:background="#ed72c8"
+        android:visibility="gone"
         android:gravity="center"
         android:text="drag_me" />
     

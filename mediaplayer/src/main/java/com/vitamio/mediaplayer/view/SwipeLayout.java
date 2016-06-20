@@ -180,9 +180,12 @@ public class SwipeLayout extends RelativeLayout {
                     final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
                     final int rightBound = getLeft();
                     logd("===dragging left view, left:%d", left);
+                    if (onSwipeLayoutListener == null) {
+                        return;
+                    }
                     if (left > leftBound && left < rightBound) {
                         onSwipeLayoutListener.onLeftViewShowing();
-                    } else if (left == leftBound){
+                    } else if (left == leftBound) {
                         onSwipeLayoutListener.onLeftViewHidden();
                     } else if (left == rightBound) {
                         onSwipeLayoutListener.onLeftViewShown();
@@ -200,7 +203,7 @@ public class SwipeLayout extends RelativeLayout {
             public int clampViewPositionHorizontal(View child, int left, int dx) {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionHorizontal(child, left, dx);
-                } else if (dragUpViewHelper.isTarget(child)){
+                } else if (dragUpViewHelper.isTarget(child)) {
                     return dragUpViewHelper.clampViewPositionHorizontal(child, left, dx);
                 } else {
                     return left;
@@ -212,7 +215,7 @@ public class SwipeLayout extends RelativeLayout {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionVertical(child, top, dy);
                 } else if (dragUpViewHelper.isTarget(child)) {
-                      return dragUpViewHelper.clampViewPositionVertical(child, top, dy);
+                    return dragUpViewHelper.clampViewPositionVertical(child, top, dy);
                 } else {
                     return top;
                 }
@@ -368,9 +371,13 @@ public class SwipeLayout extends RelativeLayout {
 
     public interface OnSwipeLayoutListener {
         void onDragViewUp();
+
         void onDragViewDown();
+
         void onLeftViewShowing();
+
         void onLeftViewShown();
+
         void onLeftViewHidden();
     }
 }

@@ -304,8 +304,7 @@ public class SwipeLayout extends RelativeLayout {
             double distance = distance(event, currentDownEvent);
             if (distance < MOVE_THRESHOLD) {
                 if (touchInDragLeftView(currentDownEvent)) {
-                    onSwipeLayoutListener.onLeftViewShown();
-                    dragLeftViewHelper.layout(getLeft(), dragLeftContentView.getTop());
+                    showOrHideLeftView();
                 } else {
                     if (onClickListener != null) {
                         onClickListener.onClick(this);
@@ -315,6 +314,21 @@ public class SwipeLayout extends RelativeLayout {
         }
         dragHelper.processTouchEvent(event);
         return true;
+    }
+
+    private void showOrHideLeftView() {
+        final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
+        final int rightBound = getLeft();
+        final int left = dragLeftContentView.getLeft();
+        if (left == leftBound) {
+            //show left view
+            onSwipeLayoutListener.onLeftViewShown();
+            dragLeftViewHelper.layout(rightBound, dragLeftContentView.getTop());
+        } else if (left == rightBound) {
+            //hide left view
+            onSwipeLayoutListener.onLeftViewHidden();
+            dragLeftViewHelper.layout(leftBound, dragLeftContentView.getTop());
+        }
     }
 
     private boolean touchInDragLeftView(MotionEvent event) {

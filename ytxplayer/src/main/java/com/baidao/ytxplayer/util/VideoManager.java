@@ -5,6 +5,9 @@ import android.media.AudioManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.baidao.ytxplayer.widget.MediaController;
 import com.pili.pldroid.player.AVOptions;
@@ -58,6 +61,8 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
     MediaController.OnOrientationChangeListener orientationChangeListener;
     private Context context;
     private boolean needReopen;
+    private int windowWidth;
+    private int windowHeight;
 
     public void setNeedReopen() {
         needReopen = true;
@@ -71,6 +76,10 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
         this.context = context.getApplicationContext();
         this.videoView = videoView;
         this.param = param;
+
+        Pair<Integer, Integer> res = ScreenResolution.getResolution(context);
+        this.windowWidth = res.first.intValue();
+        this.windowHeight = res.second.intValue();
     }
 
 
@@ -98,12 +107,26 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
 
         if (param.videoLayout == LAYOUT_PORTRAIT_HALL_SCREEN) {
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+            RelativeLayout.LayoutParams pl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            videoView.setLayoutParams(pl);
         } else if (param.videoLayout == LAYOUT_LANDSCAPE_FULL_SCREEN) {
             videoView.setDisplayOrientation(0);
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
         } else {
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
+            RelativeLayout.LayoutParams pl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            videoView.setLayoutParams(pl);
         }
+        videoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (param.videoLayout == LAYOUT_PORTRAIT_HALL_SCREEN) {
+                    int videoHeight = bottom - top;
+                    int marginTop = windowHeight - (int) (windowHeight/2 + windowHeight*0.118 + videoHeight/2);
+                    videoView.setTranslationY(marginTop);
+                }
+            }
+        });
         videoView.requestFocus();
         videoView.setVideoPath(param.path);
 

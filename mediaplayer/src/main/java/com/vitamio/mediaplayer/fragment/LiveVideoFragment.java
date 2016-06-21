@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -16,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.baidao.ytxplayer.util.VideoManager;
 import com.pili.pldroid.player.PLMediaPlayer;
@@ -26,6 +26,7 @@ import com.vitamio.mediaplayer.adapter.DanmakuAdapter;
 import com.vitamio.mediaplayer.adapter.MyAdapter;
 import com.vitamio.mediaplayer.listener.OnEnablePagingListener;
 import com.vitamio.mediaplayer.model.DanmakuChat;
+import com.vitamio.mediaplayer.view.MyRecyclerView;
 import com.vitamio.mediaplayer.view.SwipeLayout;
 
 import java.io.InputStream;
@@ -63,6 +64,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     private DanmakuAdapter danmakuAdapter;
 
     private Timer timer;
+    private MyRecyclerView recyclerView;
 
     private SpannableStringBuilder createSpannable(Drawable drawable) {
         String text = "bitmap";
@@ -118,16 +120,13 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
         showLeftContentBtn = view.findViewById(R.id.show_left_content);
         videoView = (PLVideoTextureView) view.findViewById(R.id.surface);
         progress = (ProgressBar) view.findViewById(R.id.progress);
+
         adapter = new MyAdapter(getActivity());
         adapter.setData(mockData());
 
-        view.findViewById(R.id.button0).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "===drag view clicked===");
-                Toast.makeText(getActivity(), "我被点了", Toast.LENGTH_SHORT).show();
-            }
-        });
+        recyclerView = (MyRecyclerView) view.findViewById(R.id.fl_left_content);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +236,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     }
 
     private String[] mockData() {
-        int size = 5;
+        int size = 30;
         String[] s = new String[size];
         for (int i = 0; i < size; i++) {
             s[i] = "测试评论" + i;

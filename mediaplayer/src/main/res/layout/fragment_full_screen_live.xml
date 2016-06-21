@@ -26,13 +26,13 @@
         android:layout_height="500dp"
         android:layout_alignParentBottom="true" />
 
-    <FrameLayout
+    <com.vitamio.mediaplayer.view.MyRecyclerView
         android:id="@+id/fl_left_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e0e71e">
 
-    </FrameLayout>
+    </com.vitamio.mediaplayer.view.MyRecyclerView>
     
     <TextView
         android:id="@+id/show_left_content"

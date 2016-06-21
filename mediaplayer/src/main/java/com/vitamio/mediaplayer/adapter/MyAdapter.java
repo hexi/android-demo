@@ -17,7 +17,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private static final String TAG = "MyAdapter";
 
-    private String[] data;
+    private String[] data = new String[0];
     private Context context;
 
     public void setData(String[] data) {

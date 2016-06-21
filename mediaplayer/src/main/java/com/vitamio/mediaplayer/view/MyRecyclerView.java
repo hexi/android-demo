@@ -38,19 +38,35 @@ public class MyRecyclerView extends RecyclerView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        final int action = MotionEventCompat.getActionMasked(ev);
+        boolean ret;
         if (canScroll) {
-            return super.dispatchTouchEvent(ev);
+            ret = super.dispatchTouchEvent(ev);
         } else {
-            return false;
+            ret = false;
         }
-
+        Log.d(TAG, String.format("===dispatchTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
+        final int action = MotionEventCompat.getActionMasked(e);
+        boolean ret;
         if (!canScroll) {
-            return true;
+            ret =  true;
+        } else {
+            ret = super.onInterceptTouchEvent(e);
         }
-        return super.onInterceptTouchEvent(e);
+        Log.d(TAG, String.format("===onInterceptTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        final int action = MotionEventCompat.getActionMasked(e);
+        boolean ret = super.onTouchEvent(e);
+        Log.d(TAG, String.format("===onTouchEvent, action:%d, ret:%b", action, ret));
+        return ret;
     }
 }

@@ -303,7 +303,7 @@ public class SwipeLayout extends RelativeLayout {
         } else {
             ret = dragHelper.shouldInterceptTouchEvent(ev);
         }
-        Log.d(TAG, String.format("===onInterceptTouchEvent, action:%d, ret:%b", action, ret));
+        logd("===onInterceptTouchEvent, action:%d, ret:%b", action, ret);
         return ret;
     }
 
@@ -311,7 +311,7 @@ public class SwipeLayout extends RelativeLayout {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
         boolean ret = super.dispatchTouchEvent(ev);
-        Log.d(TAG, String.format("===dispatchTouchEvent, action:%d, ret:%b", action, ret));
+        logd("===dispatchTouchEvent, action:%d, ret:%b", action, ret);
         return ret;
     }
 
@@ -331,7 +331,7 @@ public class SwipeLayout extends RelativeLayout {
             }
         }
         dragHelper.processTouchEvent(event);
-        Log.d(TAG, String.format("===onTouchEvent, action:%d, ret:%b", action, true));
+        logd("===onTouchEvent, action:%d, ret:%b", action, true);
         return true;
     }
 

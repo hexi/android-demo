@@ -123,6 +123,9 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
                 if (param.videoLayout == LAYOUT_PORTRAIT_HALL_SCREEN) {
                     int videoHeight = bottom - top;
                     int marginTop = windowHeight - (int) (windowHeight/2 + windowHeight*0.118 + videoHeight/2);
+                    if (marginTop <= 0) {
+                        return;
+                    }
                     videoView.setTranslationY(marginTop);
                 }
             }

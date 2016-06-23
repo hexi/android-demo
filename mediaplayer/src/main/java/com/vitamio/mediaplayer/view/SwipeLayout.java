@@ -141,10 +141,12 @@ public class SwipeLayout extends RelativeLayout {
                 }
                 logd("===tryCaptureView===");
                 if (child == dragLeftView) {
+                    logd("===tryCaptureView dragLeftView===");
                     dragLeftViewHelper.showContentView();
                     dragHelper.captureChildView(dragLeftContentView, pointerId);
                     return false;
                 } else if (child != dragLeftContentView) {
+                    logd("===tryCaptureView dragUpView===");
                     dragUpViewHelper.showContentView();
                     dragHelper.captureChildView(dragUpContentView, pointerId);
                     return false;
@@ -185,7 +187,7 @@ public class SwipeLayout extends RelativeLayout {
                     }
                     if (left > leftBound && left < rightBound) {
                         onSwipeLayoutListener.onLeftViewShowing();
-                    } else if (left == leftBound) {
+                    } else if (left == leftBound){
                         onSwipeLayoutListener.onLeftViewHidden();
                     } else if (left == rightBound) {
                         onSwipeLayoutListener.onLeftViewShown();
@@ -203,7 +205,7 @@ public class SwipeLayout extends RelativeLayout {
             public int clampViewPositionHorizontal(View child, int left, int dx) {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionHorizontal(child, left, dx);
-                } else if (dragUpViewHelper.isTarget(child)) {
+                } else if (dragUpViewHelper.isTarget(child)){
                     return dragUpViewHelper.clampViewPositionHorizontal(child, left, dx);
                 } else {
                     return left;
@@ -387,13 +389,9 @@ public class SwipeLayout extends RelativeLayout {
 
     public interface OnSwipeLayoutListener {
         void onDragViewUp();
-
         void onDragViewDown();
-
         void onLeftViewShowing();
-
         void onLeftViewShown();
-
         void onLeftViewHidden();
     }
 }

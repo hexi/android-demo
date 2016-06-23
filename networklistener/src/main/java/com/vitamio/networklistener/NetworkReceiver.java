@@ -32,8 +32,8 @@ public class NetworkReceiver extends BroadcastReceiver {
             boolean isConnected = !intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
             String extraInfo = intent.getStringExtra(ConnectivityManager.EXTRA_EXTRA_INFO);
             Log.i(LOGTAG, String.format("===network changed network, type:%s, " +
-                            "isConnected:%b, extraInfo:%s",
-                    typeName, isConnected, extraInfo));
+                            "isConnected:%b, extraInfo:%s, networkConnected:%b",
+                    typeName, isConnected, extraInfo, NetworkUtil.isNetworkConnected(context)));
         }
     }
 }

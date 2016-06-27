@@ -353,7 +353,7 @@ public class SwipeLayout extends RelativeLayout {
     }
 
     private boolean touchInDragLeftView(MotionEvent event) {
-        if (dragLeftView == null) {
+        if (dragLeftView == null || dragLeftView.getVisibility() != VISIBLE) {
             return false;
         }
         float x = event.getX();

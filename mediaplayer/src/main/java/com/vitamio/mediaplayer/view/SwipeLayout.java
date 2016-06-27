@@ -184,7 +184,7 @@ public class SwipeLayout extends RelativeLayout {
                     logd("===dragging left view, left:%d", left);
                     if (left > leftBound && left < rightBound) {
                         onLeftViewShowing();
-                    } else if (left == leftBound){
+                    } else if (left == leftBound) {
                         onLeftViewHidden();
                     } else if (left == rightBound) {
                         onLeftViewShown();
@@ -202,7 +202,7 @@ public class SwipeLayout extends RelativeLayout {
             public int clampViewPositionHorizontal(View child, int left, int dx) {
                 if (dragLeftViewHelper.isTarget(child)) {
                     return dragLeftViewHelper.clampViewPositionHorizontal(child, left, dx);
-                } else if (dragUpViewHelper.isTarget(child)){
+                } else if (dragUpViewHelper.isTarget(child)) {
                     return dragUpViewHelper.clampViewPositionHorizontal(child, left, dx);
                 } else {
                     return left;
@@ -348,7 +348,8 @@ public class SwipeLayout extends RelativeLayout {
         return true;
     }
 
-    private void showOrHideLeftView() {
+    public void showOrHideLeftView() {
+        dragLeftViewHelper.showContentView();
         final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
         final int rightBound = getLeft();
         final int left = dragLeftContentView.getLeft();
@@ -406,9 +407,13 @@ public class SwipeLayout extends RelativeLayout {
 
     public interface OnSwipeLayoutListener {
         void onDragViewUp();
+
         void onDragViewDown();
+
         void onLeftViewShowing();
+
         void onLeftViewShown();
+
         void onLeftViewHidden();
     }
 }

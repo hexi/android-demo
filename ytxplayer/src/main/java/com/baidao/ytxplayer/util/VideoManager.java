@@ -6,8 +6,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.baidao.ytxplayer.widget.MediaController;
 import com.pili.pldroid.player.AVOptions;
@@ -107,16 +105,29 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
 
         if (param.videoLayout == LAYOUT_PORTRAIT_HALL_SCREEN) {
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
-            RelativeLayout.LayoutParams pl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            videoView.setLayoutParams(pl);
         } else if (param.videoLayout == LAYOUT_LANDSCAPE_FULL_SCREEN) {
             videoView.setDisplayOrientation(0);
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
         } else {
             videoView.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_PAVED_PARENT);
-            RelativeLayout.LayoutParams pl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            videoView.setLayoutParams(pl);
         }
+
+        if (param.showController) {
+            MediaController mediaController = new MediaController(context);
+            mediaController.setAnchorView(videoView);
+            if (orientationChangeListener != null) {
+                mediaController.setOrientationChangeListener(orientationChangeListener);
+            }
+            videoView.setMediaController(mediaController);
+        }
+
+        initListener();
+
+        videoView.requestFocus();
+        videoView.setVideoPath(param.path);
+    }
+
+    private void initListener() {
         videoView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -130,17 +141,6 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
                 }
             }
         });
-        videoView.requestFocus();
-        videoView.setVideoPath(param.path);
-
-        if (param.showController) {
-            MediaController mediaController = new MediaController(context);
-            mediaController.setAnchorView(videoView);
-            if (orientationChangeListener != null) {
-                mediaController.setOrientationChangeListener(orientationChangeListener);
-            }
-            videoView.setMediaController(mediaController);
-        }
 
         videoView.setOnPreparedListener(new PLMediaPlayer.OnPreparedListener() {
             @Override
@@ -213,7 +213,6 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
                 }
             }
         });
-
     }
 
     private void unRegisterFocusListener() {
@@ -282,6 +281,7 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
         if (videoView == null) {
             return;
         }
+        Log.d(TAG, "===startVideo===");
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         int result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {

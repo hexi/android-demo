@@ -349,6 +349,9 @@ public class SwipeLayout extends RelativeLayout {
     }
 
     public void showOrHideLeftView() {
+        if (!enableDrag) {
+            return;
+        }
         dragLeftViewHelper.showContentView();
         final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
         final int rightBound = getLeft();

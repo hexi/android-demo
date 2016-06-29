@@ -31,7 +31,15 @@
         android:gravity="center"
         android:text="drag_me" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/bottom_button"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:text="底部Button"
+        android:textAllCaps="false" />
+
+    <RelativeLayout
         android:id="@+id/drag_up_container"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -39,8 +47,7 @@
         android:layout_marginBottom="-300dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="#FF94BBCF"
-        android:orientation="vertical">
+        android:background="#FF94BBCF">
 
         <Button
             android:id="@+id/button0"
@@ -49,6 +56,16 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:text="点我" />
-    </LinearLayout>
+
+        <Button
+            android:id="@+id/fuck_button"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="fuck_button"
+            android:textAllCaps="false" />
+    </RelativeLayout>
 
 </com.vitamio.mediaplayer.view.SwipeLayout>

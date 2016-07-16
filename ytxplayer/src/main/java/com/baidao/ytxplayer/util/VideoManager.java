@@ -113,18 +113,22 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
         }
 
         if (param.showController) {
-            MediaController mediaController = new MediaController(context);
-            mediaController.setAnchorView(videoView);
-            if (orientationChangeListener != null) {
-                mediaController.setOrientationChangeListener(orientationChangeListener);
-            }
-            videoView.setMediaController(mediaController);
+            initMediaController();
         }
 
         initListener();
 
         videoView.requestFocus();
         videoView.setVideoPath(param.path);
+    }
+
+    private void initMediaController() {
+        MediaController mediaController = new MediaController(context);
+        mediaController.setAnchorView(videoView);
+        if (orientationChangeListener != null) {
+            mediaController.setOrientationChangeListener(orientationChangeListener);
+        }
+        videoView.setMediaController(mediaController);
     }
 
     private void initListener() {
@@ -247,24 +251,14 @@ public class VideoManager implements AudioManager.OnAudioFocusChangeListener {
     public void toLandscape() {
         int videoWidth = videoView.getWidth();
         int videoHeight = videoView.getHeight();
-        Pair<Integer, Integer> res = ScreenResolution.getResolution(videoView.getContext());
-        int windowWidth = res.first.intValue();
-        int windowHeight = res.second.intValue();
         float scaleX = (float) windowWidth / videoHeight;
         float scaleY = (float) windowHeight / videoWidth;
-
-        float tx = windowWidth - videoHeight;
-        float ty = windowHeight - videoWidth;
-
-        Log.d(TAG, String.format("===toLandscape, videoWidth:%d, videoHeight:%d, " +
-                        "windowWidth:%d, windowHeight:%d, scaleX:%f, scaleY:%f, " +
-                        "tx:%f, ty:%f", videoWidth, videoHeight
-                , windowWidth, windowHeight, scaleX, scaleY, tx, ty));
-
-        videoView.setDisplayOrientation(270);
-
-        videoView.setTranslationX(tx);
-
+//
+        videoView.setTranslationY(-videoView.getTop());
+        videoView.setPivotX(0);
+        videoView.setPivotY(0);
+        videoView.setRotation(90);
+        videoView.setTranslationX(windowWidth);
         videoView.setScaleX(scaleX);
         videoView.setScaleY(scaleY);
     }

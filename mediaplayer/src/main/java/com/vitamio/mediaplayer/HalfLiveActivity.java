@@ -207,8 +207,8 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
 
     @Override
     public void toLandscape() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        videoService.toLandscape();
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        videoService.toLandscape();
     }
 
     @Override

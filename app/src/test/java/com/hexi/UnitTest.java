@@ -20,11 +20,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.junit.Test;
 
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,13 +29,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by hexi on 15/7/3.
@@ -370,11 +364,9 @@ public class UnitTest {
     }
 
     @Test
-    public void testNull() {
-        String a = null;
-        Object b = a;
-        String c = (String) b;
-        System.out.println(c);
+    public void testMath() {
+        double result = 1D / 3D;
+        System.out.println(result);
     }
 
 }

@@ -9,5 +9,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/bg_dialog_shap</item>
     </style>
-
+    <style name="animation_prelogin">
+        <item name="android:windowEnterAnimation">@anim/prelogin_in</item>
+        <item name="android:windowExitAnimation">@anim/prelogin_out</item>
+    </style>
 </resources>

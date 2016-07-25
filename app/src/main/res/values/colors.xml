@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="red">#d00010</color>
+
+    <!-- 键盘 -->
+    <color name="keyboard_backGray">#f6f6f7</color>
+    <color name="keyboard_lineGray">#cccccc</color>
+    <color name="keyboard_backBlue">#00aeff</color>
+    <color name="keyboard_backDrakBlue">#00beff</color>
+    <color name="trade_red">#d00010</color>
+    <color name="trade_create_label_text_color">#222222</color>
+    <color name="trade_create_value_text_color">#e60012</color>
+    <color name="trade_green">#00aa24</color>
+    <color name="trade_create_gray_color">#a3a8be</color>
+    <color name="trade_setting_black">#2d3136</color>
+    <color name="trade_setting_hint_no_enabled">#d4d4d4</color>
+    <color name="trade_setting_hint_enabled">#aaaaaa</color>
 </resources>

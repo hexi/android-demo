@@ -83,6 +83,14 @@
             android:text="drag_up_activity"
             android:textAllCaps="false" />
 
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="#d6d6d6"
+            android:textColor="#626262"
+            android:hint="文本框"/>
+
         <FrameLayout
             android:id="@+id/frame_layout"
             android:layout_width="match_parent"

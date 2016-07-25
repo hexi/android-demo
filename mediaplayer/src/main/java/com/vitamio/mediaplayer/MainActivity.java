@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import com.vitamio.mediaplayer.fragment.TestFragment;
 
@@ -18,6 +19,20 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final EditText editText = (EditText) findViewById(R.id.edit_text);
+//        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                Log.d(TAG, "===onFocusChange, hasFocus: " + hasFocus);
+//            }
+//        });
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===onClick editText, hasFocus: " + editText.isFocused());
+            }
+        });
     }
 
     public void showLiveRoom(View view) {

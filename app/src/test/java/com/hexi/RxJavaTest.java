@@ -1,52 +1,19 @@
 package com.hexi;
 
-import android.content.res.Resources;
-import android.util.Log;
-
-import com.example.hexi.canvastest.adapter.BooleanAsIntAdapter;
-import com.example.hexi.canvastest.adapter.DateTimeTypeAdapter;
-import com.example.hexi.canvastest.model.QuoteDataList;
-import com.example.hexi.canvastest.service.QuoteService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.ResponseBody;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import retrofit.Call;
-import retrofit.Converter;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
 
@@ -54,64 +21,6 @@ import rx.util.async.Async;
  * Created by hexi on 15/7/3.
  */
 public class RxJavaTest {
-    BooleanAsIntAdapter booleanAsIntAdapter = new BooleanAsIntAdapter();
-    Gson gson = new GsonBuilder()
-            .registerTypeAdapter(DateTime.class, new DateTimeTypeAdapter())
-            .registerTypeAdapter(Boolean.class, booleanAsIntAdapter)
-            .registerTypeAdapter(boolean.class, booleanAsIntAdapter)
-            .create();
-
-//    @Test
-//    public void testZip() throws InterruptedException {
-//
-//        QuoteService quoteService = ServiceAdapter.getQuoteService();
-//
-//        final String mockResponse = "mockResponse";
-//        String string2 = "hello world";
-//        String sid = "PMEC.YDCL";
-//        String quotationType = "1";
-//        String tradeDate = null;
-//        String sort = null;
-//        final CountDownLatch countDownLatch = new CountDownLatch(2);
-//
-//        Observable observable0 = Observable.just(mockResponse).delay(0, TimeUnit.SECONDS);
-//        Observable observable1 = Observable.just(string2).delay(0, TimeUnit.SECONDS);
-//        Subscription subscription = Observable.zip(observable0,
-//                observable1,
-//                quoteService.getDkLineQuotes(sid, quotationType, tradeDate, sort),
-//                new Func3<String, String, QuoteDataList, List<Object>>() {
-//                    @Override
-//                    public List<Object> call(String s0, String s1, QuoteDataList quoteDataList) {
-//                        List<Object> ret = new ArrayList<Object>();
-//                        ret.add(s0);
-//                        ret.add(s1);
-//                        ret.add(quoteDataList);
-//                        return ret;
-//                    }
-//                }
-//        ).subscribe(new Observer<List<Object>>() {
-//            @Override
-//            public void onCompleted() {
-//                System.out.println("===onCompleted===");
-//                countDownLatch.countDown();
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                System.out.println("===onError===");
-//                countDownLatch.countDown();
-//            }
-//
-//            @Override
-//            public void onNext(List<Object> objects) {
-//                System.out.println("===onNext, result: " + gson.toJson(objects));
-//                countDownLatch.countDown();
-//            }
-//        });
-//        subscription.unsubscribe();
-//        countDownLatch.await();
-//    }
-
 
     @Test
     public void test1() throws InterruptedException {
@@ -177,37 +86,6 @@ public class RxJavaTest {
                     }
                 });
     }
-
-//    @Test
-//    public void mockInterruptedIOException() throws InterruptedException {
-//        QuoteService quoteService = ServiceAdapter.getQuoteService();
-//
-//        final CountDownLatch countDownLatch = new CountDownLatch(1);
-//        String sid = "SZPEX.QHO50S";
-//        Subscription subscription = quoteService.getMtDataOfToday(sid, null)
-//                .subscribe(new Observer<QuoteDataList>() {
-//                    @Override
-//                    public void onCompleted() {
-//                        System.out.println("===onCompleted===");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        System.out.println("===onError===" + e.getMessage());
-//                        countDownLatch.countDown();
-//                    }
-//
-//                    @Override
-//                    public void onNext(QuoteDataList quoteDataList) {
-//                        System.out.println("===onNext===");
-//                        countDownLatch.countDown();
-//                    }
-//                });
-//
-//        Thread.sleep(705);
-//        subscription.unsubscribe();
-//        countDownLatch.await();
-//    }
 
     @Test
     public void test3() throws InterruptedException {

@@ -9,7 +9,7 @@ import rx.functions.Func1;
 public class MyTransformer implements Observable.Transformer<Integer, String> {
 
     @Override
-    public Observable<String> call(Observable<? extends java.lang.Integer> source) {
+    public Observable<String> call(Observable<Integer> source) {
         return source.map(new Func1<Integer, String>() {
             @Override
             public String call(Integer item) {
@@ -17,4 +17,5 @@ public class MyTransformer implements Observable.Transformer<Integer, String> {
             }
         });
     }
+
 }

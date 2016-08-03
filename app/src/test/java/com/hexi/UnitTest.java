@@ -369,4 +369,11 @@ public class UnitTest {
         System.out.println(result);
     }
 
+    @Test
+    public void testAdd() {
+        double d0 = 0.06D;
+        double d1 = 0.01D;
+        System.out.println(d0+d1);
+    }
+
 }

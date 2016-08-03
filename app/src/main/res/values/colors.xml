@@ -15,4 +15,15 @@
     <color name="trade_setting_black">#2d3136</color>
     <color name="trade_setting_hint_no_enabled">#d4d4d4</color>
     <color name="trade_setting_hint_enabled">#aaaaaa</color>
+
+    <color name="app_style">#03233b</color>
+    <color name="txt_orange">#ff6800</color>
+
+    <color name="product_list_bac">#efeef4</color>
+    <color name="keyboard_blackground">#bababa</color>
+    <color name="black">#000</color>
+    <color name="color_3c3c3c">#3c3c3c</color>
+    <color name="color_999999">#999999</color>
+    <color name="color_1a98ff">#1a98ff</color>
+    <color name="color_d8dbdf">#d8dbdf</color>
 </resources>

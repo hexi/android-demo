@@ -103,4 +103,10 @@
         android:onClick="startSelf"
         android:text="start_self" />
 
+    <EditText
+        android:id="@+id/et_custom_key_board"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1000"/>
+
 </LinearLayout>

@@ -1,8 +1,13 @@
 package com.hexi.retrofit;
 
+import android.support.annotation.NonNull;
+
+import com.baidao.retrofit2_log_adapter.RetrofitLogFactory;
 import com.example.hexi.canvastest.adapter.BooleanAsIntAdapter;
 import com.example.hexi.canvastest.adapter.DateTimeTypeAdapter;
+import com.example.hexi.canvastest.model.LoginInfoResult;
 import com.example.hexi.canvastest.model.QuoteDataList;
+import com.example.hexi.canvastest.service.MasApi;
 import com.example.hexi.canvastest.service.QuoteService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,16 +15,10 @@ import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -53,7 +52,38 @@ public class TestRetrofit2 {
                     @Override
                     public void onNext(QuoteDataList quoteDataList) {
                         System.out.println("===onNext===");
-                        System.out.println(gson.toJson(quoteDataList));
+                        countDownLatch.countDown();
+                    }
+                });
+
+        countDownLatch.await();
+    }
+
+    @Test
+    public void testPostWithRxJava() throws InterruptedException {
+        MasApi masApi = getMasApi();
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        String username = "167000000000631";
+        String password = "111111";
+        int serverId = 1;
+        masApi.login(username, password, serverId)
+                .subscribe(new Observer<LoginInfoResult>() {
+                    @Override
+                    public void onCompleted() {
+                        System.out.println("===onCompleted===");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println("===onError===" + e.getMessage());
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onNext(LoginInfoResult result) {
+                        System.out.println("===onNext===");
+                        System.out.println("===result: " + new Gson().toJson(result));
                         countDownLatch.countDown();
                     }
                 });
@@ -69,35 +99,8 @@ public class TestRetrofit2 {
             .create();
 
     private QuoteService getQuoteService() {
-        Interceptor interceptor = new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
-                HttpUrl httpUrl = request.url();
-                URL url = httpUrl.url();
 
-                String schema = httpUrl.scheme();
-                String host = url.getHost();
-                String path = url.getPath();
-                int port = url.getPort();
-                String query = url.getQuery();
-
-                System.out.println(String.format("host:%s, path:%s, port:%d, query:%s",
-                        host,
-                        path,
-                        port,
-                        query));
-
-                String portStr = port == -1 ? "" : String.valueOf(port);
-                System.out.println("http request: " + schema + "://" + host + portStr + path + query);
-                return chain.proceed(request);
-            }
-        };
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(15, TimeUnit.SECONDS)
-                .build();
+        OkHttpClient client = getOkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.baidao.com/")
@@ -106,5 +109,26 @@ public class TestRetrofit2 {
                 .client(client)
                 .build();
         return retrofit.create(QuoteService.class);
+    }
+
+    private MasApi getMasApi() {
+        OkHttpClient client = getOkHttpClient();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.19.162:8080/mas-client/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(client)
+                .build();
+        return retrofit.create(MasApi.class);
+    }
+
+    @NonNull
+    private OkHttpClient getOkHttpClient() {
+        return new OkHttpClient.Builder()
+                    .addInterceptor(RetrofitLogFactory.create(true))
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .build();
     }
 }

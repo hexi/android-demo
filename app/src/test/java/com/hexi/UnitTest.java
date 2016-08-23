@@ -375,5 +375,4 @@ public class UnitTest {
         double d1 = 0.01D;
         System.out.println(d0+d1);
     }
-
 }

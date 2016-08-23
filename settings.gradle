@@ -23,5 +23,6 @@ include(':app',
         ':dxlive',
         ':servicedemo',
         ':ijkplayerdemo',
-        ':ytxplayer'
+        ':ytxplayer',
+        ':retrofitAdapter'
 )

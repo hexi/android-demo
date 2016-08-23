@@ -1,22 +1,24 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!--<com.example.hexi.canvastest.view.FillPathView-->
+        <!--android:layout_width="300dp"-->
+        <!--android:layout_height="300dp"-->
+        <!--android:background="#ccc" />-->
 
-    <!--<com.example.hexi.canvastest.view.FillPathView-->
-    <!--android:layout_width="300dp"-->
-    <!--android:layout_height="300dp"-->
-    <!--android:background="#ccc" />-->
+        <!--<com.example.hexi.canvastest.view.ClearRect-->
+        <!--android:id="@+id/cr"-->
+        <!--android:layout_width="300dp"-->
+        <!--android:layout_height="200dp"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:background="#ccc" />-->
 
-    <!--<com.example.hexi.canvastest.view.ClearRect-->
-    <!--android:id="@+id/cr"-->
-    <!--android:layout_width="300dp"-->
-    <!--android:layout_height="200dp"-->
-    <!--android:layout_marginTop="5dp"-->
-    <!--android:background="#ccc" />-->
-
-    <!--<com.example.hexi.canvastest.view.SwitchView-->
+        <!--<com.example.hexi.canvastest.view.SwitchView-->
         <!--app:textLeft="限价"-->
         <!--app:textRight="市价"-->
         <!--android:layout_width="match_parent"-->
@@ -25,88 +27,110 @@
         <!--android:layout_marginRight="15dp"-->
         <!--android:layout_marginTop="10dp" />-->
 
-    <com.example.hexi.canvastest.view.CheckView
-        xmlns:checkView="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:padding="10dp"
-        checkView:checked="false"
-        checkView:checkedImage="@drawable/checkbox_checked"
-        checkView:uncheckedImage="@drawable/checkbox_unchecked"/>
+        <com.example.hexi.canvastest.view.CheckView
+            xmlns:checkView="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:padding="10dp"
+            checkView:checked="false"
+            checkView:checkedImage="@drawable/checkbox_checked"
+            checkView:uncheckedImage="@drawable/checkbox_unchecked"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="bindServiceAndStart"
-        android:text="bindServiceAndStart"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="testResponseError"
+            android:text="testResponseError"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="bindService"
-        android:text="bindService"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="deleteWarning"
+            android:text="deleteWarning"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="startServiceByIntent"
-        android:text="startServiceByIntent"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="getWarning"
+            android:text="getWarning"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="startServiceNoIntent"
-        android:text="startServiceNoIntent"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="bindServiceAndStart"
+            android:text="bindServiceAndStart"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="unbindService"
-        android:text="unbindService"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="bindService"
+            android:text="bindService"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="unbindServiceWithStartConn"
-        android:text="unbindServiceWithStartConn"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startServiceByIntent"
+            android:text="startServiceByIntent"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="showDialog"
-        android:text="showDialog" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startServiceNoIntent"
+            android:text="startServiceNoIntent"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="stopSocket"
-        android:text="stopSocket" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unbindService"
+            android:text="unbindService"
+            android:textAllCaps="false" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="cancelStopSocket"
-        android:text="cancelStopSocket" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unbindServiceWithStartConn"
+            android:text="unbindServiceWithStartConn"
+            android:textAllCaps="false" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showDialog"
+            android:text="showDialog" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="stopSocket"
+            android:text="stopSocket" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="cancelStopSocket"
+            android:text="cancelStopSocket" />
 
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="startSelf"
-        android:text="start_self" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startSelf"
+            android:text="start_self" />
 
-    <EditText
-        android:id="@+id/et_custom_key_board"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1000"/>
+        <EditText
+            android:id="@+id/et_custom_key_board"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1000"/>
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

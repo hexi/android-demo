@@ -48,10 +48,7 @@ dependencies {
     compile 'joda-time:joda-time:2.6'
 
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.ytx.android.library:retrofit2-log-adapter:1.3.0'
+    compile project(':retrofitAdapter')
     compile 'io.reactivex:rxandroid:0.22.0'
 
     compile 'io.reactivex:rxjava-async-util:0.21.0'

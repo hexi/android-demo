@@ -1,3 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">AnimationDemo</string>
+    <string name="person_info">Person</string>
 </resources>

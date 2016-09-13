@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.android.example.animationdemo.R;
@@ -15,24 +16,25 @@ import com.android.example.animationdemo.R;
 /**
  * Created by hexi on 16/8/20.
  */
-public class ObjectRotationActivity extends AppCompatActivity {
+public class BaseObjectAnimActivity extends AppCompatActivity {
 
     private static final String TAT = "ObjectRotationActivity";
     ImageView imageView;
+    View contentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_object_rotation);
-
+        setContentView(R.layout.activity_base_object_anim);
+        contentView = findViewById(R.id.content);
         imageView = (ImageView) findViewById(R.id.show);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_object_rotation, menu);
+        inflater.inflate(R.menu.menu_base_object_anim, menu);
         return true;
 
     }
@@ -49,10 +51,14 @@ public class ObjectRotationActivity extends AppCompatActivity {
                 objectAnimator.start();
                 return true;
             case R.id.translation:
-                Log.d(TAT, "===translation===");
+                int width = contentView.getMeasuredWidth();
                 currentX = imageView.getTranslationX();
-                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, 500, currentX);
-                objectAnimator.setDuration(3000);
+                int left = imageView.getLeft();
+                int delta = width - left - imageView.getMeasuredWidth();
+                Log.d(TAT, String.format("===translation, Width:%d, transX:%f", width, currentX));
+//                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, 500, currentX);
+                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, delta, currentX);
+                objectAnimator.setDuration(1000);
                 objectAnimator.start();
                 return true;
             case R.id.rotation:

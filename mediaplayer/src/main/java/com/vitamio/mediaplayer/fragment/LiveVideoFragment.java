@@ -220,6 +220,11 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
         showLeftContentBtn.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onLeftViewPositionChanged(int left, int top, int dx, int dy) {
+
+    }
+
     class AsyncAddTask extends TimerTask {
         final AtomicLong counter = new AtomicLong(0);
 

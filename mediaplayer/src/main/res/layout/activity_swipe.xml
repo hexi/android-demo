@@ -5,31 +5,89 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:SwipeLayout_dragLeftContentId="@+id/fl_content"
-    app:SwipeLayout_dragLeftId="@+id/drag_view"
+    app:SwipeLayout_dragLeftId="@+id/rl_show_hide_comment_layout"
     app:SwipeLayout_dragUpContentId="@+id/drag_up_container">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#cba3ed">
+        android:background="#83cbade6">
 
     </FrameLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/fl_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#e0e71e"></FrameLayout>
+        android:background="#e0e71e">
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/drag_view"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rl_show_hide_comment_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="94dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
-        android:background="#ed72c8"
-        android:gravity="center"
-        android:text="drag_me" />
+        android:background="#000000"
+        android:layout_marginBottom="146dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_hide_comment"
+            android:layout_width="144dp"
+            android:layout_height="94dp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_close_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_full_live_close_comment"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/show_or_hide_comment_back"
+                android:textColor="@android:color/white" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_show_comment"
+            android:layout_width="144dp"
+            android:layout_height="94dp">
+
+            <TextView
+                android:id="@+id/tv_comment_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_full_live_open_comment"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:text="@string/show_or_hide_comment_open"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tv_comment_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/tv_comment_tip"
+                android:layout_alignTop="@+id/tv_comment_tip"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/bg_full_live_comment_number"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/show_or_hide_comment_number"
+                android:textColor="@android:color/white"
+                android:textSize="11sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/bottom_button"
@@ -40,6 +98,7 @@
         android:textAllCaps="false" />
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/drag_up_container"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -61,9 +120,9 @@
             android:id="@+id/fuck_button"
             android:layout_width="150dp"
             android:layout_height="100dp"
-            android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_gravity="bottom"
             android:text="fuck_button"
             android:textAllCaps="false" />
     </RelativeLayout>

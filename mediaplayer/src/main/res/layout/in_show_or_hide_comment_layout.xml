@@ -1,19 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_show_hide_comment_layout"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="94dp"
     android:layout_alignParentBottom="true"
-    android:layout_alignParentRight="true"
-    android:layout_marginBottom="146dp">
+    android:layout_marginBottom="146dp"
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/rl_hide_comment"
         android:layout_width="144dp"
-        android:layout_height="94dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="146dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
         android:visibility="visible">
 
         <TextView
@@ -35,11 +32,8 @@
     <RelativeLayout
         android:id="@+id/rl_show_comment"
         android:layout_width="144dp"
-        android:layout_height="94dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="146dp"
-        android:layout_marginRight="-144dp">
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/tv_comment_tip"
@@ -71,4 +65,4 @@
             android:textSize="11sp" />
 
     </RelativeLayout>
-</RelativeLayout>
+</LinearLayout>

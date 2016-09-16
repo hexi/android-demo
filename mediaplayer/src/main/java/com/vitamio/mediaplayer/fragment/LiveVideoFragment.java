@@ -204,6 +204,11 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     }
 
     @Override
+    public void onLeftViewHiding() {
+
+    }
+
+    @Override
     public void onLeftViewHidden() {
         enablePaging(true);
 
@@ -221,7 +226,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     }
 
     @Override
-    public void onLeftViewPositionChanged(int left, int top, int dx, int dy) {
+    public void onLeftViewPositionChanged(int left, int dx) {
 
     }
 

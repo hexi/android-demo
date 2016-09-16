@@ -12,7 +12,8 @@ public class DragLeftViewHelper {
     private View parent;
     private int contentWidth;
     private int contentLeft;
-    private boolean debug = true;
+    private boolean debug = false;
+    private boolean shown;
 
     public DragLeftViewHelper(View parent) {
         this.parent = parent;
@@ -35,8 +36,8 @@ public class DragLeftViewHelper {
      * @return new left position
      */
     public int clampViewPositionHorizontal(View child, int left, int dx) {
-        final int leftBound = parent.getLeft() - contentWidth;
-        final int rightBound = parent.getLeft();
+        final int leftBound = getLeftBound();
+        final int rightBound = getRightBound();
         final int newLeft = Math.max(Math.min(left, rightBound), leftBound);
         logd("===clampViewPositionHorizontal, leftBound:%d, rightBound:%d, left:%d, newLeft:%d",
                 leftBound, rightBound, left, newLeft);
@@ -72,13 +73,21 @@ public class DragLeftViewHelper {
      */
     public boolean needSettle(View releasedChild, float xvel, float yvel) {
         boolean isDragLeft = isTarget(releasedChild);
-        final int leftBound = parent.getLeft() - contentWidth;
-        final int rightBound = parent.getLeft();
+        final int leftBound = getLeftBound();
+        final int rightBound = getRightBound();
         final int left = this.contentView.getLeft();
-        boolean needSettle = left > leftBound && left < rightBound;
+        boolean needSettle = left != leftBound && left != rightBound;
         logd("===onViewReleased, xvel:%f, yvel:%f, left:%d, leftBound:%d, rightBound:%d, needSettle:%b, isDragView:%b",
                 xvel, yvel, left, leftBound, rightBound, needSettle, isDragLeft);
         return isDragLeft && needSettle;
+    }
+
+    public int getRightBound() {
+        return 0;
+    }
+
+    public int getLeftBound() {
+        return 0 - contentWidth;
     }
 
     /**
@@ -93,10 +102,10 @@ public class DragLeftViewHelper {
         final int left;
         if (xvel <= 0) {
             //往左华
-            left = parent.getLeft() - contentWidth;
+            left = getLeftBound();
         } else {
             //往右华
-            left = parent.getLeft();
+            left = getRightBound();
         }
         this.contentLeft = left;
         return left;
@@ -115,10 +124,13 @@ public class DragLeftViewHelper {
         if (contentView == null) {
             return;
         }
-        int right = contentLeft + contentWidth;
-        logd("===onLayout, changed:%b, dragLeftContentViewLeft:%d, contentViewRight:%d", changed,
-                contentLeft, right);
-        contentView.layout(contentLeft, contentView.getTop(), right, contentView.getBottom());
+
+        if (contentWidth > 0) {
+            int right = contentLeft + contentWidth;
+            logd("===onLayout, changed:%b, dragLeftContentViewLeft:%d, contentViewRight:%d, parentLeft:%d", changed,
+                    contentLeft, right, parent.getLeft());
+            contentView.layout(contentLeft, contentView.getTop(), right, contentView.getBottom());
+        }
     }
 
     /**
@@ -131,6 +143,7 @@ public class DragLeftViewHelper {
         if (contentView == null) {
             return;
         }
+
         logd(String.format("===layout, leftTo:%d, contentWidth:%d", left, contentWidth));
         int right = left + contentWidth;
         int bottom = top + contentView.getMeasuredHeight();
@@ -145,11 +158,12 @@ public class DragLeftViewHelper {
         if (contentView == null) {
             return;
         }
+
         if (contentWidth <= 0) {
             contentWidth = contentView.getMeasuredWidth();
-            contentLeft = parent.getLeft() - contentWidth;
-            logd("===onMeasure, dragLeftContentViewWidth:%d, dragLeftContentViewLeft:%d",
-                    contentWidth, contentLeft);
+            contentLeft = getLeftBound();
+            logd("===init contentWith, dragLeftContentViewWidth:%d, dragLeftContentViewLeft:%d, parentLeft:%d",
+                    contentWidth, contentLeft, parent.getLeft());
         }
     }
 
@@ -170,5 +184,13 @@ public class DragLeftViewHelper {
         if (contentView.getVisibility() != View.VISIBLE) {
             contentView.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setShown(boolean shown) {
+        this.shown = shown;
+    }
+
+    public boolean isShow() {
+        return this.shown;
     }
 }

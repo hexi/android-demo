@@ -27,7 +27,6 @@
         android:layout_width="wrap_content"
         android:layout_height="94dp"
         android:layout_alignParentBottom="true"
-        android:background="#000000"
         android:layout_marginBottom="146dp"
         android:orientation="horizontal">
 
@@ -104,8 +103,6 @@
         android:layout_height="300dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="-300dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:background="#FF94BBCF">
 
         <Button

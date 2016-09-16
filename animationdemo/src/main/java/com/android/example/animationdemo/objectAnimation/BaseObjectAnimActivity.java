@@ -18,8 +18,8 @@ import com.android.example.animationdemo.R;
  */
 public class BaseObjectAnimActivity extends AppCompatActivity {
 
-    private static final String TAT = "ObjectRotationActivity";
-    ImageView imageView;
+    private static final String TAG = "BaseObjectAnimActivity";
+    View imageView;
     View contentView;
 
     @Override
@@ -28,7 +28,14 @@ public class BaseObjectAnimActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_base_object_anim);
         contentView = findViewById(R.id.content);
-        imageView = (ImageView) findViewById(R.id.show);
+        imageView = findViewById(R.id.show);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "===image clicked===");
+            }
+        });
     }
 
     @Override
@@ -45,7 +52,7 @@ public class BaseObjectAnimActivity extends AppCompatActivity {
         float currentX;
         switch (item.getItemId()) {
             case R.id.scale:
-                Log.d(TAT, "===scale===");
+                Log.d(TAG, "===scale===");
                 objectAnimator = ObjectAnimator.ofFloat(imageView, "scaleX", 1f, 2f,1f);
                 objectAnimator.setDuration(3000);
                 objectAnimator.start();
@@ -55,20 +62,20 @@ public class BaseObjectAnimActivity extends AppCompatActivity {
                 currentX = imageView.getTranslationX();
                 int left = imageView.getLeft();
                 int delta = width - left - imageView.getMeasuredWidth();
-                Log.d(TAT, String.format("===translation, Width:%d, transX:%f", width, currentX));
-//                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, 500, currentX);
-                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, delta, currentX);
+                Log.d(TAG, String.format("===translation, Width:%d, transX:%f", width, currentX));
+//                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, delta, currentX);
+                objectAnimator = ObjectAnimator.ofFloat(imageView, "translationX", currentX, delta);
                 objectAnimator.setDuration(1000);
                 objectAnimator.start();
                 return true;
             case R.id.rotation:
-                Log.d(TAT, "===rotation===");
+                Log.d(TAG, "===rotation===");
                 objectAnimator = ObjectAnimator.ofFloat(imageView, "rotation", 0f, 360f);
                 objectAnimator.setDuration(3000);
                 objectAnimator.start();
                 return true;
             case R.id.alpha:
-                Log.d(TAT, "===alpha===");
+                Log.d(TAG, "===alpha===");
                 objectAnimator = ObjectAnimator.ofFloat(imageView, "alpha", 1f, 0f, 1f);
                 objectAnimator.setDuration(3000);
                 objectAnimator.start();

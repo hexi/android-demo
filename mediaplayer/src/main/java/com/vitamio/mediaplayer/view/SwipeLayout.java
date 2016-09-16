@@ -58,7 +58,7 @@ public class SwipeLayout extends RelativeLayout {
      * setg enable drag up
      */
     public void setEnableDragUp(boolean enableDragUp) {
-        Log.d(TAG, "===setEnableDragUp===");
+        logd(TAG, "===setEnableDragUp===");
         this.enableDragUp = enableDragUp;
     }
 
@@ -156,14 +156,12 @@ public class SwipeLayout extends RelativeLayout {
                     return false;
                 }
                 logd("===tryCaptureView===");
-                if (child == dragLeftView || touchInDragLeftView(currentDownEvent)) {
+                if (touchInDragLeftView(currentDownEvent)) {
                     logd("===tryCaptureView dragLeftView===");
                     dragLeftViewHelper.showContentView();
                     dragHelper.captureChildView(dragLeftContentView, pointerId);
                     return false;
-                } else if (dragUpContentView != null
-                        && child != dragLeftContentView
-                        && enableDragUp) {
+                } else if (child != dragLeftContentView && enableDragUp) {
                     logd("===tryCaptureView dragUpView===");
                     dragUpViewHelper.showContentView();
                     dragHelper.captureChildView(dragUpContentView, pointerId);
@@ -194,15 +192,13 @@ public class SwipeLayout extends RelativeLayout {
                 }
                 boolean isDragLeftView = dragLeftViewHelper.isTarget(changedView);
                 if (isDragLeftView) {
-                    final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
-                    final int rightBound = getLeft();
+                    final int leftBound = dragLeftViewHelper.getLeftBound();
+                    final int rightBound = dragLeftViewHelper.getRightBound();
                     logd("===dragging left view, left:%d", left);
 
-                    if (onSwipeLayoutListener != null) {
-                        onSwipeLayoutListener.onLeftViewPositionChanged(left, top, dx, dy);
-                    }
+                    onLeftViewPositionChanged(left, dx);
                     if (left > leftBound && left < rightBound) {
-                        onLeftViewShowing();
+                        onLeftViewShowingOrHiding();
                     } else if (left == leftBound) {
                         onLeftViewHidden();
                     } else if (left == rightBound) {
@@ -245,6 +241,7 @@ public class SwipeLayout extends RelativeLayout {
                 if (needSettleLeft) {
                     int top = dragLeftContentView.getTop();
                     int left = dragLeftViewHelper.settleLeftTo(releasedChild, xvel, yvel);
+                    logd("===leftContentView, targetLeft:" + left);
                     dragHelper.settleCapturedViewAt(left, top);
                     invalidate();
                 }
@@ -259,6 +256,26 @@ public class SwipeLayout extends RelativeLayout {
         });
     }
 
+    private void onLeftViewPositionChanged(int left, int dx) {
+        if (onSwipeLayoutListener != null) {
+            onSwipeLayoutListener.onLeftViewPositionChanged(left, dx);
+        }
+    }
+
+    private void onLeftViewShowingOrHiding() {
+        if (!dragLeftViewHelper.isShow()) {
+            onLeftViewShowing();
+        } else {
+            onLeftViewHiding();
+        }
+    }
+
+    private void onLeftViewHiding() {
+        if (onSwipeLayoutListener != null) {
+            onSwipeLayoutListener.onLeftViewHiding();
+        }
+    }
+
     private void onLeftViewShowing() {
         if (onSwipeLayoutListener != null) {
             onSwipeLayoutListener.onLeftViewShowing();
@@ -266,6 +283,7 @@ public class SwipeLayout extends RelativeLayout {
     }
 
     private void onLeftViewHidden() {
+        this.dragLeftViewHelper.setShown(false);
         if (onSwipeLayoutListener != null) {
             onSwipeLayoutListener.onLeftViewHidden();
         }
@@ -402,8 +420,13 @@ public class SwipeLayout extends RelativeLayout {
         }
         float x = event.getX();
         float y = event.getY();
-        if ((x >= child.getLeft() && x <= child.getRight()) && (y >= child.getTop()
-                && y <= child.getBottom())) {
+
+        float viewLeft = child.getX();
+        float viewRight = viewLeft + child.getMeasuredWidth();
+        float viewTop = child.getY();
+        float viewBottom = viewTop + child.getMeasuredHeight();
+        if ((x >= viewLeft && x <= viewRight) && (y >= viewTop
+                && y <= viewBottom)) {
             return true;
         }
         return false;
@@ -416,23 +439,28 @@ public class SwipeLayout extends RelativeLayout {
         if (!enableDrag) {
             return;
         }
+        logd(TAG, "===showOrHideLeftView===");
         dragLeftViewHelper.showContentView();
-        final int leftBound = getLeft() - dragLeftContentView.getMeasuredWidth();
-        final int rightBound = getLeft();
+        final int leftBound = dragLeftViewHelper.getLeftBound();
+        final int rightBound = dragLeftViewHelper.getRightBound();
         final int left = dragLeftContentView.getLeft();
         if (left == leftBound) {
             //show left view
             onLeftViewShowing();
             dragLeftViewHelper.layout(rightBound, dragLeftContentView.getTop());
+            onLeftViewPositionChanged((rightBound - leftBound), (rightBound - leftBound));
             onLeftViewShown();
         } else if (left == rightBound) {
             //hide left view
-            onLeftViewHidden();
+            onLeftViewShowing();
             dragLeftViewHelper.layout(leftBound, dragLeftContentView.getTop());
+            onLeftViewPositionChanged((leftBound - rightBound), (leftBound - rightBound));
+            onLeftViewHidden();
         }
     }
 
     private void onLeftViewShown() {
+        dragLeftViewHelper.setShown(true);
         if (onSwipeLayoutListener != null) {
             onSwipeLayoutListener.onLeftViewShown();
         }
@@ -512,6 +540,11 @@ public class SwipeLayout extends RelativeLayout {
         void onLeftViewShowing();
 
         /**
+         * left view hiding
+         */
+        void onLeftViewHiding();
+
+        /**
          * left view shown method
          */
         void onLeftViewShown();
@@ -521,6 +554,10 @@ public class SwipeLayout extends RelativeLayout {
          */
         void onLeftViewHidden();
 
-        void onLeftViewPositionChanged(int left, int top, int dx, int dy);
+        /**
+         * on left view position changed
+         */
+        void onLeftViewPositionChanged(final int left, final int dx);
+
     }
 }

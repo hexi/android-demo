@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.vitamio.mediaplayer.view.SwipeLayout;
-import com.vitamio.mediaplayer.view.helper.ScrollViewHelper;
 
 /**
  * Created by hexi on 16/6/17.
@@ -14,8 +14,11 @@ import com.vitamio.mediaplayer.view.helper.ScrollViewHelper;
 public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayoutListener, View.OnClickListener {
 
     private static final String TAG = "SwipeActivity";
+
+    private SwipeLayout swipeLayout;
     private View showOrHideCommentView;
-    private ScrollViewHelper scrollViewHelper;
+    private View hideLeftView;
+    private View showLeftView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,48 +26,41 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
 
         setContentView(R.layout.activity_swipe);
 
-//        findViewById(R.id.bottom_button).setOnClickListener(this);
-//        findViewById(R.id.button0).setOnClickListener(this);
-//        findViewById(R.id.fuck_button).setOnClickListener(this);
+        findViewById(R.id.bottom_button).setOnClickListener(this);
+        findViewById(R.id.button0).setOnClickListener(this);
+        findViewById(R.id.fuck_button).setOnClickListener(this);
 
-        ((SwipeLayout)findViewById(R.id.swipe_layout)).setOnSwipeLayoutListener(this);
+        swipeLayout = ((SwipeLayout) findViewById(R.id.swipe_layout));
+        swipeLayout.setOnSwipeLayoutListener(this);
         showOrHideCommentView = findViewById(R.id.rl_show_hide_comment_layout);
-
-        scrollViewHelper = new ScrollViewHelper(showOrHideCommentView);
+        hideLeftView = findViewById(R.id.rl_hide_comment);
+        showLeftView = findViewById(R.id.rl_show_comment);
     }
 
     @Override
     public void onClick(View v) {
-//        if (v.getId() == R.id.bottom_button) {
-//            Toast.makeText(this, "bottom button clicked", Toast.LENGTH_SHORT).show();
-//        } else if (v.getId() == R.id.button0) {
-//            Toast.makeText(this, "我被点击了", Toast.LENGTH_SHORT).show();
-//        } else if (v.getId() == R.id.fuck_button) {
-//            Toast.makeText(this, "fuck button clicked", Toast.LENGTH_SHORT).show();
-//        }
+        if (v.getId() == R.id.bottom_button) {
+            Toast.makeText(this, "bottom button clicked", Toast.LENGTH_SHORT).show();
+        } else if (v.getId() == R.id.button0) {
+            Toast.makeText(this, "我被点击了", Toast.LENGTH_SHORT).show();
+        } else if (v.getId() == R.id.fuck_button) {
+            Toast.makeText(this, "fuck button clicked", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         showOrHideCommentView.post(new Runnable() {
             @Override
             public void run() {
                 int dragLeftWidth = showOrHideCommentView.getMeasuredWidth();
-                Log.d(TAG, "===dragLeftWidth:" + dragLeftWidth);
-
-//                int targetLeft = -dragLeftWidth/2;
-//                int right = targetLeft + dragLeftWidth;
-//                showOrHideCommentView.layout(targetLeft, showOrHideCommentView.getTop(), right, showOrHideCommentView.getBottom());
-
-//                showOrHideCommentView.animate().translationXBy(-dragLeftWidth/2).setDuration(0).start();
-//                showOrHideCommentView.animate().x(-dragLeftWidth/2).setDuration(0).start();
-
-                scrollViewHelper.settleViewAt(-dragLeftWidth/2, showOrHideCommentView.getTop());
+                showOrHideCommentView.animate().translationXBy(-dragLeftWidth / 2).setDuration(0).start();
             }
         });
+
+
     }
 
     @Override
@@ -80,28 +76,35 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
     @Override
     public void onLeftViewShowing() {
         Log.d(TAG, "===onLeftViewShowing===");
+        hideLeftView.setVisibility(View.INVISIBLE);
+        showLeftView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLeftViewHiding() {
+        Log.d(TAG, "===onLeftViewShowing===");
+        hideLeftView.setVisibility(View.VISIBLE);
+        showLeftView.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onLeftViewShown() {
         Log.d(TAG, "===onLeftViewShown===");
+        hideLeftView.setVisibility(View.VISIBLE);
+        showLeftView.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onLeftViewHidden() {
         Log.d(TAG, "===onLeftViewShown===");
+        hideLeftView.setVisibility(View.INVISIBLE);
+        showLeftView.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onLeftViewPositionChanged(int left, int top, int dx, int dy) {
-        int dragViewLeft = showOrHideCommentView.getLeft();
-        float dragX = showOrHideCommentView.getX();
-        Log.d(TAG, String.format("===onLeftViewPositionChanged, origin:%d, target:%d, dragX:%f", dragViewLeft, dragViewLeft+dx, dragX));
-//        showOrHideCommentView.setX(dragViewLeft);
+    public void onLeftViewPositionChanged(final int left, final int dx) {
+        Log.d(TAG, String.format("===onLeftViewPositionChanged, left:%d, dx:%d", left, dx));
 
-
-//        showOrHideCommentView.animate().x(dragX+dx).setDuration(0).start();
-
-        scrollViewHelper.settleViewAt(dragViewLeft+dx, showOrHideCommentView.getTop());
+        showOrHideCommentView.animate().translationXBy(dx).setDuration(0).start();
     }
 }

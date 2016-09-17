@@ -446,13 +446,13 @@ public class SwipeLayout extends RelativeLayout {
         final int left = dragLeftContentView.getLeft();
         if (left == leftBound) {
             //show left view
-            onLeftViewShowing();
+            onLeftViewShowingOrHiding();
             dragLeftViewHelper.layout(rightBound, dragLeftContentView.getTop());
             onLeftViewPositionChanged((rightBound - leftBound), (rightBound - leftBound));
             onLeftViewShown();
         } else if (left == rightBound) {
             //hide left view
-            onLeftViewShowing();
+            onLeftViewShowingOrHiding();
             dragLeftViewHelper.layout(leftBound, dragLeftContentView.getTop());
             onLeftViewPositionChanged((leftBound - rightBound), (leftBound - rightBound));
             onLeftViewHidden();

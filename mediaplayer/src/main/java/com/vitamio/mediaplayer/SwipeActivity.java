@@ -56,7 +56,7 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
             @Override
             public void run() {
                 int dragLeftWidth = showOrHideCommentView.getMeasuredWidth();
-                showOrHideCommentView.animate().translationXBy(-dragLeftWidth / 2).setDuration(0).start();
+                showOrHideCommentView.animate().xBy(-dragLeftWidth / 2).setDuration(0).start();
             }
         });
 
@@ -105,6 +105,6 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
     public void onLeftViewPositionChanged(final int left, final int dx) {
         Log.d(TAG, String.format("===onLeftViewPositionChanged, left:%d, dx:%d", left, dx));
 
-        showOrHideCommentView.animate().translationXBy(dx).setDuration(0).start();
+        showOrHideCommentView.animate().xBy(dx).setDuration(0).start();
     }
 }

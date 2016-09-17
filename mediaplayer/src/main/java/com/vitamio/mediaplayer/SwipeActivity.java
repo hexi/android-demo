@@ -35,6 +35,18 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
         showOrHideCommentView = findViewById(R.id.rl_show_hide_comment_layout);
         hideLeftView = findViewById(R.id.rl_hide_comment);
         showLeftView = findViewById(R.id.rl_show_comment);
+
+        initLeftTools();
+    }
+
+    private void initLeftTools() {
+        showOrHideCommentView.post(new Runnable() {
+            @Override
+            public void run() {
+                int dragLeftWidth = showOrHideCommentView.getMeasuredWidth();
+                showOrHideCommentView.animate().xBy(-dragLeftWidth / 2).setDuration(0).start();
+            }
+        });
     }
 
     @Override
@@ -46,21 +58,11 @@ public class SwipeActivity extends Activity implements SwipeLayout.OnSwipeLayout
         } else if (v.getId() == R.id.fuck_button) {
             Toast.makeText(this, "fuck button clicked", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        showOrHideCommentView.post(new Runnable() {
-            @Override
-            public void run() {
-                int dragLeftWidth = showOrHideCommentView.getMeasuredWidth();
-                showOrHideCommentView.animate().xBy(-dragLeftWidth / 2).setDuration(0).start();
-            }
-        });
-
-
     }
 
     @Override

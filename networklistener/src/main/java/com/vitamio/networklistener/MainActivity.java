@@ -1,17 +1,16 @@
 package com.vitamio.networklistener;
 
 import android.app.Activity;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends Activity {
-    IntentFilter mNetworkStateChangedFilter;
+public class MainActivity extends Activity implements NetworkReceiver.onNetworkChangedListener {
+    private static final String TAG = "MainActivity";
     NetworkReceiver networkReceiver;
 
     @Override
@@ -30,10 +29,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        mNetworkStateChangedFilter = new IntentFilter();
-        mNetworkStateChangedFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        networkReceiver = new NetworkReceiver();
-        registerReceiver(networkReceiver, mNetworkStateChangedFilter);
+        networkReceiver = new NetworkReceiver(this);
+        registerReceiver(networkReceiver, NetworkReceiver.getIntentFilter());
     }
 
     @Override
@@ -67,5 +64,10 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onNetworkChanged(int type, boolean isConnected) {
+        Log.d(TAG, String.format("===onNetworkChanged, type:%d, isConnected:%b", type, isConnected));
     }
 }

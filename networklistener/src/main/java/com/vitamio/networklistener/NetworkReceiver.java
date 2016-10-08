@@ -3,7 +3,10 @@ package com.vitamio.networklistener;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
@@ -12,28 +15,50 @@ import android.util.Log;
 public class NetworkReceiver extends BroadcastReceiver {
     private static final String LOGTAG = "NetworkReceiver";
 
+    public interface onNetworkChangedListener {
+        void onNetworkChanged(int type, boolean isConnected);
+    }
+
+    protected onNetworkChangedListener onNetworkChangedListener;
+
+    public NetworkReceiver(NetworkReceiver.onNetworkChangedListener onNetworkChangedListener) {
+        this.onNetworkChangedListener = onNetworkChangedListener;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(LOGTAG, "Action: " + intent.getAction() + ", thread:"+Thread.currentThread());
+        Log.i(LOGTAG, "Action: " + intent.getAction());
         if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-//            NetworkInfo info = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-//            String typeName = info.getTypeName();
-//            String subtypeName = info.getSubtypeName();
-//            boolean available = info.isAvailable();
-//            boolean isConnected = info.isConnected();
-//            String extraInfo = info.getExtraInfo();
-//            Log.i(LOGTAG, String.format("===network changed network, type:%s, " +
-//                    "subtype:%s, available:%b, isConnected:%b, extraInfo:%s",
-//                    typeName, subtypeName, available, isConnected, extraInfo));
-
-
             int type = intent.getIntExtra(ConnectivityManager.EXTRA_NETWORK_TYPE, -1);
+            NetworkInfo networkInfo = ((ConnectivityManager) context
+                    .getSystemService( Context.CONNECTIVITY_SERVICE ))
+                    .getNetworkInfo(type);
+
+            boolean isConnected = networkInfo == null ? false : networkInfo.isConnected();
+
             String typeName = type == ConnectivityManager.TYPE_WIFI ? "WIFI" : "mobile";
-            boolean isConnected = !intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-            String extraInfo = intent.getStringExtra(ConnectivityManager.EXTRA_EXTRA_INFO);
             Log.i(LOGTAG, String.format("===network changed network, type:%s, " +
-                            "isConnected:%b, extraInfo:%s, networkConnected:%b",
-                    typeName, isConnected, extraInfo, NetworkUtil.isNetworkConnected(context)));
+                            "isEffective:%b",
+                    typeName, isConnected));
+
+            fireNetworkChanged(type, isConnected);
         }
+    }
+
+    protected void fireNetworkChanged(int type, boolean isConnected) {
+        if (onNetworkChangedListener != null) {
+            onNetworkChangedListener.onNetworkChanged(type, isConnected);
+        }
+    }
+
+    @NonNull
+    public static IntentFilter getIntentFilter() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        return filter;
+    }
+
+    public void removeListener() {
+        this.onNetworkChangedListener = null;
     }
 }

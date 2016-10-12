@@ -12,13 +12,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.baidao.retrofitadapter.RetrofitBuilder;
+import com.baidao.retrofitadapter.YtxSubscriber;
+import com.baidao.retrofitadapter.exception.RetrofitException;
 import com.example.hexi.canvastest.QuotationSocketManager;
 import com.example.hexi.canvastest.R;
 import com.example.hexi.canvastest.model.Result;
 import com.example.hexi.canvastest.model.WarningSetting;
-import com.example.hexi.canvastest.rxAdapter.RxErrorHandlingCallAdapterFactory;
-import com.example.hexi.canvastest.rxAdapter.YtxSubscriber;
-import com.example.hexi.canvastest.rxAdapter.exception.RetrofitException;
 import com.example.hexi.canvastest.service.JryApi;
 import com.example.hexi.canvastest.service.MockApi;
 import com.example.hexi.canvastest.service.TestService;
@@ -34,6 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -178,7 +178,6 @@ public class MainActivity extends ActionBarActivity {
         Retrofit retrofit = new RetrofitBuilder()
                 .withDomain("http://test.tt.device.baidao.com/")
                 .withDebug(true)
-                .withCallFactory(RxErrorHandlingCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build();
 
         JryApi jryApi = retrofit.create(JryApi.class);
@@ -207,7 +206,7 @@ public class MainActivity extends ActionBarActivity {
         Retrofit retrofit = new RetrofitBuilder()
                 .withDomain("http://192.168.5.43:9090/")
                 .withDebug(true)
-                .withCallFactory(RxErrorHandlingCallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .withCallFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build();
 
         MockApi mockApi = retrofit.create(MockApi.class);
@@ -220,6 +219,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onFailed(RetrofitException e) {
+                int i = 1/0;
                 e.printStackTrace();
                 if (e.getKind() == RetrofitException.Kind.HTTP) {
                     try {

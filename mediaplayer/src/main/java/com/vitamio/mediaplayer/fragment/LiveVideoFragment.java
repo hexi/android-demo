@@ -102,7 +102,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
 
     }
 
-    String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
+    String path = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
 
     @Override
     public void onAttach(Context context) {
@@ -157,6 +157,16 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
     @Override
     public void onVideoBufferingEnd(int extra) {
         videoService.startVideo();
+    }
+
+    @Override
+    public void onVideoRenderingStart(int i) {
+
+    }
+
+    @Override
+    public void onVideoAudioRenderingStart(int i) {
+
     }
 
     @Override
@@ -309,7 +319,7 @@ public class LiveVideoFragment extends Fragment implements VideoManager.VideoSer
             return;
         }
         videoService = new VideoManager(this.getActivity(), videoView,
-                new VideoManager.Param(path, VideoManager.LAYOUT_PORTRAIT_FULL_SCREEN, false));
+                new VideoManager.Param(path, VideoManager.LAYOUT_PORTRAIT_FULL_SCREEN, false, true));
         videoService.setListener(this);
         videoService.initVideoView();
         videoView.setBufferingIndicator(progress);

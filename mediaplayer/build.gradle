@@ -34,5 +34,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.+'
     compile 'com.android.support:percent:23.+'
     compile 'com.github.ctiao:DanmakuFlameMaster:0.4.5@aar'
-    compile project(':ytxplayer')
+    compile 'com.ytx.android.library:ytxplayer:1.9.0'
 }

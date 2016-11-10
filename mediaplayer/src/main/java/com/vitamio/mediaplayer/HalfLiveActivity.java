@@ -35,14 +35,14 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     private static final String INTENT_LIVE_PATH = "intent_live_path";
 
     private ViewGroup contentContainer;
-    VideoManager videoService;
+    VideoManager videoManager;
     ScreenOffOnReceiver screenOffOnReceiver;
     PLVideoTextureView videoView;
 
 
-    private String livePath = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
+    private String videoPath = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
 
-    String path = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
+    private String audioPath = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
 
     AudioService audioService;
     private boolean audioBound;
@@ -53,10 +53,10 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
                                        IBinder service) {
             AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
             audioService = binder.getService();
-            audioService.setAudioServiceListener(HalfLiveActivity.this);
+            audioService.addAudioServiceListener(HalfLiveActivity.this);
 
             if (!audioService.isMediaPlayerCreated()) {
-                audioService.createMediaPlayer(path);
+                audioService.createMediaPlayer(new AudioService.Param(audioPath, true));
             } else {
                 audioService.startPlay();
             }
@@ -76,7 +76,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
         Log.d(TAG, "===onCreate===");
         setContentView(R.layout.activity_half_live);
         contentContainer = (ViewGroup) findViewById(R.id.content_container);
-        if (!isLiveStreaming(path)) {
+        if (!isLiveStreaming(audioPath)) {
             finish();
             return;
         }
@@ -99,7 +99,7 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     }
 
     private void initVideo() {
-        if (!TextUtils.isEmpty(livePath)) {
+        if (!TextUtils.isEmpty(videoPath)) {
             videoView.setVisibility(View.VISIBLE);
             int videoLayout;
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -107,25 +107,25 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
             } else {
                 videoLayout = VideoManager.LAYOUT_PORTRAIT_HALL_SCREEN;
             }
-            videoService = new VideoManager(this, videoView,
-                    new VideoManager.Param(livePath, videoLayout, true));
-            videoService.setListener(this);
-            videoService.setOrientationChangeListener(this);
-            videoService.initVideoView();
+            videoManager = new VideoManager(this, videoView,
+                    new VideoManager.Param(videoPath, videoLayout, true, true));
+            videoManager.setListener(this);
+            videoManager.setOrientationChangeListener(this);
+            videoManager.initVideoView();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(INTENT_LIVE_PATH, livePath);
+        outState.putString(INTENT_LIVE_PATH, videoPath);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "===onResume===");
-        videoService.startVideo();
+        videoManager.startVideo();
         if (audioBound) {
             audioService.pausePlay();
         }
@@ -150,9 +150,9 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (videoService != null) {
-            videoService.release();
-            videoService = null;
+        if (videoManager != null) {
+            videoManager.release();
+            videoManager = null;
         }
         if (audioBound) {
             unbindService(audioConnection);
@@ -168,12 +168,22 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
 
     @Override
     public void onVideoPrepared(PLMediaPlayer mp) {
-        videoService.startVideo();
+        videoManager.startVideo();
     }
 
     @Override
     public void onVideoBufferingEnd(int extra) {
-        videoService.startVideo();
+        videoManager.startVideo();
+    }
+
+    @Override
+    public void onVideoRenderingStart(int i) {
+
+    }
+
+    @Override
+    public void onVideoAudioRenderingStart(int i) {
+
     }
 
     @Override
@@ -208,13 +218,13 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     @Override
     public void toLandscape() {
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        videoService.toLandscape();
+        videoManager.toLandscape();
     }
 
     @Override
     public void toPortrait() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        videoService.toHalfPortrait();
+//        videoManager.toHalfPortrait();
     }
 
     @Override
@@ -238,14 +248,14 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     }
 
     public void startVideo() {
-        if (videoService != null) {
-            videoService.startVideo();
+        if (videoManager != null) {
+            videoManager.startVideo();
         }
     }
 
     public void pauseVideo() {
-        if (videoService != null) {
-            videoService.pauseVideo();
+        if (videoManager != null) {
+            videoManager.pauseVideo();
         }
     }
 

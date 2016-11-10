@@ -35,8 +35,6 @@ android {
 repositories {
     maven { url 'https://github.com/donnfelker/mvn-repo/raw/master/' }
     mavenCentral()
-    maven { url 'http://maven.tiantong99.com:8081/nexus/content/repositories/releases/'}
-    maven { url 'http://maven.tiantong99.com:8081/nexus/content/repositories/snapshots/'}
 }
 
 dependencies {

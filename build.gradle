@@ -14,5 +14,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven { url 'http://maven.tiantong99.com:8081/nexus/content/repositories/releases/'}
     }
 }

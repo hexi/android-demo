@@ -22,7 +22,7 @@ public class VideoLiveActivity extends Activity {
 
         setContentView(R.layout.activity_video_live);
 
-        String path = "rtmp://live1.evideocloud.net/live/test1__8Z2MPDMkP4Nm";
+        String path = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
 
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
 //        mVideoView.setMediaController(mMediaController);

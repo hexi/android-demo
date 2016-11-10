@@ -45,10 +45,10 @@ public class AndroidAudioFragment extends Fragment implements AudioService.Audio
                                        IBinder service) {
             AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
             audioService = binder.getService();
-            audioService.setAudioServiceListener(AndroidAudioFragment.this);
+            audioService.addAudioServiceListener(AndroidAudioFragment.this);
             Log.d(TAG, "===service:" + audioService);
 
-            audioService.createMediaPlayer(path);
+            audioService.createMediaPlayer(new AudioService.Param(path, true));
             bound = true;
         }
 

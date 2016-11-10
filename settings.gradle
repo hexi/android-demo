@@ -13,6 +13,5 @@ include(':app',
         ':mediaplayer',
         ':dxlive',
         ':servicedemo',
-        ':ijkplayerdemo',
-        ':ytxplayer',
+        ':ijkplayerdemo'
 )

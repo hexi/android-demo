@@ -1,41 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFEFD44B">
+    android:background="#9fefd44b">
     <!--<FrameLayout-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--app:layout_widthPercent="100%"-->
-        <!--app:layout_aspectRatio="177%">-->
-        <com.pili.pldroid.player.widget.PLVideoTextureView
-            android:id="@+id/surface_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"/>
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="0dp"-->
+    <!--app:layout_widthPercent="100%"-->
+    <!--app:layout_aspectRatio="177%">-->
+    <com.pili.pldroid.player.widget.PLVideoTextureView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
-        <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_marginLeft="15dp"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:gravity="center"-->
-            <!--android:visibility="gone"-->
-            <!--android:layout_marginRight="15dp">-->
+    <Button
+        android:id="@+id/btn_open_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="startVideo"
+        android:text="打开视频" />
 
-            <!--<TextView-->
-                <!--android:id="@+id/no_wifi_hint"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:gravity="center_horizontal"-->
-                <!--android:text="当前没有wifi，继续观看需花费流量"-->
-                <!--android:textColor="@android:color/white"-->
-                <!--android:textSize="20sp" />-->
+    <Button
+        android:id="@+id/btn_close_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btn_open_video"
+        android:onClick="pauseVideo"
+        android:text="关闭视频" />
 
-        <!--</RelativeLayout>-->
+    <Button
+        android:id="@+id/btn_open_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btn_close_video"
+        android:onClick="startAudio"
+        android:text="打开音频" />
+
+    <Button
+        android:id="@+id/btn_close_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btn_open_audio"
+        android:onClick="closeAudio"
+        android:text="关闭音频" />
+
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:gravity="center"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_marginRight="15dp">-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/no_wifi_hint"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:gravity="center_horizontal"-->
+    <!--android:text="当前没有wifi，继续观看需花费流量"-->
+    <!--android:textColor="@android:color/white"-->
+    <!--android:textSize="20sp" />-->
+
+    <!--</RelativeLayout>-->
     <!--</FrameLayout>-->
 
 </android.support.percent.PercentRelativeLayout>

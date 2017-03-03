@@ -1,26 +1,25 @@
 package com.vitamio.mediaplayer;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.baidao.ytxplayer.service.AudioService;
+import com.baidao.logutil.YtxLog;
+import com.baidao.ytxplayer.YtxMediaPlayer;
 import com.baidao.ytxplayer.util.VideoManager;
 import com.baidao.ytxplayer.widget.MediaController;
+import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
+
+import java.io.IOException;
 
 
 /**
@@ -28,46 +27,20 @@ import com.vitamio.mediaplayer.broadcast.ScreenOffOnReceiver;
  */
 public class HalfLiveActivity extends FragmentActivity implements VideoManager.VideoServiceListener,
         MediaController.OnOrientationChangeListener,
-        ScreenOffOnReceiver.ScreenOnOffListener,
-        AudioService.AudioServiceListener {
-    private static final String TAG = "HalfLiveActivity";
+        ScreenOffOnReceiver.ScreenOnOffListener {
 
+    private static final String TAG = "HalfLiveActivity";
     private static final String INTENT_LIVE_PATH = "intent_live_path";
 
-    private ViewGroup contentContainer;
-    VideoManager videoManager;
     ScreenOffOnReceiver screenOffOnReceiver;
-    PLVideoTextureView videoView;
-
 
     private String videoPath = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+//    private String videoPath = "rtmp://xianctc169.rt1.gensee.com/96e49642a025412c9ef14a4afa6a1f9a_13072_0_8808440164_1478524890_20cbc64c/video";
+    PLVideoTextureView videoView;
+    VideoManager videoManager;
 
-    private String audioPath = "http://live.evideocloud.net/live/testaudio__aEmogVx094LY/testaudio__aEmogVx094LY.m3u8";
-
-    AudioService audioService;
-    private boolean audioBound;
-    private ServiceConnection audioConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            AudioService.AudioBinder binder = (AudioService.AudioBinder) service;
-            audioService = binder.getService();
-            audioService.addAudioServiceListener(HalfLiveActivity.this);
-
-            if (!audioService.isMediaPlayerCreated()) {
-                audioService.createMediaPlayer(new AudioService.Param(audioPath, true));
-            } else {
-                audioService.startPlay();
-            }
-            audioBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            audioBound = false;
-        }
-    };
+    private String audioPath = "rtmp://wuhan247.rt1.gensee.com/96e49642a025412c9ef14a4afa6a1f9a_13072_0_8809029162_1478764328_c60ec1d3/audio";
+    private YtxMediaPlayer mediaPlayer;
 
 
     @Override
@@ -75,7 +48,6 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
         super.onCreate(savedInstanceState);
         Log.d(TAG, "===onCreate===");
         setContentView(R.layout.activity_half_live);
-        contentContainer = (ViewGroup) findViewById(R.id.content_container);
         if (!isLiveStreaming(audioPath)) {
             finish();
             return;
@@ -85,8 +57,86 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
 
         initVideo();
 
+        createMediaPlayer();
+
         screenOffOnReceiver = new ScreenOffOnReceiver(HalfLiveActivity.this);
         registerReceiver(screenOffOnReceiver, ScreenOffOnReceiver.getIntentFilter());
+    }
+
+    private void createMediaPlayer() {
+        AVOptions avOptions = createAVOptions();
+
+        Uri uri = Uri.parse(audioPath);
+        mediaPlayer = new YtxMediaPlayer(this.getApplicationContext(), avOptions);
+        mediaPlayer.setLooping(true);
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), uri);
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(new PLMediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(PLMediaPlayer mp) {
+                    mediaPlayer.setPrepared(true);
+                    YtxLog.d(TAG, "===onAudioPrepared===");
+                }
+            });
+            mediaPlayer.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(PLMediaPlayer mp, int what, int extra) {
+                    YtxLog.d(TAG, String.format("===onInfo, what:%d, extra:%d===", what, extra));
+                    switch (what) {
+                        case PLMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                            //Begin buffer, pauseVideo playing
+                            Log.d(TAG, "===start buffer===");
+                            break;
+                        case PLMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                            //The buffering is done, resume playing
+                            Log.d(TAG, "===end buffer===");
+                            break;
+
+                    }
+                    return true;
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new PLMediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(PLMediaPlayer mp) {
+                    YtxLog.d(TAG, "===onCompletion, thread:" + Thread.currentThread());
+                    //这个方法在本地缓存播放完了会回调，对于网络流并不知道什么时候播放结束
+                }
+            });
+            mediaPlayer.setOnErrorListener(new PLMediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(PLMediaPlayer mp, int errorCode) {
+                    YtxLog.d(TAG, String.format("===onAudioError, errorCode:%d", errorCode));
+                    mediaPlayer.setPrepared(false);
+                    return true;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private AVOptions createAVOptions() {
+        boolean isLiveStreaming = true;
+        AVOptions avOptions = new AVOptions();
+        // the unit of timeout is ms
+        avOptions.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        avOptions.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        // Some optimization with buffering mechanism when be set to 1
+        avOptions.setInteger(AVOptions.KEY_LIVE_STREAMING, isLiveStreaming ? 1 : 0);
+        // 是否开启"延时优化"，只在在线直播流中有效
+        // 默认值是：0
+        avOptions.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, isLiveStreaming ? 1 : 0);
+
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        int codec = 0;
+        avOptions.setInteger(AVOptions.KEY_MEDIACODEC, codec);
+
+        // whether start play automatically after prepared, default value is 1
+        avOptions.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
+
+        return avOptions;
     }
 
     private boolean isLiveStreaming(String url) {
@@ -126,9 +176,6 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
         super.onResume();
         Log.d(TAG, "===onResume===");
         videoManager.startVideo();
-        if (audioBound) {
-            audioService.pausePlay();
-        }
     }
 
     @Override
@@ -154,9 +201,9 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
             videoManager.release();
             videoManager = null;
         }
-        if (audioBound) {
-            unbindService(audioConnection);
-            stopService(new Intent(this, AudioService.class));
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
         unregisterReceiver(screenOffOnReceiver);
     }
@@ -193,12 +240,12 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
 
     @Override
     public void onVideoLossFocus() {
-        pauseVideo();
+        pauseVideo(null);
     }
 
     @Override
     public void onVideoGainFocus() {
-        startVideo();
+        startVideo(null);
     }
 
     @Override
@@ -238,54 +285,35 @@ public class HalfLiveActivity extends FragmentActivity implements VideoManager.V
     }
 
     private void pauseVideoAndStartAudio() {
-        pauseVideo();
-        if (audioBound) {
-            audioService.startPlay();
-        } else {
-            Intent intent = new Intent(this, AudioService.class);
-            bindService(intent, audioConnection, Context.BIND_AUTO_CREATE);
-        }
+        pauseVideo(null);
     }
 
-    public void startVideo() {
+    public void startVideo(View view) {
         if (videoManager != null) {
             videoManager.startVideo();
         }
     }
 
-    public void pauseVideo() {
+    public void pauseVideo(View view) {
         if (videoManager != null) {
             videoManager.pauseVideo();
         }
     }
 
-    @Override
-    public void onAudioPrepared(PLMediaPlayer mp) {
-        audioService.startPlay();
+    public void startAudio(View view) {
+        if (mediaPlayer != null
+                && mediaPlayer.isPrepared()) {
+            Log.d(TAG, "===startAudio===");
+            mediaPlayer.start();
+        }
     }
 
-    @Override
-    public void onAudioBufferingEnd(int extra) {
-        audioService.startPlay();
+    public void closeAudio(View view) {
+        if (mediaPlayer !=  null
+                && mediaPlayer.isPlaying()) {
+            Log.d(TAG, "===closeAudio");
+            mediaPlayer.pause();
+        }
     }
 
-    @Override
-    public void onAudioBufferingStart(int extra) {
-
-    }
-
-    @Override
-    public boolean onAudioError(PLMediaPlayer mp, int errorCode) {
-        return true;
-    }
-
-    @Override
-    public void onAudioLossFocus() {
-        audioService.pausePlay();
-    }
-
-    @Override
-    public void onAudioGainFocus() {
-        audioService.startPlay();
-    }
 }

@@ -4,13 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
-
 import com.baidao.retrofitadapter.RetrofitBuilder;
 import com.baidao.retrofitadapter.YtxSubscriber;
 import com.baidao.retrofitadapter.exception.RetrofitException;
@@ -25,10 +26,9 @@ import com.example.hexi.canvastest.view.CheckView;
 import com.example.hexi.canvastest.view.NoTradePermissionDialog;
 import com.example.hexi.canvastest.view.OnCheckStatusChangedListener;
 import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,7 +38,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-
 
 public class MainActivity extends ActionBarActivity {
 
@@ -93,12 +92,41 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ((CheckView) findViewById(R.id.checkbox)).setOnCheckStatusChangedListener(new OnCheckStatusChangedListener() {
-            @Override
-            public void onCheckStatusChanged(boolean check) {
-                Log.d(TAG, "===onCheckStatusChanged:"+check);
+        ((CheckView) findViewById(R.id.checkbox)).setOnCheckStatusChangedListener(
+                new OnCheckStatusChangedListener() {
+                    @Override
+                    public void onCheckStatusChanged(boolean check) {
+                        Log.d(TAG, "===onCheckStatusChanged:" + check);
+                    }
+                });
+    }
+
+    public void toWeixin(View view) {
+        if (isWeixinAvilible(this)) {
+            Intent intent = new Intent();
+            ComponentName cmp = new ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI");
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //intent.putExtra("Chat_User", "wxid_bvzvy6ri3or821");
+            //intent.addFlags(335544320);
+            intent.setComponent(cmp);
+            startActivity(intent);
+        }
+    }
+
+    public static boolean isWeixinAvilible(Context context) {
+        final PackageManager packageManager = context.getPackageManager();// 获取packagemanager
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);// 获取所有已安装程序的包信息
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mm")) {
+                    return true;
+                }
             }
-        });
+        }
+        return false;
     }
 
     public void bindServiceAndStart(View view) {
@@ -146,8 +174,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void getWarning(View view) {
-        Retrofit retrofit = new RetrofitBuilder()
-                .withDomain("http://test.tt.device.baidao.com/")
+        Retrofit retrofit = new RetrofitBuilder().withDomain("http://test.tt.device.baidao.com/")
                 .withDebug(true)
                 .build();
         JryApi jryApi = retrofit.create(JryApi.class);
@@ -158,7 +185,8 @@ public class MainActivity extends ActionBarActivity {
         Call<ArrayList<WarningSetting>> call = jryApi.getWarningSettingsOfSid(deviceId, sid, token);
         call.enqueue(new Callback<ArrayList<WarningSetting>>() {
             @Override
-            public void onResponse(Call<ArrayList<WarningSetting>> call, Response<ArrayList<WarningSetting>> response) {
+            public void onResponse(Call<ArrayList<WarningSetting>> call,
+                    Response<ArrayList<WarningSetting>> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "===onNext, warning: " + new Gson().toJson(response.body()));
                 } else {
@@ -175,8 +203,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void deleteWarning(View view) {
-        Retrofit retrofit = new RetrofitBuilder()
-                .withDomain("http://test.tt.device.baidao.com/")
+        Retrofit retrofit = new RetrofitBuilder().withDomain("http://test.tt.device.baidao.com/")
                 .withDebug(true)
                 .build();
 
@@ -203,8 +230,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void testResponseError(View view) {
-        Retrofit retrofit = new RetrofitBuilder()
-                .withDomain("http://192.168.5.43:9090/")
+        Retrofit retrofit = new RetrofitBuilder().withDomain("http://192.168.5.43:9090/")
                 .withDebug(true)
                 .withCallFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build();
@@ -219,12 +245,13 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onFailed(RetrofitException e) {
-                int i = 1/0;
+                int i = 1 / 0;
                 e.printStackTrace();
                 if (e.getKind() == RetrofitException.Kind.HTTP) {
                     try {
                         Result result = e.getErrorBodyAs(Result.class);
-                        Log.e(TAG, String.format("===error, code:%d, message:%s", result.code, result.message));
+                        Log.e(TAG, String.format("===error, code:%d, message:%s", result.code,
+                                result.message));
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -238,8 +265,6 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -249,7 +274,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        Log.d(TAG, "===onWindowFocusChanged, hasFocus:"+hasFocus);
+        Log.d(TAG, "===onWindowFocusChanged, hasFocus:" + hasFocus);
     }
 
     @Override

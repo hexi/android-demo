@@ -1,17 +1,16 @@
-include ':animationdemo'
+include ':animationdemo', ':downloadapk'
 include(':app',
-        ':broadcastintenttest',
-        ':tablayout',
-        ':toolbar',
-        ':bestuipractice',
-        ':whois',
-        ':dragtoplayouttest',
-        ':nestedscrollview',
-        ':activitylunchmode',
-        ':restaurant',
-        ':networklistener',
-        ':mediaplayer',
-        ':dxlive',
-        ':servicedemo',
-        ':ijkplayerdemo'
-)
+    ':broadcastintenttest',
+    ':tablayout',
+    ':toolbar',
+    ':bestuipractice',
+    ':whois',
+    ':dragtoplayouttest',
+    ':nestedscrollview',
+    ':activitylunchmode',
+    ':restaurant',
+    ':networklistener',
+    ':mediaplayer',
+    ':dxlive',
+    ':servicedemo',
+    ':ijkplayerdemo')

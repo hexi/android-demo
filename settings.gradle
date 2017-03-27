@@ -1,4 +1,4 @@
-include ':animationdemo', ':downloadapk'
+include ':animationdemo', ':downloadapk', ':rxjava2demo'
 include(':app',
     ':broadcastintenttest',
     ':tablayout',

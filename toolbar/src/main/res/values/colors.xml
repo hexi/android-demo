@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="theme_default_primary">#31353d</color>
+    <color name="theme_default_deep_primary">#1c1e23</color>
+
+    <color name="background">#F5F5F5</color>
+    <color name="ytx_orange_color">#ff6d00</color>
+
+    <color name="bg_back_pressed_color">#222222</color>
+    <color name="transparent">#00000000</color>
+</resources>

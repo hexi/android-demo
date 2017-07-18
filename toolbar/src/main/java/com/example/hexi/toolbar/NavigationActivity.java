@@ -76,7 +76,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationF
     private void changeFragment(int position) {
         Log.d(TAG, "===changeFragment, postion: " + position);
         if (position == 0) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new ViewPagerfragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new ViewPagerFragment()).commit();
         } else if (position == 1) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new CardFragment()).commit();
         }

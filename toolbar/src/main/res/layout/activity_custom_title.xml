@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:overScrollMode="never"
     tools:context="com.example.hexi.toolbar.CustomTitleActivity">
 
-    <com.example.hexi.toolbar.widgets.YtxTitle
-        android:id="@+id/ytx_title"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:barTitle="资讯"
-        app:rightActionImage="@drawable/icon_share"
-        app:leftActionImage="@drawable/ic_action_previous_item" />
-</LinearLayout>
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/common_page_bg" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/common_page_bg" />
+        </LinearLayout>
+
+        <com.example.hexi.toolbar.widgets.YtxTitle
+            android:id="@+id/ytx_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:barTitle="资讯"
+            app:leftActionImage="@drawable/ic_action_previous_item"
+            app:rightActionImage="@drawable/icon_share" />
+    </RelativeLayout>
+
+</ScrollView>

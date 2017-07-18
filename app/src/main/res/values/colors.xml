@@ -2,11 +2,6 @@
 <resources>
     <color name="red">#d00010</color>
 
-    <!-- 键盘 -->
-    <color name="keyboard_backGray">#f6f6f7</color>
-    <color name="keyboard_lineGray">#cccccc</color>
-    <color name="keyboard_backBlue">#00aeff</color>
-    <color name="keyboard_backDrakBlue">#00beff</color>
     <color name="trade_red">#d00010</color>
     <color name="trade_create_label_text_color">#222222</color>
     <color name="trade_create_value_text_color">#e60012</color>
@@ -20,7 +15,6 @@
     <color name="txt_orange">#ff6800</color>
 
     <color name="product_list_bac">#efeef4</color>
-    <color name="keyboard_blackground">#bababa</color>
     <color name="black">#000</color>
     <color name="color_3c3c3c">#3c3c3c</color>
     <color name="color_999999">#999999</color>

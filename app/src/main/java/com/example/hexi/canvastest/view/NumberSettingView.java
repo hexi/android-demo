@@ -20,7 +20,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 
 import com.example.hexi.canvastest.R;
 import com.example.hexi.canvastest.util.BigDecimalUtil;
@@ -61,7 +60,6 @@ public class NumberSettingView extends LinearLayout implements View.OnFocusChang
     private double maxValue = Double.MAX_VALUE;
     private double minValue = 0;
     private int scale;
-    private CustomKeyboard keyboard;
 
     public void setScale(int scale) {
         this.scale = scale;
@@ -100,13 +98,10 @@ public class NumberSettingView extends LinearLayout implements View.OnFocusChang
         if (inputType == 1) {
             editTextView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
             setScale(0);
-            keyboard = new CustomKeyboard(getContext(), CustomKeyboard.TYPE_AMOUNT);
         } else {
             setScale(DEFAULT_SCALE);
             editTextView.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            keyboard = new CustomKeyboard(getContext(), CustomKeyboard.TYPE_PRICE);
         }
-        keyboard.setEdit(editTextView);
         if (!TextUtils.isEmpty(hint)) {
             editTextView.setHint(hint);
         }
@@ -117,9 +112,6 @@ public class NumberSettingView extends LinearLayout implements View.OnFocusChang
             public boolean onTouch(View v, MotionEvent event) {
                 if (!editTextView.isFocused()) {
                     editTextView.setFocusable(true);
-                }
-                if (!keyboard.isShowing()) {
-                    keyboard.showAtLocation(editTextView);
                 }
                 editTextView.requestFocusFromTouch();
                 return false;
@@ -145,30 +137,10 @@ public class NumberSettingView extends LinearLayout implements View.OnFocusChang
             public void onDestroyActionMode(ActionMode mode) {
             }
         });
-        keyboard.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                String numberStr = getTextValue();
-                double value = parseValue(numberStr);
-                value = fixValue(value);
-
-                numberStr = format(value);
-                editTextView.setText(numberStr);
-                editTextView.setSelection(numberStr.length());
-
-                onValueChanged(getValue());
-            }
-        });
         editTextView.setLongClickable(false);
         editTextView.setFocusable(false);
         hideSoftInputMethod(editTextView);
         setEnabled(enabled);
-    }
-
-    public void setKeyboardListener(CustomKeyboard.KeyBoardListener listener) {
-        if (keyboard != null) {
-            keyboard.setOnKeyboardListener(listener);
-        }
     }
 
     @Override

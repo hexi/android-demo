@@ -3,15 +3,13 @@ package com.example.hexi.canvastest.activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+
 import com.baidao.retrofitadapter.RetrofitBuilder;
 import com.baidao.retrofitadapter.YtxSubscriber;
 import com.baidao.retrofitadapter.exception.RetrofitException;
@@ -21,14 +19,15 @@ import com.example.hexi.canvastest.model.Result;
 import com.example.hexi.canvastest.model.WarningSetting;
 import com.example.hexi.canvastest.service.JryApi;
 import com.example.hexi.canvastest.service.MockApi;
-import com.example.hexi.canvastest.service.TestService;
 import com.example.hexi.canvastest.view.CheckView;
 import com.example.hexi.canvastest.view.NoTradePermissionDialog;
 import com.example.hexi.canvastest.view.OnCheckStatusChangedListener;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,49 +42,7 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
 
-    boolean bound;
-    TestService testService;
-
-    public ServiceConnection bindAndStartConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "===onServiceConnected===");
-            testService = ((TestService.ServiceBinder) service).getService();
-            bound = true;
-
-            Intent intent = createIntent();
-            startService(intent);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "===onServiceDisconnected===");
-            bound = false;
-        }
-    };
-
-    public ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "===onServiceConnected===");
-            testService = ((TestService.ServiceBinder) service).getService();
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "===onServiceDisconnected===");
-            bound = false;
-        }
-    };
     private Subscription subscription;
-
-    @NonNull
-    private Intent createIntent() {
-        Intent intent = new Intent(MainActivity.this, TestService.class);
-        intent.putExtra("path", "http://www.google.com");
-        return intent;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,32 +84,6 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         return false;
-    }
-
-    public void bindServiceAndStart(View view) {
-        Intent intent = new Intent(this, TestService.class);
-        bindService(intent, bindAndStartConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    public void bindService(View view) {
-        Intent intent = new Intent(this, TestService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
-    }
-
-    public void startServiceByIntent(View view) {
-        startService(createIntent());
-    }
-
-    public void startServiceNoIntent(View view) {
-        startService(new Intent(this, TestService.class));
-    }
-
-    public void unbindService(View view) {
-        unbindService(connection);
-    }
-
-    public void unbindServiceWithStartConn(View view) {
-        unbindService(bindAndStartConnection);
     }
 
     public void showDialog(View view) {

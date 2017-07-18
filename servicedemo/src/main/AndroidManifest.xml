@@ -18,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Main2Activity"></activity>
+
+        <service
+            android:name=".HelloService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

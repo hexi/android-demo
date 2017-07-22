@@ -2,6 +2,7 @@ package com.android.example.servicedemo;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -13,9 +14,16 @@ import android.util.Log;
 public class HelloService extends Service {
     private static final String TAG = "HelloService";
 
+    static class HelloBinder extends Binder {
+
+    }
+
+    private HelloBinder binder;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        binder = new HelloBinder();
         Log.d(TAG, "===onCreate===");
     }
 
@@ -28,7 +36,8 @@ public class HelloService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "===onUnbind===");
-        return super.onUnbind(intent);
+        super.onUnbind(intent);
+        return true;
     }
 
     @Override
@@ -47,7 +56,7 @@ public class HelloService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "===onBind===");
-        return null;
+        return binder;
     }
 
     @Override

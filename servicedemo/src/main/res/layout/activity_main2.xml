@@ -42,8 +42,15 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="startActivity"
-        android:text="startActivity"
+        android:onClick="startActivity2"
+        android:text="startActivity2"
+        android:textAllCaps="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="destroySelf"
+        android:text="destroySelf"
         android:textAllCaps="false" />
 
 </LinearLayout>

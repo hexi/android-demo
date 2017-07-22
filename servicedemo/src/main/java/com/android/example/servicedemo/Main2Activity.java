@@ -52,8 +52,12 @@ public class Main2Activity extends AppCompatActivity {
         unbindService(connection);
     }
 
-    public void startActivity(View v) {
+    public void startActivity2(View v) {
         startActivity(new Intent(this, Main2Activity.class));
+    }
+
+    public void destroySelf(View view) {
+        finish();
     }
 
     @Override

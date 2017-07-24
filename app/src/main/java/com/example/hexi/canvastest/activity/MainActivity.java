@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
@@ -22,6 +21,7 @@ import com.example.hexi.canvastest.model.Result;
 import com.example.hexi.canvastest.model.WarningSetting;
 import com.example.hexi.canvastest.service.JryApi;
 import com.example.hexi.canvastest.service.MockApi;
+import com.example.hexi.canvastest.util.NotificationsUtils;
 import com.example.hexi.canvastest.view.CheckView;
 import com.example.hexi.canvastest.view.NoTradePermissionDialog;
 import com.example.hexi.canvastest.view.OnCheckStatusChangedListener;
@@ -62,32 +62,15 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void requestPermission(View view) {
-//        Intent intent = new Intent();
-//        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//        Uri uri = Uri.fromParts("package", getPackageName(), null);
-//        intent.setData(uri);
-//        startActivity(intent);
-
-//        Intent intent = new Intent();
-//        intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-//        intent.putExtra("app_package", getPackageName());
-//        intent.putExtra("app_uid", getApplicationInfo().uid);
-//        startActivity(intent);
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent();
-            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-            intent.putExtra("app_package", getPackageName());
-            intent.putExtra("app_uid", getApplicationInfo().uid);
-            startActivity(intent);
-        } else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+        if (!NotificationsUtils.isNotificationEnabled(this)) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            intent.setData(Uri.parse("package:" + getPackageName()));
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
             startActivity(intent);
         }
 
+//        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
     }
 
     public void toWeixin(View view) {

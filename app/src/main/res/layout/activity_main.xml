@@ -55,33 +55,6 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="testResponseError"
-            android:text="testResponseError"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="deleteWarning"
-            android:text="deleteWarning"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="getWarning"
-            android:text="getWarning"
-            android:textAllCaps="false" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="showDialog"
-            android:text="showDialog" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:onClick="stopSocket"
             android:text="stopSocket" />
 
@@ -98,11 +71,6 @@
             android:onClick="startSelf"
             android:text="start_self" />
 
-        <EditText
-            android:id="@+id/et_custom_key_board"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1000"/>
     </LinearLayout>
 
 </ScrollView>

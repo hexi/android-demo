@@ -2,7 +2,6 @@ package com.hexi.retrofit;
 
 import android.support.annotation.NonNull;
 import com.example.hexi.canvastest.model.LoginInfoResult;
-import com.example.hexi.canvastest.service.MasApi;
 import com.google.gson.Gson;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
